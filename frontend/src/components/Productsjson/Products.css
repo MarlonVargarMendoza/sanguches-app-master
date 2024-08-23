@@ -1,0 +1,242 @@
+/* Products.css */
+
+
+.products {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  background-color: #f4f4f4; /* Fondo claro para resaltar los productos */
+}
+
+.products ul {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* Muestra 3 productos por fila en dispositivos grandes */
+  gap: 2rem; /* Espacio entre los productos */
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.products li {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  border-radius: 8px;
+  background: #fff;
+  color: #333;
+  overflow: hidden; /* Asegura que el contenido no se desborde del contenedor */
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.products li:hover {
+  transform: scale(1.05); /* Aumenta el tamaño del producto en hover */
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+}
+
+.products img {
+  width: 100%;
+  height: 250px; /* Aumenta la altura para hacer la imagen más prominente */
+  object-fit: cover;
+  
+  transition: transform 0.3s;
+}
+
+.products li:hover img {
+  transform: scale(1.1); /* Aumenta el tamaño de la imagen en hover */
+}
+
+.products h3 {
+  margin: 0;
+  font-size: 1.5rem; /* Aumenta el tamaño del texto */
+  color: #333;
+}
+
+.products span {
+  font-size: 1.1rem; /* Ajusta el tamaño del texto */
+  color: #666;
+}
+
+.button {
+  display: flex;
+  align-items: center;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #333;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.3s, border-color 0.3s, transform 0.2s;
+}
+
+.button:hover {
+  background-color: #444;
+  border-color: #6ac700;
+  transform: scale(1.05); /* Efecto de escala en hover para el botón */
+}
+
+.button:hover .button-icon {
+  color: #FFD700; /* Color del ícono después del hover */
+}
+
+.icon-text-container {
+  display: flex;
+  align-items: center;
+}
+
+.button-text {
+  margin-left: 0.5rem; /* Espacio entre el ícono y el texto */
+  font-weight: 600;
+}
+
+
+.actions .favorite {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  color: #fff;
+  background-color:  rgba(255, 255, 255, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background-color 0.3s ease, color 0.3s ease;;
+}
+.actions .favorite.filled {
+  background-color: #ff0000; 
+  color: #fff; 
+}
+.actions .favorite.empty {
+  background-color: rgba(255, 255, 255, 0.7); /* when empty */
+  color: #333; 
+}
+.card:hover .actions .favorite {
+  right: 20px; /* Asegúrate de que el corazón esté visible en hover */
+}
+.card .actions .favorite:hover {
+  background-color: #ffcccc; /* Fondo más claro al pasar el ratón sobre el corazón */
+}
+.actions .favorite:hover {
+  background-color: #9a50ccb4;
+}
+.card .actions .favorite svg {
+  width: 25px; /* Tamaño del ícono del corazón */
+  height: 25px; /* Tamaño del ícono del corazón */
+}
+
+.card:hover .actions .favorite {
+  right: 10px;
+}
+
+.card > * {
+  margin: 10px 0 10px;
+}
+
+.card h3 {
+  font-size: 22px;
+  font-weight: 500;
+  color: #000;
+}
+
+.flip-container .flip-box-front {
+    font-size: 20px;
+    color: #000;
+}
+
+.flip-box-front ins {
+    margin-left: 10px;
+    text-decoration: none;
+}
+
+.flip-container {
+    perspective: 1000px;
+}
+
+.flip-box {
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.6s;
+    padding-bottom: 30px;
+}
+
+.flip-box-front,
+.flip-box-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    color: #000;
+}
+
+.flip-box-front {
+    transform: rotateX(0deg);
+}
+
+.flip-box-back {
+    transform: rotateX(-180deg);
+}
+
+.flip-box-back button {
+    position: relative;
+    font-size: 20px;
+    font-weight: 500;
+    color: #9b50cc;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    background-color: transparent;
+}
+
+.flip-box-back button::before {
+    content: "";
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0%;
+    height: 1px;
+    visibility: hidden;
+    background-color: #9b50cc;
+    transition: all 0.3s ease;
+}
+
+.flip-box-back:hover button::before {
+    visibility: visible;
+    width: 100%;
+}
+
+.card:hover .flip-box {
+    transform: rotateX(180deg);
+}
+/* Medios de comunicación */
+@media (max-width: 1200px) {
+  .products ul {
+    grid-template-columns: repeat(2, 1fr); /* Muestra 2 productos por fila en pantallas medianas */
+  }
+}
+
+@media (max-width: 800px) {
+  .products ul {
+    grid-template-columns: repeat(1, 1fr); /* Muestra 1 producto por fila en pantallas pequeñas */
+  }
+
+  .products img {
+    height: 200px; /* Ajusta la altura de la imagen en pantallas pequeñas */
+  }
+
+  .products h3 {
+    font-size: 1.25rem; /* Ajusta el tamaño del texto en pantallas pequeñas */
+  }
+
+  .products span {
+    font-size: 1rem; /* Ajusta el tamaño del texto en pantallas pequeñas */
+  }
+}
