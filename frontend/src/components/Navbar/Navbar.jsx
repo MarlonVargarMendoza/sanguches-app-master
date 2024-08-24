@@ -47,7 +47,7 @@ export const Navbar = ({ cartItems }) => {
                 <IconButton aria-label="show menu items" color="inherit">
                   <MenuBookIcon />
                 </IconButton>
-                  Menu
+                  Menu   {/* COMENTARI  */}
                 </Link>
             </div>
           </div>
