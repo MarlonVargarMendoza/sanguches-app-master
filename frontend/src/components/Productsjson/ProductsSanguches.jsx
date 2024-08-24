@@ -6,9 +6,7 @@ import { useCart } from '../../hooks/useCart.js';
 import './Products.css';
 import { CartProvider } from '../../context/cart.jsx';
 
-export function ProductsSanguches() {  
-    
-    console.log('llego');
+export function ProductsSanguches() {
     
     const products = [
       {
