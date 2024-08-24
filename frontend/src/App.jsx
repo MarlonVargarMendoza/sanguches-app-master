@@ -47,24 +47,22 @@ const App = () => {
         <Link to="/carrito">Carrito</Link>
       </Navbar>
 
-      <div className="bg-primary w-full overflow-hidden">
-        <div className={`${styles.paddingX} ${styles.flexCenter}`}>
-          <div className={`${styles.boxWidth}`}>
+      <div className="bg-primary ">
+        <div >
             <Hero />
-          </div>
         </div>
 
-        {/*<div className="bg-primary w-full overflow-hidden">
+        <div className="bg-primary w-full overflow-hidden">
           <Productsjson products={filteredProducts} />
-        </div>*/}
+        </div>
 
         <div className={`bg-dimWhite ${styles.paddingX} ${styles.flexStart}`}>
           <div className={`${styles.boxWidth}`}>
             <Promotions />
-            <Combo />
+            <Combo /> 
             <CTA />
             <Testimonials />
-          </div>
+          </div>  {/* prueba  */}
         </div>
 
         <div className="bg-primary w-full overflow-hidden">
