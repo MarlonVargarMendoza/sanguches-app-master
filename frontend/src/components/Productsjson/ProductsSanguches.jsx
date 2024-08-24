@@ -5,9 +5,7 @@ import RemoveShoppingCartIcon from '@mui/icons-material/RemoveShoppingCart';
 import { useCart } from '../../hooks/useCart.js';
 import './Products.css';
 
-export function ProductsSanguches() {  
-    
-    console.log('llego');
+export function ProductsSanguches() {
     
     const products = [
       {
