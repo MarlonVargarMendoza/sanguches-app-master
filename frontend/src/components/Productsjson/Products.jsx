@@ -71,7 +71,7 @@ export function Productsjson({ products }) {
                     </button>
                   </div>
                 </div>
-              </div>
+              </div>   {/* prueba */}
             </li>
           );
         })}
