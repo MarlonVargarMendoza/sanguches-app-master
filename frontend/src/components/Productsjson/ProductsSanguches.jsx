@@ -4,7 +4,6 @@ import HeartOutlinedIcon from '@mui/icons-material/FavoriteBorder';
 import RemoveShoppingCartIcon from '@mui/icons-material/RemoveShoppingCart';
 import { useCart } from '../../hooks/useCart.js';
 import './Products.css';
-import { CartProvider } from '../../context/cart.jsx';
 
 export function ProductsSanguches() {
     

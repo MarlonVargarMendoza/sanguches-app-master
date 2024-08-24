@@ -20,7 +20,7 @@ export const Navbar = ({ cartItems }) => {
     <AppBar position="fixed" className="bg-gray-800 ">
       <Toolbar className="flex justify-between items-center xl:py-0 sm:py-0  ">
         <div className="w-full flex py-6 justify-between items-center navbar w-[124px] h-[75px]">
-          <Link href="#" className="flex items-center" prefetch={false}>
+          <Link href="#" className="flex items-center">
             <img src={logo} alt="logo" className=" logo w-auto h-auto sm:w-400" />
           </Link>
         </div>
@@ -47,7 +47,7 @@ export const Navbar = ({ cartItems }) => {
                 <IconButton aria-label="show menu items" color="inherit">
                   <MenuBookIcon />
                 </IconButton>
-                  Menu
+                  Menu   {/* COMENTARI  */}
                 </Link>
             </div>
           </div>

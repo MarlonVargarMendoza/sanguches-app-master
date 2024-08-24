@@ -2,7 +2,7 @@ import { ThemeProvider, createTheme } from '@mui/material/styles';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
-import App from './App.jsx';
+import { CartProvider } from './context/cart.jsx'; // Importa el CartProvider
 import { FiltersProvider } from './context/filters.jsx';
 import './index.css';
 import { AppRoute } from './routes/AppRoute.jsx';
@@ -11,10 +11,10 @@ const theme = createTheme({
   palette: {
     mode: 'light',
     primary: {
-      main: '#C8102E', // Color principal
+      main: '#C8102E',
     },
     secondary: {
-      main: '#FFD700', // Color del hover
+      main: '#FFD700',
     },
   },
   components: {
@@ -22,7 +22,7 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           '&:hover': {
-            color: '#FFD700', // Usa el color definido en el tema
+            color: '#FFD700',
           },
         },
       },
@@ -35,7 +35,9 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     <BrowserRouter>
       <ThemeProvider theme={theme}>
         <FiltersProvider>
-          <AppRoute />
+          <CartProvider> {/* Envuelve el AppRoute con CartProvider */}
+            <AppRoute />
+          </CartProvider>
         </FiltersProvider>
       </ThemeProvider>
     </BrowserRouter>
