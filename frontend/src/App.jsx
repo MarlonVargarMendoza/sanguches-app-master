@@ -62,7 +62,7 @@ const App = () => {
             <Combo /> 
             <CTA />
             <Testimonials />
-          </div>
+          </div>  {/* prueba  */}
         </div>
 
         <div className="bg-primary w-full overflow-hidden">
