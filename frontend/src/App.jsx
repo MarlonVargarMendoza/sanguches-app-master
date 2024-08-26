@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
 import { Cart, Combo, CTA, Favorites, Footer, Hero, Navbar, Promotions, Testimonials } from './components';
 import { Productsjson } from './components/Productsjson/Products.jsx';
 import { IS_DEVELOPMENT } from './config.js';
@@ -42,11 +41,7 @@ const App = () => {
 
   return (
     <CartProvider>
-      <Navbar cartItems={cartItems} className={styles.navigation}>
-        <Link to="/">Home</Link>
-        <Link to="/carrito">Carrito</Link>
-      </Navbar>
-
+      <Navbar cartItems={cartItems} className={styles.navigation}/>
       <div className="bg-primary ">
         <div >
             <Hero />
