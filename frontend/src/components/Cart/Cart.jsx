@@ -1,12 +1,13 @@
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import RemoveShoppingCartIcon from '@mui/icons-material/RemoveShoppingCart';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+
 import { useId } from 'react';
 import { useCart } from '../../hooks/useCart.js';
 import styles from '../../style.js';
 import './Cart.css';
 
-function CartItem ({ thumbnail, price, title, quantity, addToCart }) {
+export function CartItem ({ thumbnail, price, title, quantity, addToCart }) {
   return (
     <li>
       <img

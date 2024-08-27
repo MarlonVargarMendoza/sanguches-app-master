@@ -20,7 +20,7 @@ export const Navbar = ({ cartItems }) => {
     <AppBar position="fixed" className="bg-gray-800 ">
       <Toolbar className="flex justify-between items-center xl:py-0 sm:py-0  ">
         <div className="w-full flex py-6 justify-between items-center navbar w-[124px] h-[75px]">
-          <Link href="#" className="flex items-center">
+          <Link to="/" className="flex items-center">
             <img src={logo} alt="logo" className=" logo w-auto h-auto sm:w-400" />
           </Link>
         </div>
@@ -35,6 +35,7 @@ export const Navbar = ({ cartItems }) => {
                   Editalo
               </Link>
             </div>
+
             <div className="center">
               <div className="explainer"><span>Menu</span></div>
                 <a href="#" className="text-white hover:text-red-400 ">
@@ -42,12 +43,13 @@ export const Navbar = ({ cartItems }) => {
                   <span>Combos</span>
                 </a>
             </div>
+
             <div className="right">
-              <Link to='/menuSanguches' className='bg-gold-gradient'>
+              <Link to='/menuSanguches' className='text-white hover:text-red-400'>
                 <IconButton aria-label="show menu items" color="inherit">
                   <MenuBookIcon />
                 </IconButton>
-                  Menu   {/* COMENTARI  */}
+                  Menu   
                 </Link>
             </div>
           </div>

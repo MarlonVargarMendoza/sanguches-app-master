@@ -4,10 +4,21 @@
 .products {
   width: 100%;
   display: flex;
-  justify-content: center;
-  align-items: center;
+  flex-direction: column; /* Cambia la dirección del contenedor a columna */
+  align-items: flex-start;
   padding: 2rem;
   background-color: #f4f4f4; /* Fondo claro para resaltar los productos */
+}
+
+
+/* Contenedor de filtros */
+.filters-container {
+  position: sticky; /* Fijar en la parte superior */
+  top: 0;
+  width: 100%;
+  padding: 1rem; /* Ajusta el padding para crear espacio */
+  background-color: #fff; /* Fondo blanco para que los filtros se destaquen */
+  z-index: 20; /* Asegúrate de que esté encima de los productos */
 }
 
 .products ul {
@@ -17,6 +28,7 @@
   list-style: none;
   padding: 0;
   margin: 0;
+  flex-grow: 1;
 }
 
 .products li {
@@ -71,12 +83,6 @@
   color: #fff;
   cursor: pointer;
   transition: background-color 0.3s, border-color 0.3s, transform 0.2s;
-}
-
-.button:hover {
-  background-color: #444;
-  border-color: #6ac700;
-  transform: scale(1.05); /* Efecto de escala en hover para el botón */
 }
 
 .button:hover .button-icon {
@@ -189,7 +195,7 @@
     position: relative;
     font-size: 20px;
     font-weight: 500;
-    color: #9b50cc;
+    color: gray;
     border: none;
     outline: none;
     cursor: pointer;
@@ -204,7 +210,7 @@
     width: 0%;
     height: 1px;
     visibility: hidden;
-    background-color: #9b50cc;
+    background-color: gray;
     transition: all 0.3s ease;
 }
 

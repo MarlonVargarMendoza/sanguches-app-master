@@ -1,34 +1,53 @@
 .cart {
   background: #C8102E;
-  display: none;
   padding: 32px;
   position: fixed;
   right: 0;
-  top: 0;
+  top: 0; /* Adjusted top position */
+  width: 600px;
+  z-index: 9999;
+  box-shadow: 0 0 10px rgba(0,0,0,0.3); 
+  display: none; /* Initially hidden */
+  transition: all 0.3s ease;
+  overflow: auto;
+}
+.products-sanguches .cart { 
+  display: none;
+  height: auto; /* Allow the cart to grow based on content */
+  max-height: 80vh; /* Limit the maximum height */
+}
+
+/* Always show PersistentCart */
+.persistent-cart {
+  background: #C8102E;
+  display: block;
+  padding: 32px;
+  position: fixed;
+  right: 0;
+  top: 320px;
   width: 600px;
   height: 50vh; 
-  z-index: 9999; /* Asegura que esté por encima de todo */
   box-shadow: 0 0 10px rgba(0,0,0,0.3); /* Opcional: Agrega una sombra para destacarlo */
 }
 
 .cart img {
-  aspect-ratio: 16/9;
+  aspect-ratio: 16 / 9;
   width: 100%;
 }
 
 .cart li {
-  padding-bottom: 16px;
+  padding-bottom: 1rem; /* pb-4 */
 }
 
 .cart footer {
   display: flex;
-  gap: 8px;
   justify-content: center;
   align-items: center;
+  gap: 0.5rem; /* gap-2 */
 }
 
 .cart footer button {
-  padding: 8px;
+  padding: 0.5rem; /* p-2 */
 }
 
 .cart-button {
@@ -40,21 +59,27 @@
   height: 32px;
   justify-content: center;
   padding: 4px;
-  position: absolute;
+  position: fixed;
   right: 8px;
   top: 120px;
   transition: all .3s ease;
   width: 32px;
   z-index: 10000; /* Asegura que el botón también esté por encima de todo */
+  max-height: 80vh; /* O ajusta según tu diseño */
+
 }
 
 .cart-button:hover {
-  scale: 1.1;
-  background: #FFD700;
+  transform: scale(1.1); /* hover:scale-110 */
+  background-color: #ffd700; /* hover:bg-yellow-400 */
 }
 
 .cart-button ~ input:checked ~ .cart {
-  height: 100%; /* Asegúrate de que ocupe toda la altura si se desea */
-  display: block;
+  display: block; 
 }
 
+@media (max-width: 768px) { 
+  .cart {
+    width: 100%; /* El carrito ocupa todo el ancho en pantallas pequeñas */
+  }
+}

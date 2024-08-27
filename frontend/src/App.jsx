@@ -31,10 +31,10 @@ const App = () => {
   }, []);
   console.log(cart);
    */
-  const [cartItems, setCartItems] = useState([]);
   const { filterProducts } = useFilters()
   const filteredProducts = filterProducts(initialProducts)
 
+  const [cartItems, setCartItems] = useState([]);
   const handleAddToCart = (product) => {
     setCartItems([...cartItems, product]);
   };
@@ -42,11 +42,12 @@ const App = () => {
   return (
     <CartProvider>
       <Navbar cartItems={cartItems} className={styles.navigation}/>
+      
       <div className="bg-primary ">
         <div >
             <Hero />
         </div>
-
+        
         <div className="bg-primary w-full overflow-hidden">
           <Productsjson products={filteredProducts} />
         </div>
