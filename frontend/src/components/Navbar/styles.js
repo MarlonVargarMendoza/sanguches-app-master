@@ -14,12 +14,12 @@ export default makeStyles((theme) => ({
     },
     appBar: {
         boxShadow: 'none',
-        borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
-        position: 'fixed', // Asegura que el Navbar se mantenga en la parte superior
+        borderBottom: '0px solid rgba(0, 0, 0, 0.12)',
+        position: 'relative', // Asegura que el Navbar se mantenga en la parte superior
         top: 0,
         left: 0,
         width: '100%',
-        zIndex: 1200, // Asegura que el Navbar esté por encima de otros elementos
+        zIndex: 1100, // Asegura que el Navbar esté por encima de otros elementos
         [theme.breakpoints.up('sm')]: {
             width: `calc(100% - ${drawerWidth}px)`,
             marginLeft: drawerWidth,

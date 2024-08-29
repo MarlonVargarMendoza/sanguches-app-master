@@ -56,6 +56,19 @@
       #ffffff -278.56%,
       #6d6d6d -78.47%,
       #11101d 91.61%);
+
+}
+.scrolling-text {
+  animation: scrollText 30s linear infinite; /* Adjust duration as needed */
+}
+
+@keyframes scrollText {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%); /* Move text to the left until it's offscreen */
+  }
 }
 
 .bg-black-gradient-2 {
@@ -309,10 +322,9 @@
   }
 }
 
-
 .logo {
-
-  filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.742));
+ 
+  filter: drop-shadow(0px 4px 4px #F03153);
   -webkit-animation: slide-top 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
   animation: slide-top 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
 

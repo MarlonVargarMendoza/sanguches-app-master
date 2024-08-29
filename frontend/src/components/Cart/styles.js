@@ -26,4 +26,12 @@ export default makeStyles((theme) => ({
     width: '100%',
     justifyContent: 'space-between',
   },
+  successAlert: {
+    backgroundColor: theme.palette.success.main, // Use the theme's success color
+    color: theme.palette.getContrastText(theme.palette.success.main), // Ensure text contrast
+    borderRadius: '8px',
+    boxShadow: '0px 2px 5px rgba(0, 0, 0, 0.2)',
+    '& .MuiAlert-icon': { // Target the Alert's icon
+      color: theme.palette.getContrastText(theme.palette.success.main),
+    },
 }));

@@ -30,7 +30,7 @@ export function Filters() {
     };
 
     return (
-        <section className='filters-container flex flex-col sm:flex-row w-full sm:w-3/4 lg:w-1/2 mx-auto mb-8 gap-4 sm:gap-6 px-4 sm:px-12'>
+        <section className='filters-container flex flex-col sm:flex-row w-full sm:w-3/4 lg:w-1/2 mx-auto mb-0 gap-4 sm:gap-6 px-4 sm:px-12'>
             <div className='filter-item flex-2 w-full mb-4 sm:mb-0'>
                 <label htmlFor={minPriceFilterId} className='block text-gray-700 font-semibold mb-2'>
                     Precio a partir de:

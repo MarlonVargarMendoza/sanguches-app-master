@@ -9,6 +9,7 @@
     margin-bottom: 1rem; /* Agregar margen inferior para evitar superposición */
 }
 
+
 @media (min-width: 640px) {
     .filters {
         flex-direction: row; /* Fila en dispositivos medianos en adelante */

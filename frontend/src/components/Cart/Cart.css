@@ -1,53 +1,131 @@
 .cart {
-  background: #C8102E;
-  padding: 32px;
+  background: #fffdf7;
+  color: #333333;
+  padding: 1.5rem;
+  /* Reduced padding */
   position: fixed;
-  right: 0;
-  top: 0; /* Adjusted top position */
-  width: 600px;
+  right: 3rem;
+  /* Adjusted right position */
+  top: 9.5rem;
+  width: fit-content;
+  /* Adjusted width */
   z-index: 9999;
-  box-shadow: 0 0 10px rgba(0,0,0,0.3); 
-  display: none; /* Initially hidden */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+  display: none;
   transition: all 0.3s ease;
   overflow: auto;
-}
-.products-sanguches .cart { 
-  display: none;
-  height: auto; /* Allow the cart to grow based on content */
-  max-height: 80vh; /* Limit the maximum height */
+  border-radius: 0.5rem;
+  /* Added border-radius */
+  max-height: 80vh;
 }
 
 /* Always show PersistentCart */
 .persistent-cart {
-  background: #C8102E;
-  display: block;
-  padding: 32px;
-  position: fixed;
-  right: 0;
-  top: 320px;
-  width: 600px;
-  height: 50vh; 
-  box-shadow: 0 0 10px rgba(0,0,0,0.3); /* Opcional: Agrega una sombra para destacarlo */
+  background: #fffdf7;
+  color: #333333;
+  padding: 0 0 0.5rem 0;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+  /* Opcional: Agrega una sombra para destacarlo */
+  overflow: auto;
+  max-height: 74vh;
+  border-radius: 0.5rem;
 }
 
 .cart img {
-  aspect-ratio: 16 / 9;
-  width: 100%;
+  aspect-ratio: 1 / 1;
+  /* Square images */
+  width: 4rem;
+  object-fit: cover;
+  margin-right: 1rem;
+}
+.persistent-cart img {
+aspect-ratio: 1 / 1 !important;
+  width: 5rem !important;
+height: 4rem !important;
+margin-right: 1rem !important;
+  object-fit: cover !important;
 }
 
-.cart li {
-  padding-bottom: 1rem; /* pb-4 */
+.cart li{
+  display: flex;
+  align-items: flex-start;
+  /* Align items to the top */
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+.persistent-cart li {
+  display: flex;  /* Arrange items horizontally */
+    align-items: flex-start;
+    padding: 0.5rem; /* Adjust padding as needed */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+
 }
 
-.cart footer {
+.cart .item-details {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.persistent-cart .item-details {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column!important;  /* Arrange details horizontally *
+}
+
+.cart .item-details strong,
+.persistent-cart .item-details strong {
+  font-size: 0.875rem;
+  /* Slightly larger font size for title */
+  margin-bottom: 0.25rem;
+}
+
+.cart .item-details .description,
+.persistent-cart .item-details .description {
+  font-size: 0.75rem;
+  color: #798685;
+  margin-bottom: 0.5rem;
+
+}
+.cart .price,
+.persistent-cart .price {
+  color: #73B89D;
+}
+.cart .title ,
+.persistent-cart .title {
+  color: #525D5A;
+}
+.cart .quantity-controls,
+.persistent-cart .quantity-controls {
+  /* Style for quantity controls */
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.cart .item-details .price,
+.persistent-cart .item-details .price {
+  font-weight: bold;
+}
+
+.cart footer,
+.persistent-cart footer {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 0.5rem; /* gap-2 */
+  gap: 0.5rem;
+  /* gap-2 */
 }
 
-.cart footer button {
-  padding: 0.5rem; /* p-2 */
+.cart footer button,
+.persistent-cart footer button {
+  padding: 0.5rem;
+  background-color: #f44336;
+  /* Use your desired color */
+  color: white;
+  border: none;
+  border-radius: 0.25rem;
+  cursor: pointer;
 }
 
 .cart-button {
@@ -61,25 +139,39 @@
   padding: 4px;
   position: fixed;
   right: 8px;
-  top: 120px;
+  top: 150px;
   transition: all .3s ease;
   width: 32px;
-  z-index: 10000; /* Asegura que el botón también esté por encima de todo */
-  max-height: 80vh; /* O ajusta según tu diseño */
+  z-index: 10000;
+  /* Asegura que el botón también esté por encima de todo */
+  max-height: 80vh;
+  /* O ajusta según tu diseño */
 
 }
 
 .cart-button:hover {
-  transform: scale(1.1); /* hover:scale-110 */
-  background-color: #ffd700; /* hover:bg-yellow-400 */
+  transform: scale(1.1);
+  /* hover:scale-110 */
+  background-color: #ffd700;
+  /* hover:bg-yellow-400 */
 }
 
-.cart-button ~ input:checked ~ .cart {
-  display: block; 
+.cart-button~input:checked~.cart {
+  display: block;
 }
 
-@media (max-width: 768px) { 
+
+@media (max-width: 768px) {/*  pantallas pequeñas */
   .cart {
-    width: 100%; /* El carrito ocupa todo el ancho en pantallas pequeñas */
+    width: 90%;
+    top: 5rem;
   }
+  .cart-button{
+    top: 5.5rem;
+  }
+
 }
+
+
+
+
