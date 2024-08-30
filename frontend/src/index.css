@@ -206,13 +206,13 @@
 #navbarend {
   font-family: 'Poppins', sans-serif;
   overflow: visible;
-  background-image: radial-gradient(circle at 135deg, #ff4b1f, #ff9068);
+  background-image: radial-gradient(circle at 135deg, #AB131B, #ff9068);
   background-repeat: no-repeat;
   height: 15vh;
   display: none;
   justify-content: center;
   align-items: center;
-  border-bottom: 2px solid #fff;
+  border-bottom: 2px solid  #AB131B;
   background: radial-gradient(ellipse at bottom, 144.39deg,
       #ffffff -278.56%,
       #6d6d6d -78.47%,
@@ -236,7 +236,7 @@
   background-position: center center;
   background-size: contain;
   background-repeat: no-repeat;
-  background-color: #F03153;
+  background-color: #AB131B;
   cursor: pointer;
   background-blend-mode: color-burn;
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
@@ -247,8 +247,8 @@
 .right:hover,
 .lefter:hover,
 .righter:hover {
-  box-shadow: 0, 0, 30px, 10px #F03153;
-  background-color: #F03153;
+  box-shadow: 0, 0, 30px, 10px #C8151B;
+  background-color: #C8151B;
   text-transform: uppercase;
 
 
@@ -323,8 +323,10 @@
 }
 
 .logo {
- 
-  filter: drop-shadow(0px 4px 4px #F03153);
+ /* 
+  filter: drop-shadow(0px 4px 4px #F03153); */
+  background: #FFD33D;
+  border-radius: 50%;
   -webkit-animation: slide-top 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
   animation: slide-top 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
 

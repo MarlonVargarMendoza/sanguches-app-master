@@ -12,13 +12,13 @@
 }
 
 
+
 /* Contenedor de filtros */
 .filters-container {
   position: sticky; /* Fijar en la parte superior */
   top: 0;
   width: 100%;
   padding: 1rem; /* Ajusta el padding para crear espacio */
-  background-color: #fff; /* Fondo blanco para que los filtros se destaquen */
   z-index: 20; /* Asegúrate de que esté encima de los productos */
 }
 

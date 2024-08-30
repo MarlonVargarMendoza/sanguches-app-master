@@ -2,8 +2,8 @@ import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import HeartIcon from '@mui/icons-material/Favorite';
 import HeartOutlinedIcon from '@mui/icons-material/FavoriteBorder';
 import RemoveShoppingCartIcon from '@mui/icons-material/RemoveShoppingCart';
+import { Button } from '../../components';
 import { useCart } from '../../hooks/useCart.js';
-import { Filters } from '../Productsjson/Filters.jsx';
 import './Products.css';
 
 export function Productsjson({ products }) {
@@ -26,9 +26,7 @@ export function Productsjson({ products }) {
 
   return (
     <main className='products relative w-full p-8'>
-      <div className='filters-container absolute top-0 left-0 w-full p-4 z-20 mt-15 z-20'>
-        <Filters />
-      </div>
+      
       <div className='products-list mt-16 py-8'>
         <ul className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 list-none p-0 m-0 rounded-lg'>
           {products.slice(0, 3).map((product) => {
@@ -79,6 +77,9 @@ export function Productsjson({ products }) {
             );
           })}
         </ul>
+      </div>
+      <div className='filters-container absolute top-0 left-0 w-full p-4 z-20 mt-15 z-20'>
+        <Button buttonText='Ver menu completo' />
       </div>
     </main>
   );

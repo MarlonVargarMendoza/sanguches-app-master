@@ -23,11 +23,11 @@ export const Navbar = () => {
       <div className="promotions bg-gold-gradient text-black-gradient p-1 text-center overflow-hidden">
         <div className="scrolling-text whitespace-nowrap"> {/* Add class for animation */}
           <div className="inline-block font-semibold">
-            ¡NUEVOS COMBOS SANGUCHE Y POLLO BBQ POR SOLO $20.900!
+          🚀 Disfruta nuestras sangudays por tan sólo $22.900 ¡sanguches mejores ingredientes, mejor pizza
           </div>
         </div>
       </div>
-      <Toolbar className="flex justify-between items-center xl:py-0 sm:py-0  ">
+      <Toolbar className="flex justify-between items-center xl:py-0 sm:py-0 sticky bg-white z-50 ">
         <div className="w-full flex py-6 justify-between items-center ">
           <Link to="/" className="logo flex items-center">
             <img src={logo} alt="logo" className=" logo w-40 h-auto sm:w-48" />
@@ -38,7 +38,7 @@ export const Navbar = () => {
         <div id='navbarend' className="all hidden md:flex space-x-12">
           <div id="navlinks" className=" all ">
             <div className='left'>
-              <Link to='/editaloTuMismo' className="text-white hover:text-red-400">
+              <Link to='/editaloTuMismo' className="text-white hover:text-red-400 font-bold">
                 <AutoAwesomeIcon />
                 <br />
                 Editalo
@@ -47,14 +47,14 @@ export const Navbar = () => {
 
             <div className="center">
               <div className="explainer"><span>Menu</span></div>
-              <a href="#" className="text-white hover:text-red-400 ">
+              <a href="#" className="text-white hover:text-red-400 font-bold ">
                 <FastfoodIcon />
                 <span>Combos</span>
               </a>
             </div>
 
             <div className="right">
-              <Link to='/menuSanguches' className='text-white hover:text-red-400'>
+              <Link to='/menuSanguches' className='text-white hover:text-red-400 font-bold'>
                 <IconButton aria-label="show menu items" color="inherit">
                   <MenuBookIcon />
                 </IconButton>
@@ -67,13 +67,13 @@ export const Navbar = () => {
 
         {/* Enlaces de navegación para pantallas pequeñas */}
 
-        <a href="#" className="text-white hover:text-red-400 ml-auto px-3 ">Local</a>
+        <a href="#" className="text-black hover:text-red-400 ml-auto px-3 font-black  text-xl text-shadow ">LOCAL</a>
 
         {/* Botón del menú  para pantallas pequeñas */}
-        <div className="md:hidden ml-4">
-          <IconButton onClick={toggleMenu} aria-label="Menu" color="inherit">
+        <div className="md:hidden ml-4 strong">
+          <IconButton onClick={toggleMenu} aria-label="Menu" >
             <svg
-              className="w-6 h-6 text-white"
+              className="w-6 h-6 text-[#b01027]"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -90,31 +90,35 @@ export const Navbar = () => {
         </div>
 
       </Toolbar>
-      <div className=" bg-white p-1 text-center overflow-hidden">
-        {/* Add class for animation */}
-        <div className="absolute right-0 z-10 mt-2 w-full rounded-md bg-[#f5f5f5] shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-          <ul className="flex py-1 justify-between items-center" role="menu" aria-orientation="vertical">
-            <li className={`block px-4 py-2 text-sm text-gray-700 cursor-pointer hover:bg-[#FFD33D]`} >Granizados</li>
-            <li className={`block px-4 py-2 text-sm text-gray-700 cursor-pointer hover:bg-[#FFD33D]`} >Sanduches</li>
-            <li className={`block px-4 py-2 text-sm text-gray-700 cursor-pointer hover:bg-[#FFD33D] `}>Combos</li>
-            <div className="text-right pr-4"> {/* Wrapper for right side item, text aligned to right with padding */}
-              <span className="text-sm text-gray-700"><AvTimerIcon />Tiempo de entrega 45 min</span>
-            </div>
-          </ul>
-        </div>
-      </div>    {/* Menú desplegable para pantallas pequeñas */}
+
+      {/* Add class for animation */}
+      <div className=" right-0 z-10 mt-2 w-full bg-[#AB131B] shadow-lg ring-1 ring-black ring-opacity-5 py-2 focus:outline-none hidden md:block">
+        <ul className="flex py-1 justify-between items-center" role="menu" aria-orientation="vertical">
+          <li className={`block px-4 py-2 text-xl text-white cursor-pointer hover:bg-[#C8151B] font-black  text-shadow`} >GRANIZADOS</li>
+          <li className={`block px-4 py-2 text-xl text-white cursor-pointer hover:bg-[#C8151B] font-black  text-shadow`} >SANDUCHES</li>
+          <li className={`block px-4 py-2 text-xl text-white cursor-pointer hover:bg-[#C8151B] font-black  text-shadow `}>COMBOS</li>
+          <li className={`block px-4 py-2 text-xl text-white cursor-pointer hover:bg-[#C8151B] font-black  text-shadow `}>EXTRAS</li>
+          <div className="text-right pr-4"> {/* Wrapper for right side item, text aligned to right with padding */}
+            <span className="text-sm text-white "><AvTimerIcon />Tiempo de entrega 45 min</span>
+          </div>
+        </ul>
+      </div>
+      {/* Menú desplegable para pantallas pequeñas */}
       {isOpen && (
         <div id="mobile-menu" className="md:hidden ">
-          <a to='/menuSanguches' className="block px-4 py-2 text-white hover:bg-red-400">
+          <br />
+          <br />
+          <br />
+          <a to='/menuSanguches' className="block px-4 py-2 text-black font-bold hover:bg-red-400  text-shadow">
             Menu
           </a>
-          <a href="#" className="block px-4 py-2 text-white hover:bg-red-400">
+          <a href="#" className="block px-4 py-2 text-black font-bold hover:bg-red-400 color-black text-shadow">
             Combos
           </a>
-          <a href="#" className="block px-4 py-2 text-white hover:bg-red-400">
+          <a href="#" className="block px-4 py-2 text-black font-bold hover:bg-red-400">
             Nosotros
           </a>
-          <a href="#" className="block px-4 py-2 text-white hover:bg-red-400">
+          <a href="#" className="block px-4 py-2 text-black font-bold hover:bg-red-400">
             Local
           </a>
 
