@@ -105,7 +105,7 @@ function Customize() {
                       {additionalIngredients.length >= 3 && (
                         <p className="text-red-500 text-sm">*Superaste el límite de adiciones en tu pizza</p>
                       )}
-                    </div>
+                    </div>  {/* fofof */}
                   </div>
                 </div>
               </div> {/* Cierre del primer div */}
