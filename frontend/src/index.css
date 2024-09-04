@@ -344,5 +344,17 @@
 
 }
 
+.MuiCheckbox-root {
+  color: transparent; /* Hace que la casilla sin marcar sea invisible */
+}
 
+/* Aplicar estilos cuando la casilla está marcada */
+.MuiCheckbox-root.Mui-checked {
+  color: green; /* Cambia el color a verde cuando está marcada */
+}
+
+/* Aplicar estilos al símbolo de verificación dentro de la casilla */
+.MuiCheckbox-root::after {
+  border-color: green; /* Cambia el color del borde del símbolo de verificación a verde */
+}
   
