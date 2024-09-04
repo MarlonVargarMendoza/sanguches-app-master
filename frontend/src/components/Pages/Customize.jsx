@@ -81,7 +81,7 @@ function Customize() {
         case 'Cebolla roja': return 2.8;
         default: return 0;
       }
-    });
+    }); // Precio fijo por acompaniante
 
     const drinkPrices = selectedDrinks.map(drink => 5.5); // Precio fijo por bebida
 
