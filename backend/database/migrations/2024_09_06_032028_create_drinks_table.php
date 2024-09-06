@@ -14,9 +14,9 @@ return new class extends Migration
         Schema::create('drinks', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->float('basePrice', 10, 2);
-            $table->string('image');
-            $table->foreignId('type_drinks_id')->constrained()->onDelete('cascade');
+            $table->float('basePrice', 10, 2)->nullable();
+            $table->string('image')->nullable();
+            $table->foreignId('type_drinks_id')->nullable()->constrained()->onDelete('cascade');
         });
     }
 
