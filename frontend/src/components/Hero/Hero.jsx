@@ -34,7 +34,6 @@ const Hero = () => {
           <div className="ss:flex hidden md:mr-4 mr-0"></div>
         </div>
 
-
       <Button buttonText='Ordenar ahora' />
 
         <p className={`${styles.paragraph} max-w-[470px] mt-5`}>
