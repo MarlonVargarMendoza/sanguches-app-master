@@ -12,7 +12,8 @@ class Ingredient extends Model
     protected $fillable = [
         'name',
         'price',
-        'type_ingredients_id'
+        'type_ingredients_id',
+        'addition'
     ];
 
     public function typeIngredient () {
