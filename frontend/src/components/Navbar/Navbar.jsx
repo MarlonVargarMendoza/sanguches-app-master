@@ -92,8 +92,9 @@ export const Navbar = () => {
       </Toolbar>
 
       {/* Add class for animation */}
-      <div className=" right-0 z-10 mt-2 w-full bg-[#AB131B] shadow-lg ring-1 ring-black ring-opacity-5 py-2 focus:outline-none hidden md:block">
+      <div className="sticky top-0 right-0 z-10 mt-2 w-full bg-[#AB131B] shadow-lg ring-1 ring-black ring-opacity-5 py-2 focus:outline-none hidden md:block overflow-hidden">
         <ul className="flex py-1 justify-between items-center" role="menu" aria-orientation="vertical">
+
           <li className={`block px-4 py-2 text-xl text-white cursor-pointer hover:bg-[#C8151B] font-black  text-shadow`} >GRANIZADOS</li>
           <Link to='/menuSanguches' className={`block px-4 py-2 text-xl text-white cursor-pointer hover:bg-[#C8151B] font-black  text-shadow`} >SANGUCHES</Link>
           <li className={`block px-4 py-2 text-xl text-white cursor-pointer hover:bg-[#C8151B] font-black  text-shadow `}>COMBOS</li>
