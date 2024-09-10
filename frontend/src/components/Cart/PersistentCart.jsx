@@ -1,6 +1,6 @@
 import RemoveShoppingCartIcon from '@mui/icons-material/RemoveShoppingCart';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import { Alert, Grid, Snackbar } from "@mui/material";
+import { Alert, Grid, Snackbar, Typography } from "@mui/material";
 
 import { useState } from 'react';
 import { useCart } from '../../hooks/useCart.js';
@@ -29,10 +29,13 @@ export const PersistentCart = () => {
     return (
 
         <li className='persistent-cart'>
+
             <Grid item>
-                <div className='flex items-center justify-between mb-4 bg-red-600 rounded p-2'>
-                    <h2 className='text-xl font-bold text-white '>Tu orden</h2>
-                    <div className="flex items-center">
+                <div className='flex items-center justify-between mb-4 bg-[#C8151B] rounded p-2'>
+                    <Typography variant="h6" component="h2" className='font-bold text-white'>
+                        Tu orden
+                    </Typography>
+                    <div className="relative">
                         <span className="inline-block bg-white rounded-full h-7 w-7 text-center text-red-700 mr-2">
                             <ShoppingCartIcon /></span> {/* Example item count */}
                         {/* Add any other icons or elements from the header */}
@@ -41,22 +44,21 @@ export const PersistentCart = () => {
             </Grid>
 
             <Grid item className='overflow-y-auto sx={{flexGrow: 1}}'>
-                <ul className=' flex-grow items'>
-                    <ul className='item-details '>
-                        {cart.map(product => (
-                            <CartItem
-                                key={product.id}
-                                addToCart={() => addToCart(product)}
-                                removeFromCart={() => clearCart(product)}
-                                {...product}
-                            />
-                        ))}
-                    </ul>
+                <ul className='item-details '>
+                    {cart.map(product => (
+                        <CartItem
+                            key={product.id}
+                            addToCart={() => addToCart(product)}
+                            removeFromCart={() => clearCart(product)}
+                            {...product}
+                        />
+                    ))}
                 </ul>
-            </Grid>
 
-            <footer>
-                <Grid item>
+            </Grid>
+            <Grid item>
+                <footer>
+
                     <footer>
                         <div className="mt-4 border-t border-gray-300 pt-4">
                             <div className="flex justify-between items-center mb-2">
@@ -72,11 +74,12 @@ export const PersistentCart = () => {
                             </button>
                         </div>
                         <button onClick={clearCart}>
-                            <RemoveShoppingCartIcon className='red text-red-700' />
+                            <RemoveShoppingCartIcon className='red text-white' />
                         </button>
                     </footer>
-                </Grid>
-            </footer>
+
+                </footer>
+            </Grid>
             <Snackbar
                 open={snackbarOpen}
                 autoHideDuration={6000} // Adjust duration as needed
@@ -87,8 +90,8 @@ export const PersistentCart = () => {
                     severity="success"
                     sx={{ width: '100%', ...styles.successAlert }}>
                     <label class="container">
-                        <input checked="checked" type="checkbox"/>
-                            <div class="checkmark"></div>
+                        <input checked="checked" type="checkbox" />
+                        <div class="checkmark"></div>
                     </label>
                     Pedido enviado a WhatsApp! 🚀 ¡Pronto estaremos en contacto!
                 </Alert>

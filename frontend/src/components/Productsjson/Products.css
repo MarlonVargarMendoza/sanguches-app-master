@@ -12,13 +12,13 @@
 }
 
 
+
 /* Contenedor de filtros */
 .filters-container {
   position: sticky; /* Fijar en la parte superior */
   top: 0;
   width: 100%;
   padding: 1rem; /* Ajusta el padding para crear espacio */
-  background-color: #fff; /* Fondo blanco para que los filtros se destaquen */
   z-index: 20; /* Asegúrate de que esté encima de los productos */
 }
 
@@ -44,20 +44,15 @@
 }
 
 .products li:hover {
-  transform: scale(1.05); /* Aumenta el tamaño del producto en hover */
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
 }
 
 .products img {
   width: 100%;
-  height: 250px; /* Aumenta la altura para hacer la imagen más prominente */
+  height: 200px; /* Aumenta la altura para hacer la imagen más prominente */
   object-fit: cover;
   
   transition: transform 0.3s;
-}
-
-.products li:hover img {
-  transform: scale(1.1); /* Aumenta el tamaño de la imagen en hover */
 }
 
 .products h3 {
@@ -128,9 +123,6 @@
 }
 .card .actions .favorite:hover {
   background-color: #ffcccc; /* Fondo más claro al pasar el ratón sobre el corazón */
-}
-.actions .favorite:hover {
-  background-color: #9a50ccb4;
 }
 .card .actions .favorite svg {
   width: 25px; /* Tamaño del ícono del corazón */

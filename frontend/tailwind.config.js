@@ -1,4 +1,12 @@
 /** @type {import('tailwindcss').Config} */
+
+
+const colors = require("tailwindcss/colors");
+const {
+  default: flattenColorPalette,
+} = require("tailwindcss/lib/util/flattenColorPalette");
+
+
 module.exports = {
   content: ["./index.html", "./src/**/*.{js,jsx}"],
   mode: "jit",
@@ -9,6 +17,9 @@ module.exports = {
         secondary: "#00f6ff",
         dimWhite: "rgba(255, 255, 255, 0.7)",
         dimBlue: "rgba(9, 151, 124, 0.1)",
+        100: "#000319",
+        200: "rgba(17, 25, 40, 0.75)",
+        300: "rgba(255, 255, 255, 0.125)",
       },
       fontFamily: {
         poppins: ["Poppins", "sans-serif"],

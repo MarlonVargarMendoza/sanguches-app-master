@@ -34,4 +34,4 @@ export default makeStyles((theme) => ({
     '& .MuiAlert-icon': { // Target the Alert's icon
       color: theme.palette.getContrastText(theme.palette.success.main),
     },
-}));
+  }));
