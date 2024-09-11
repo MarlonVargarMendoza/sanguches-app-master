@@ -3,16 +3,26 @@
 namespace App\Http\Controllers\Product;
 
 use App\Http\Controllers\Controller;
+use App\Models\Product;
 use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+
     public function index()
     {
-        //
+        try {
+            $products = Product::where('type_products_id', 7)->select('id', 'image', 'name', 'description', 'basePrice')->get();
+
+            if ($products->toArray()) {
+                return response()->json(['message' => 'Success', 'data' => $products,], 200);
+            } else {
+                return response()->json(['message' => 'No products found'], 404);
+            }
+
+        } catch (\Throwable $th) {
+            return response()->json(['message' => 'Internal error, contact administrator'], 500);
+        }
     }
 
     /**
