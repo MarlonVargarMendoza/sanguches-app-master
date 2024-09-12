@@ -5,6 +5,7 @@ import './loader.css';
 const HomePage = lazy(() => import('../App'));
 const CustomizeSandwiches = lazy(() => import('../components/Pages/Customize'));
 const Menu = lazy(() => import('../components/Productsjson/ProductsSanguches'));
+const Local = lazy(() => import('../components/Pages/Local'));
 
 import { CartProvider } from '../context/cart.jsx';
 import { useFilters } from '../hooks/useFilters.js';
@@ -24,8 +25,9 @@ export const AppRoute = () => {
     </div>}>
       <Routes>
         <Route path="/" element={<HomePage/>} />
-        <Route path='/editaloTuMismo' element={<CustomizeSandwiches/>} />
+        <Route path='/editaloTuMismo' element={<CustomizeSandwiches products={filteredProducts}/>} />
         <Route path='/menuSanguches' element={<Menu products={filteredProducts}/>} />
+        <Route path='/local' element={<Local/>} />
       </Routes>
     </Suspense>
     </CartProvider>

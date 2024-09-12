@@ -1,8 +1,7 @@
+import LocalMallIcon from '@mui/icons-material/LocalMall';
 import RemoveShoppingCartIcon from '@mui/icons-material/RemoveShoppingCart';
-import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import { Alert, Grid, Snackbar, Typography } from "@mui/material";
-
-import { useState } from 'react';
+import { Alert, Divider, Grid, Snackbar, Typography } from "@mui/material";
+import React, { useState } from 'react';
 import { useCart } from '../../hooks/useCart.js';
 import styles from '../../style.js';
 import './Cart.css';
@@ -31,30 +30,43 @@ export const PersistentCart = () => {
         <li className='persistent-cart'>
 
             <Grid item>
-                <div className='flex items-center justify-between mb-4 bg-[#C8151B] rounded p-2'>
-                    <Typography variant="h6" component="h2" className='font-bold text-white'>
-                        Tu orden
+                <div className='container justify-between mb-4 bg-white rounded p-2'>
+                    <Typography variant="h5" component="h2" className='font-bold text-black'>
+                        Tu Carrito
                     </Typography>
                     <div className="relative">
                         <span className="inline-block bg-white rounded-full h-7 w-7 text-center text-red-700 mr-2">
-                            <ShoppingCartIcon /></span> {/* Example item count */}
-                        {/* Add any other icons or elements from the header */}
+                            <LocalMallIcon /></span>
                     </div>
+
+                    <Divider />
                 </div>
             </Grid>
 
-            <Grid item className='overflow-y-auto sx={{flexGrow: 1}}'>
-                <ul className='item-details '>
-                    {cart.map(product => (
-                        <CartItem
-                            key={product.id}
-                            addToCart={() => addToCart(product)}
-                            removeFromCart={() => clearCart(product)}
-                            {...product}
-                        />
-                    ))}
-                </ul>
-
+            <Grid item className='overflow-y-auto sx={{ flexGrow: 1 }}'>
+                {cart.length === 0 ? ( // Check if cart is empty
+                    <div className="empty-cart p-4 text-center"> {/* Center the message */}
+                        <Typography variant="h6" className="font-semibold text-gray-600">
+                            Tu carrito está vacío.
+                        </Typography>
+                        <Typography variant="body1" className="mt-2 text-gray-500">
+                            ¡Agrega algunos productos deliciosos para comenzar tu pedido!
+                        </Typography>
+                    </div>
+                ) : (
+                    <ul className='item-details'>
+                        {cart.map(product => (
+                            <React.Fragment key={product.id}>
+                                <CartItem
+                                    addToCart={() => addToCart(product)}
+                                    removeFromCart={() => clearCart(product)}
+                                    {...product}
+                                />
+                                <Divider />
+                            </React.Fragment>
+                        ))}
+                    </ul>
+                )}
             </Grid>
             <Grid item>
                 <footer>
@@ -70,7 +82,8 @@ export const PersistentCart = () => {
                                 className='w-full bg-red-700 hover:bg-yellow-500 text-white font-bold'
                                 onClick={sendToWhatsApp}
                             >
-                                Finalizar compra
+                                Continuar
+                            
                             </button>
                         </div>
                         <button onClick={clearCart}>
