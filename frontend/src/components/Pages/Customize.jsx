@@ -14,6 +14,11 @@ import RadioButtonGroup from '../ui/RadioButtonGroup.jsx';
 
 
 function Customize({ products }) {
+
+    // Assuming 'product' prop contains the data from the API
+    const { id, name, basePrice, image } = product; 
+  console.log('Customize products:', products);
+  
   const location = useLocation();
   const { selectedProduct } = location.state || {};
   const [size, setSize] = React.useState('medium');
