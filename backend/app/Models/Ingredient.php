@@ -11,6 +11,12 @@ class Ingredient extends Model
 
     protected $fillable = [
         'name',
-        'price'
+        'price',
+        'type_ingredients_id'
     ];
+
+    public function typeIngredient () {
+        return $this->belongsTo(TypeIngredient::class, 'type_ingredients_id', 'id');
+    }
+
 }

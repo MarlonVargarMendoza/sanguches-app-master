@@ -5,13 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Sauce extends Model
+class TypeIngredient extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'name',
-        'price',
-        'addition'
+        'name'
     ];
 }
