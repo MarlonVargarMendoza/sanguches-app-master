@@ -95,10 +95,10 @@ export const Navbar = () => {
       <div className="z-10 py-2 w-full bg-[#AB131B] shadow-lg ring-1 ring-black ring-opacity-5  focus:outline-none hidden md:block md:overflow-hidden">
         <ul className="flex  justify-between items-center" role="menu" aria-orientation="vertical">
 
-          <li className={`block px-4 text-xl text-white cursor-pointer hover:bg-[#C8151B] font-black text-shadow`} >GRANIZADOS</li>
+          <li className={`block px-4 text-xl text-white cursor-pointer hover:bg-[#C8151B] font-black text-shadow`} >BEBIDAS</li>
           <Link to='/menuSanguches' className={`block px-4  text-xl text-white cursor-pointer hover:bg-[#C8151B] font-black  text-shadow`} >SANGUCHES</Link>
           <li className={`block px-4 text-xl text-white cursor-pointer hover:bg-[#C8151B] font-black  text-shadow `}>COMBOS</li>
-          <li className={`block px-4 text-xl text-white cursor-pointer hover:bg-[#C8151B] font-black  text-shadow `}>EXTRAS</li>
+          <li className={`block px-4 text-xl text-white cursor-pointer hover:bg-[#C8151B] font-black  text-shadow `}>ANTOJOS</li>
           <div className="text-right"> {/* Wrapper for right side item, text aligned to right with padding */}
             <span className="text-sm text-white "><AvTimerIcon />Tiempo de entrega 45 min</span>
           </div>

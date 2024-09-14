@@ -1,17 +1,17 @@
 import { useEffect, useState } from 'react';
+import ContentLoader from "react-content-loader";
 import { Button } from '../../components'; // Asegúrate de importar Grid
 import { useCart } from '../../hooks/useCart.js';
+import { getProducts } from '../../services/productService';
 import ProductCard from '../Productsjson/ProductCard.jsx';
 import './Products.css';
-
-export function Productsjson() {
+export function Productsjson({ productService = getProducts }) {
   const { addToCart, removeFromCart, cart } = useCart();
 
   //for api call
-  const [products, setProducts] = useState([]); 
-  const [isLoading, setIsLoading] = useState(true); 
-  const [error, setError] = useState(null); 
-
+  const [products, setProducts] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
   const checkProductInCart = (product) => {
     return cart.some((item) => item.id === product.id);
   };
@@ -23,37 +23,50 @@ export function Productsjson() {
       addToCart(product);
     }
   };
+
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await fetch('/api/products'); 
-        if (response.ok) {
-          const data = await response.json();   
-
-          console.log("API Response:", data);
-          setProducts(data.data); // Now setProducts is defined
-        } else {
-          // ... error handling
-        }
+        const data = await productService();
+        setProducts(data);
       } catch (error) {
-        // ... error handling
+        setError(error.message);
       } finally {
         setIsLoading(false);
       }
     };
 
     fetchProducts();
-  }, []); 
+  }, [productService]);
+
   return (
     <main className='products relative w-full p-8 flex flex-col md:flex-row'>
-        <div className='products-list mt-16 py-8'>
+      <div className='products-list mt-16 py-8'>
         {isLoading ? ( // Display loading indicator while fetching data
-          <div>Loading...</div> 
+          <ul className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 list-none p-0 m-0 rounded-lg'>
+            {/* Render placeholders mientras carga */}
+            {[...Array(3)].map((_, index) => (
+              <ContentLoader
+                key={index}
+                speed={2}
+                width={400}
+                height={250}
+                viewBox="0 0 400 250"
+                backgroundColor="#f3f3f3"
+                foregroundColor="#ecebeb"
+              >
+                <rect x="0" y="0" rx="5" ry="5" width="400" height="150" />
+                <rect x="0" y="165" rx="3" ry="3" width="350" height="20" />
+                <rect x="0" y="195" rx="3" ry="3" width="250" height="20" />
+                <rect x="0" y="225" rx="3" ry="3" width="150" height="20" />
+              </ContentLoader>
+            ))}
+          </ul>
         ) : error ? ( // Display error message if fetching fails
           <div>{error}</div>
         ) : (
           <ul className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 list-none p-0 m-0 rounded-lg'>
-            {products.slice(0, 3).map((product) => { 
+            {products && products.slice(0, 3).map((product) => {
               const isProductInCart = checkProductInCart(product);
 
               return (

@@ -18,17 +18,17 @@ function ProductCard({ product, onAddToCart, onRemoveFromCart, isInCart }) {
         <li key={id} className="product-card">
             {/* Image */}
             <div className="product-image">
+            <RouterLink to='/editaloTuMismo' state={{ selectedProduct: product }}>
                 <img
                     src={imageUrl} 
                     alt={name}
                     className="w-full h-full object-cover"
                 />
+            </RouterLink>
             </div>
-
             {/* Content */}
             <div className="p-4 flex flex-col flex-grow">
                 <h3 className="product-name">{name}</h3>
-
                 {/* Price & Button */}
                 <div className="mt-4 flex items-center justify-between">
                     <div className="flex items-baseline">

@@ -43,7 +43,7 @@ export const PersistentCart = () => {
                 </div>
             </Grid>
 
-            <Grid item className='overflow-y-auto sx={{ flexGrow: 1 }}'>
+            <Grid item className='overflow-y-auto sx={{ flexGrow: 1 }} no-scrollbar'>
                 {cart.length === 0 ? ( // Check if cart is empty
                     <div className="empty-cart p-4 text-center"> {/* Center the message */}
                         <Typography variant="h6" className="font-semibold text-gray-600">

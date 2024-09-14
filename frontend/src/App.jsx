@@ -8,29 +8,7 @@ import { products as initialProducts } from './mocks/products.json';
 import styles from './style.js';
 
 const App = () => {
-  /* uncomment when using commerce.js
-    const [products, setProducts] = useState([]);
-    const fetchProducts = async () => {
-      const { data } = await Commerce.products.list();
-      setProducts(response.data);
-    };
-  
-    useEffect(() => {//hook
-      fetchProducts();
-    }, []);
-  
-    console.log(products); 
-  const [cart, setCart] = useState({});
-  const fetchCart = async () => {
-    setCart(await Commerce.cart.retrieve());
-  };
 
-  useEffect(() => {
-    fetchProducts();
-    fetchCart();
-  }, []);
-  console.log(cart);
-   */
   const { filterProducts } = useFilters()
   const filteredProducts = filterProducts(initialProducts)
 

@@ -16,7 +16,7 @@ import RadioButtonGroup from '../ui/RadioButtonGroup.jsx';
 function Customize({ products }) {
 
     // Assuming 'product' prop contains the data from the API
-    const { id, name, basePrice, image } = product; 
+  
   console.log('Customize products:', products);
   
   const location = useLocation();
@@ -27,7 +27,9 @@ function Customize({ products }) {
   const [selectedDrink, setSelectedDrink] = React.useState(null);
   const [selectedDrinks, setSelectedDrinks] = React.useState([]);
 
-  const { addToCart } = useCart();
+  const { addToCart, removeFromCart, cart } = useCart(); // Destructure removeFromCart and cart
+
+
 
   useEffect(() => {
     if (selectedProduct) {
@@ -114,7 +116,7 @@ function Customize({ products }) {
     'Cerveza Zero Light',
     'Agua',
   ];
-  const [selectedOption, setSelectedOption] = useState('HTML'); // Estado para guardar la selección
+  const [selectedOption, setSelectedOption] = useState("HTML"); // Estado para guardar la selección
 
   const handleOptionChange = (event) => {
     setSelectedOption(event.target.value);

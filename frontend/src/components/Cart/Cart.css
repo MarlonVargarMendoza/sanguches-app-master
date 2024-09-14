@@ -28,9 +28,10 @@
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
   /* Opcional: Agrega una sombra para destacarlo */
   overflow: auto;
-  max-height: 56vh;
+  max-height: 44vh;
   border-radius: 0.5rem;
 }
+
 
 .cart img {
   aspect-ratio: 1 / 1;
