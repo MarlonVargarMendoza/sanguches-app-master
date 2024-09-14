@@ -75,8 +75,8 @@ export function Filters() {
                         <div className="absolute right-0 z-10 mt-2 w-full rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                             <ul className="py-1" role="menu" aria-orientation="vertical" aria-labelledby={categoryFilterId}>
                                 <li onClick={() => handleSelectCategory('all')} className={`block px-4 py-2 text-sm text-gray-700 cursor-pointer hover:bg-[#FFD33D] ${selectedCategory === 'all' ? 'bg-[#FFD33D]' : ''}`} role="menuitem">Todas</li>
-                                <li onClick={() => handleSelectCategory('laptops')} className={`block px-4 py-2 text-sm text-gray-700 cursor-pointer hover:bg-[#FFD33D] ${selectedCategory === 'laptops' ? 'bg-[#FFD33D]' : ''}`} role="menuitem">Portátiles</li>
-                                <li onClick={() => handleSelectCategory('smartphones')} className={`block px-4 py-2 text-sm text-gray-700 cursor-pointer hover:bg-[#FFD33D] ${selectedCategory === 'smartphones' ? 'bg-[#FFD33D]' : ''}`} role="menuitem">Celulares</li>
+                                <li onClick={() => handleSelectCategory('laptops')} className={`block px-4 py-2 text-sm text-gray-700 cursor-pointer hover:bg-[#FFD33D] ${selectedCategory === 'laptops' ? 'bg-[#FFD33D]' : ''}`} role="menuitem">Sanduches</li>
+                                <li onClick={() => handleSelectCategory('smartphones')} className={`block px-4 py-2 text-sm text-gray-700 cursor-pointer hover:bg-[#FFD33D] ${selectedCategory === 'smartphones' ? 'bg-[#FFD33D]' : ''}`} role="menuitem">Sanguchitos</li>
                             </ul>
                         </div>
                     )}

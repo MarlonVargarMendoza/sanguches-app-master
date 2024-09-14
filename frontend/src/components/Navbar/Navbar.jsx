@@ -67,7 +67,7 @@ export const Navbar = () => {
 
         {/* Enlaces de navegación para pantallas pequeñas */}
 
-        <a href="#" className="text-black hover:text-red-400 ml-auto px-3 font-black  text-xl text-shadow ">LOCAL</a>
+        <a href="/Local" className="text-black hover:text-red-400 ml-auto px-3 font-black  text-xl text-shadow ">LOCAL</a>
 
         {/* Botón del menú  para pantallas pequeñas */}
         <div className="md:hidden ml-4 strong">
@@ -92,14 +92,14 @@ export const Navbar = () => {
       </Toolbar>
 
       {/* Add class for animation */}
-      <div className="sticky top-0 right-0 z-10 mt-2 w-full bg-[#AB131B] shadow-lg ring-1 ring-black ring-opacity-5 py-2 focus:outline-none hidden md:block overflow-hidden">
-        <ul className="flex py-1 justify-between items-center" role="menu" aria-orientation="vertical">
+      <div className="z-10 py-2 w-full bg-[#AB131B] shadow-lg ring-1 ring-black ring-opacity-5  focus:outline-none hidden md:block md:overflow-hidden">
+        <ul className="flex  justify-between items-center" role="menu" aria-orientation="vertical">
 
-          <li className={`block px-4 py-2 text-xl text-white cursor-pointer hover:bg-[#C8151B] font-black  text-shadow`} >GRANIZADOS</li>
-          <Link to='/menuSanguches' className={`block px-4 py-2 text-xl text-white cursor-pointer hover:bg-[#C8151B] font-black  text-shadow`} >SANGUCHES</Link>
-          <li className={`block px-4 py-2 text-xl text-white cursor-pointer hover:bg-[#C8151B] font-black  text-shadow `}>COMBOS</li>
-          <li className={`block px-4 py-2 text-xl text-white cursor-pointer hover:bg-[#C8151B] font-black  text-shadow `}>EXTRAS</li>
-          <div className="text-right pr-4"> {/* Wrapper for right side item, text aligned to right with padding */}
+          <li className={`block px-4 text-xl text-white cursor-pointer hover:bg-[#C8151B] font-black text-shadow`} >BEBIDAS</li>
+          <Link to='/menuSanguches' className={`block px-4  text-xl text-white cursor-pointer hover:bg-[#C8151B] font-black  text-shadow`} >SANGUCHES</Link>
+          <li className={`block px-4 text-xl text-white cursor-pointer hover:bg-[#C8151B] font-black  text-shadow `}>COMBOS</li>
+          <li className={`block px-4 text-xl text-white cursor-pointer hover:bg-[#C8151B] font-black  text-shadow `}>ANTOJOS</li>
+          <div className="text-right"> {/* Wrapper for right side item, text aligned to right with padding */}
             <span className="text-sm text-white "><AvTimerIcon />Tiempo de entrega 45 min</span>
           </div>
         </ul>

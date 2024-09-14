@@ -9,9 +9,16 @@ import styles from '../../style.js';
 import { Cart } from '../Cart/Cart.jsx';
 import { PersistentCart } from '../Cart/PersistentCart';
 import { Navbar } from '../Navbar/Navbar';
+import ProductCard from '../Productsjson/ProductCard.jsx';
 import RadioButtonGroup from '../ui/RadioButtonGroup.jsx';
 
-function Customize() {
+
+function Customize({ products }) {
+
+    // Assuming 'product' prop contains the data from the API
+  
+  console.log('Customize products:', products);
+  
   const location = useLocation();
   const { selectedProduct } = location.state || {};
   const [size, setSize] = React.useState('medium');
@@ -20,7 +27,9 @@ function Customize() {
   const [selectedDrink, setSelectedDrink] = React.useState(null);
   const [selectedDrinks, setSelectedDrinks] = React.useState([]);
 
-  const { addToCart } = useCart();
+  const { addToCart, removeFromCart, cart } = useCart(); // Destructure removeFromCart and cart
+
+
 
   useEffect(() => {
     if (selectedProduct) {
@@ -107,7 +116,7 @@ function Customize() {
     'Cerveza Zero Light',
     'Agua',
   ];
-  const [selectedOption, setSelectedOption] = useState('HTML'); // Estado para guardar la selección
+  const [selectedOption, setSelectedOption] = useState("HTML"); // Estado para guardar la selección
 
   const handleOptionChange = (event) => {
     setSelectedOption(event.target.value);
@@ -151,11 +160,12 @@ function Customize() {
     addToCart(customizedProduct);
   };
 
+
   return (
-    <div className='relative w-full  bg-[#F5F5F5]' style={{ paddingTop: '200px' }}>
+    <div className='relative w-full bg-[#F5F5F5]' style={{ paddingTop: '210px' }}>
       <Navbar className={styles.navigation} />
       <Cart />
-      <div className='relative  px-13 mx-auto px-4 py-5  md:py-16  '>
+      <div className='relative  px-13 mx-auto px-4 py-1  md:py-2  '>
         <Breadcrumbs aria-label="breadcrumb">
           <Link to="/">Inicio</Link>
           <Link to="/menuSanguches">Menú</Link>
@@ -251,7 +261,6 @@ function Customize() {
                     {size.charAt(0).toUpperCase() + size.slice(1)}
                   </h3>
                   <div className="mb-4">
-                    <h4 className="text-lg font-bold mb-2 text-[#525D5A]">Ingredientes adicionales:</h4>
                     <ul className="list-disc pl-4 bg-[#F5F5F5]">
                       {additionalIngredients.map((ingredient) => (
                         <li key={ingredient}>{ingredient.charAt(0).toUpperCase() + ingredient.slice(1)}</li>
@@ -319,6 +328,20 @@ function Customize() {
             <Grid item xs={8} md={4} display={{ xs: 'none', md: 'block', lg: 'block', xl: 'block' }} >
               <PersistentCart />
             </Grid>
+
+            <div className='maylike-products-wrapper'>
+              <h2 className="text-2xl font-bold mb-4 text-[#525D5A]">Otros productos</h2>
+              
+              <div className='marquee'>
+                <div className='maylike-products-container track  flex flex-row overflow-x-auto'>
+                  {products.map((item) => (
+                    <ProductCard key={item._id} product={item} />
+                  ))}
+                </div>
+              </div>
+
+            </div>
+
           </>
         ) : (
           <Grid item xs={12} style={{ height: '68vh' }}>

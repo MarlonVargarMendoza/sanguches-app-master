@@ -11,7 +11,6 @@ class Sauce extends Model
 
     protected $fillable = [
         'name',
-        'price',
-        'addition'
+        'price'
     ];
 }

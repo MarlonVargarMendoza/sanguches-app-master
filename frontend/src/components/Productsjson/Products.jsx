@@ -1,14 +1,17 @@
-import HeartIcon from '@mui/icons-material/Favorite';
-import HeartOutlinedIcon from '@mui/icons-material/FavoriteBorder';
-import { Link as RouterLink } from 'react-router-dom'; // Asegúrate de importar RouterLink
+import { useEffect, useState } from 'react';
+import ContentLoader from "react-content-loader";
 import { Button } from '../../components'; // Asegúrate de importar Grid
 import { useCart } from '../../hooks/useCart.js';
-
+import { getProducts } from '../../services/productService';
+import ProductCard from '../Productsjson/ProductCard.jsx';
 import './Products.css';
-
-export function Productsjson({ products }) {
+export function Productsjson({ productService = getProducts }) {
   const { addToCart, removeFromCart, cart } = useCart();
 
+  //for api call
+  const [products, setProducts] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
   const checkProductInCart = (product) => {
     return cart.some((item) => item.id === product.id);
   };
@@ -21,69 +24,65 @@ export function Productsjson({ products }) {
     }
   };
 
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const data = await productService();
+        setProducts(data);
+      } catch (error) {
+        setError(error.message);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, [productService]);
+
   return (
     <main className='products relative w-full p-8 flex flex-col md:flex-row'>
       <div className='products-list mt-16 py-8'>
-        <ul className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 list-none p-0 m-0 rounded-lg'>
-          {products.slice(0, 3).map((product) => {
-            const isProductInCart = checkProductInCart(product);
-
-            return (
-              <li 
-                key={product.id} 
-                className="card relative overflow-hidden bg-white rounded-lg shadow-lg flex flex-col gap-4 transform hover:scale-105 transition-transform duration-300"
+        {isLoading ? ( // Display loading indicator while fetching data
+          <ul className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 list-none p-0 m-0 rounded-lg'>
+            {/* Render placeholders mientras carga */}
+            {[...Array(3)].map((_, index) => (
+              <ContentLoader
+                key={index}
+                speed={2}
+                width={400}
+                height={250}
+                viewBox="0 0 400 250"
+                backgroundColor="#f3f3f3"
+                foregroundColor="#ecebeb"
               >
-                <div className="img-container h-32"> 
-                  <img 
-                    src={product.thumbnail} 
-                    alt={product.title} 
-                    className="w-full h-full object-cover" 
-                  />
-                </div>
-                <div className="actions">
-                  <a href="#" className="favorite" onClick={() => toggleFavorite(product)}>
-                    {isProductInCart ? (
-                      <HeartIcon className="text-red-500" />
-                    ) : (
-                      <HeartOutlinedIcon className="text-gray-500" />
-                    )}
-                  </a>
-                </div>
-                <div className="p-4"> 
-                  <h3 className="font-bold text-lg mb-2">{product.title}</h3>
-                  <p className="text-gray-600 text-sm line-clamp-2">
-                    {product.description}
-                  </p>
-                </div>
+                <rect x="0" y="0" rx="5" ry="5" width="400" height="150" />
+                <rect x="0" y="165" rx="3" ry="3" width="350" height="20" />
+                <rect x="0" y="195" rx="3" ry="3" width="250" height="20" />
+                <rect x="0" y="225" rx="3" ry="3" width="150" height="20" />
+              </ContentLoader>
+            ))}
+          </ul>
+        ) : error ? ( // Display error message if fetching fails
+          <div>{error}</div>
+        ) : (
+          <ul className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 list-none p-0 m-0 rounded-lg'>
+            {products && products.slice(0, 3).map((product) => {
+              const isProductInCart = checkProductInCart(product);
 
-                <div className="flip-container p-1">
-                  <div className="flip-box">
-                    <div className="flip-box-front">
-                      <del>
-                        <span className="price">${(product.price * 1.2).toFixed(2)}</span>
-                      </del>
-                      <ins>
-                        <span className="price">${product.price.toFixed(2)}</span>
-                      </ins>
-                    </div>
-                    <div className="flip-box-back">
-                      <RouterLink to='/editaloTuMismo' state={{ selectedProduct: product }}> {/* Usa RouterLink */}
-                        <button
-                          style={{ backgroundColor: isProductInCart ? 'red' : '#FFD700' }}
-                          className="px-4 py-2 rounded-lg text-white font-semibold hover:bg-orange-500 transition-colors duration-300"
-                        >
-                          <span className="button-text">Ordenar Ahora</span> 
-                        </button>
-                      </RouterLink>
-                    </div>
-                  </div>
-                </div> 
-              </li>
-            );
-          })}
-        </ul>
+              return (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  onAddToCart={addToCart}
+                  onRemoveFromCart={removeFromCart}
+                  isInCart={isProductInCart}
+                />
+              );
+            })}
+          </ul>
+        )}
       </div>
-      <div className='filters-container absolute top-0 left-0 w-full p-4 z-20 mt-15 z-20'>
+      <div className='filters-container absolute top-0 left-0 w-full p-4 z-20 mt-15'>
         <Button buttonText='Ver menu completo' />
       </div>
     </main>
