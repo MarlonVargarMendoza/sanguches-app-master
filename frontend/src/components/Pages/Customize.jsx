@@ -12,13 +12,12 @@ import { Navbar } from '../Navbar/Navbar';
 import ProductCard from '../Productsjson/ProductCard.jsx';
 import RadioButtonGroup from '../ui/RadioButtonGroup.jsx';
 
-
 function Customize({ products }) {
 
-    // Assuming 'product' prop contains the data from the API
-  
+  // Assuming 'product' prop contains the data from the API
+
   console.log('Customize products:', products);
-  
+
   const location = useLocation();
   const { selectedProduct } = location.state || {};
   const [size, setSize] = React.useState('medium');
@@ -26,10 +25,8 @@ function Customize({ products }) {
   const [selectedSideDishes, setSelectedSideDishes] = React.useState([]);
   const [selectedDrink, setSelectedDrink] = React.useState(null);
   const [selectedDrinks, setSelectedDrinks] = React.useState([]);
-
   const { addToCart, removeFromCart, cart } = useCart(); // Destructure removeFromCart and cart
-
-
+  
 
   useEffect(() => {
     if (selectedProduct) {
@@ -271,6 +268,7 @@ function Customize({ products }) {
                   <div className="flex justify-between items-center mb-4">
                     <div className="flex items-center"> {/* Wrap quantity controls in a flex container */}
                       <Button
+
                         onClick={() => handleQuantityChange(-1)}
                         disabled={quantity === 1}
                         variant="outlined"
@@ -298,7 +296,6 @@ function Customize({ products }) {
                           },
                         }}
                       >
-
                       </Button>
                     </div>
 
@@ -331,7 +328,7 @@ function Customize({ products }) {
 
             <div className='maylike-products-wrapper'>
               <h2 className="text-2xl font-bold mb-4 text-[#525D5A]">Otros productos</h2>
-              
+
               <div className='marquee'>
                 <div className='maylike-products-container track  flex flex-row overflow-x-auto'>
                   {products.map((item) => (

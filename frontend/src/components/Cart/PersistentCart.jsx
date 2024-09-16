@@ -1,6 +1,7 @@
 import LocalMallIcon from '@mui/icons-material/LocalMall';
 import RemoveShoppingCartIcon from '@mui/icons-material/RemoveShoppingCart';
 import { Alert, Divider, Grid, Snackbar, Typography } from "@mui/material";
+
 import React, { useState } from 'react';
 import { useCart } from '../../hooks/useCart.js';
 import styles from '../../style.js';
@@ -30,16 +31,20 @@ export const PersistentCart = () => {
         <li className='persistent-cart'>
 
             <Grid item>
-                <div className='container justify-between mb-4 bg-white rounded p-2'>
-                    <Typography variant="h5" component="h2" className='font-bold text-black'>
-                        Tu Carrito
-                    </Typography>
-                    <div className="relative">
-                        <span className="inline-block bg-white rounded-full h-7 w-7 text-center text-red-700 mr-2">
-                            <LocalMallIcon /></span>
+                <div className='container flex justify-between items-center mb-4 bg-white rounded p-2'> {/* Added flex and items-center */}
+                    <div className="flex items-center"> {/* Inner div to group text and icon */}
+                        <span className="inline-block bg-white rounded-full h-7 w-7 text-center text-[#FFC603]">
+                            <LocalMallIcon />
+                        </span>
+                        <Typography variant="h5" component="h2" className='font-bold text-black mr-2'> {/* Added margin-right */}
+                            Tu Carrito
+                        </Typography>
+
+                        <Divider />
                     </div>
 
                     <Divider />
+
                 </div>
             </Grid>
 
@@ -50,7 +55,7 @@ export const PersistentCart = () => {
                             Tu carrito está vacío.
                         </Typography>
                         <Typography variant="body1" className="mt-2 text-gray-500">
-                            ¡Agrega algunos productos deliciosos para comenzar tu pedido!
+                            Los productos que agregues aparecerán aquí
                         </Typography>
                     </div>
                 ) : (
@@ -61,6 +66,8 @@ export const PersistentCart = () => {
                                     addToCart={() => addToCart(product)}
                                     removeFromCart={() => clearCart(product)}
                                     {...product}
+                                    snackbarOpen={snackbarOpen} // Pass snackbarOpen 
+                                    handleSnackbarClose={handleSnackbarClose} // and handleSnackbarClose as prop
                                 />
                                 <Divider />
                             </React.Fragment>
@@ -70,27 +77,31 @@ export const PersistentCart = () => {
             </Grid>
             <Grid item>
                 <footer>
-
-                    <footer>
-                        <div className="mt-4 border-t border-gray-300 pt-4">
-                            <div className="flex justify-between items-center mb-2">
-                                <span className="font-bold text-white">Total</span>
-                                <span className='text-white font-bold'>${calculateTotalPrice(cart)}</span>
-                            </div>
-                            <button
-                                size="lg"
-                                className='w-full bg-red-700 hover:bg-yellow-500 text-white font-bold'
-                                onClick={sendToWhatsApp}
-                            >
-                                Continuar
-                            
-                            </button>
-                        </div>
-                        <button onClick={clearCart}>
-                            <RemoveShoppingCartIcon className='red text-white' />
+                    <div className="flex justify-between items-center mb-2">
+                        <span className="font-bold text-black">Total</span>
+                        <span className='text-gray-700 font-bold'>${calculateTotalPrice(cart)}</span>
+                    </div>
+                    <div className="flex mt-4 border-t border-gray-300 pt-4">
+                        <button
+                            size="lg"
+                            className={`w-full bg-[#FFC603] hover:bg-orange-500 text-white font-bold py-2 
+                            rounded mr-2 transition-transform duration-300 transform
+                            ${cart.length === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:scale-105 shadow-md'}`}
+                            onClick={sendToWhatsApp}
+                            disabled={cart.length === 0}
+                        >
+                            Continuar
                         </button>
-                    </footer>
-
+                        <button
+                            onClick={clearCart}
+                            className={`bg-[#FFC603] hover:bg-orange-500 text-white font-bold rounded-full p-2 
+                            transition-transform duration-300 transform 
+                            ${cart.length === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:scale-105 shadow-md'}`}
+                            disabled={cart.length === 0}
+                        >
+                            <RemoveShoppingCartIcon />
+                        </button>
+                    </div>
                 </footer>
             </Grid>
             <Snackbar

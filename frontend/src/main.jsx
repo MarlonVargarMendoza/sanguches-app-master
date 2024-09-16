@@ -14,15 +14,15 @@ const theme = createTheme({
       main: '#FFFFFF',
     },
     secondary: {
-      main: '#FFD700',
+      main: '#FFC603',
     },
   },
-  components: {
+    components: {
     MuiIconButton: {
       styleOverrides: {
         root: {
           '&:hover': {
-            color: '#FFD700',
+            color: '#FFC603',
           },
         },
       },
@@ -36,7 +36,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
       <ThemeProvider theme={theme}>
         <FiltersProvider>
           <CartProvider> {/* Envuelve el AppRoute con CartProvider */}
-            <AppRoute />
+              <AppRoute />
           </CartProvider>
         </FiltersProvider>
       </ThemeProvider>
