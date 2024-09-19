@@ -38,36 +38,36 @@ import logo from '../../assets/logo.svg';
           <div id='navbarend' className="all hidden md:flex space-x-12">
             <div id="navlinks" className=" all ">
               <div className='left'>
-                <Link to='/editaloTuMismo' className="text-white hover:text-red-400 font-bold">
+                <Link to='/' className="text-white hover:text-red-400 font-bold">
                   <AutoAwesomeIcon />
                   <br />
-                  Editalo
+                  Home
                 </Link>
               </div>
 
               <div className="center">
-                <div className="explainer"><span>Menu</span></div>
-                <a href="#" className="text-white hover:text-red-400 font-bold ">
+                <div className="explainer"><span>Home</span></div>
+                <a href="/menuSanguches" className="text-white hover:text-red-400 font-bold ">
                   <FastfoodIcon />
-                  <span>Combos</span>
+                  <span>Menu</span>
                 </a>
               </div>
 
               <div className="right">
-                <Link to='/menuSanguches' className='text-white hover:text-red-400 font-bold'>
+                <Link to='/Local' className='text-white hover:text-red-400 font-bold'>
                   <IconButton aria-label="show menu items" color="inherit">
                     <MenuBookIcon />
                   </IconButton>
-                  Menu
+                  Local
                 </Link>
               </div>
             </div>
 
           </div>
 
-          {/* Enlaces de navegación para pantallas pequeñas */}
+          {/* Enlaces de navegación para pantallas pequeñas */}{/* 
 
-          <a href="/Local" className="text-black hover:text-red-400 ml-auto px-3 font-black  text-xl text-shadow ">LOCAL</a>
+          <a href="/Local" className="text-black hover:text-red-400 ml-auto px-3 font-black  text-xl text-shadow ">LOCAL</a> */}
 
           {/* Botón del menú  para pantallas pequeñas */}
           <div className="md:hidden ml-4 strong">

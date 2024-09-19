@@ -1,12 +1,13 @@
 import LocalMallIcon from '@mui/icons-material/LocalMall';
 import RemoveShoppingCartIcon from '@mui/icons-material/RemoveShoppingCart';
 import { Alert, Divider, Grid, Snackbar, Typography } from "@mui/material";
-
 import React, { useState } from 'react';
 import { useCart } from '../../hooks/useCart.js';
 import styles from '../../style.js';
 import './Cart.css';
 import { CartItem } from './Cart.jsx';
+
+
 export const PersistentCart = () => {
     const { cart, clearCart, addToCart } = useCart();
     const [snackbarOpen, setSnackbarOpen] = useState(false);
@@ -37,8 +38,9 @@ export const PersistentCart = () => {
                             <LocalMallIcon />
                         </span>
                         <Typography variant="h5" component="h2" className='font-bold text-black mr-2'> {/* Added margin-right */}
-                            Tu Carrito
+                            Tu Carrito 
                         </Typography>
+
 
                         <Divider />
                     </div>

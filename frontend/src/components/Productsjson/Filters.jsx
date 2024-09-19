@@ -76,7 +76,8 @@ export function Filters() {
                             <ul className="py-1" role="menu" aria-orientation="vertical" aria-labelledby={categoryFilterId}>
                                 <li onClick={() => handleSelectCategory('all')} className={`block px-4 py-2 text-sm text-gray-700 cursor-pointer hover:bg-[#FFC603] ${selectedCategory === 'all' ? 'bg-[#FFC603]' : ''}`} role="menuitem">Todas</li>
                                 <li onClick={() => handleSelectCategory('laptops')} className={`block px-4 py-2 text-sm text-gray-700 cursor-pointer hover:bg-[#FFC603] ${selectedCategory === 'laptops' ? 'bg-[#FFC603]' : ''}`} role="menuitem">Sanduches</li>
-                                <li onClick={() => handleSelectCategory('smartphones')} className={`block px-4 py-2 text-sm text-gray-700 cursor-pointer hover:bg-[#FFC603] ${selectedCategory === 'smartphones' ? 'bg-[#FFD33D]' : ''}`} role="menuitem">Sanguchitos</li>
+                                <li onClick={() => handleSelectCategory('smartphones')} className={`block px-4 py-2 text-sm text-gray-700 cursor-pointer hover:bg-[#FFC603] ${selectedCategory === 'smartphones' ? 'bg-[#FFD33D]' : ''}`} role="menuitem">Bebidas</li>
+                                <li onClick={() => handleSelectCategory('smartphones')} className={`block px-4 py-2 text-sm text-gray-700 cursor-pointer hover:bg-[#FFC603] ${selectedCategory === 'smartphones' ? 'bg-[#FFD33D]' : ''}`} role="menuitem">Antojos</li>
                             </ul>
                         </div>
                     )}

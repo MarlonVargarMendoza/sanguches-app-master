@@ -94,17 +94,27 @@ export function Cart() {
         </ul>
 
         <footer>
-          <button onClick={clearCart}>
-            <RemoveShoppingCartIcon />
-          </button>
-
-          {/* Botón para finalizar compra */}
-          <button
-            onClick={sendToWhatsApp}
-            className='bg-[#FFC603] hover:bg-yellow-500 text-white font-bold py-2 px-4 rounded'
-          >
-            Continuar
-          </button>
+        <div className="flex mt-4 border-t border-gray-300 pt-4">
+                        <button
+                            size="lg"
+                            className={`w-full bg-[#FFC603] hover:bg-orange-500 text-white font-bold py-2 
+                            rounded mr-2 transition-transform duration-300 transform
+                            ${cart.length === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:scale-105 shadow-md'}`}
+                            onClick={sendToWhatsApp}
+                            disabled={cart.length === 0}
+                        >
+                            Continuar
+                        </button>
+                        <button
+                            onClick={clearCart}
+                            className={`bg-[#FFC603] hover:bg-orange-500 text-white font-bold rounded-full p-2 
+                            transition-transform duration-300 transform 
+                            ${cart.length === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:scale-105 shadow-md'}`}
+                            disabled={cart.length === 0}
+                        >
+                            <RemoveShoppingCartIcon />
+                        </button>
+                    </div>
         </footer>
         {/* Snackbar */}
         <Snackbar

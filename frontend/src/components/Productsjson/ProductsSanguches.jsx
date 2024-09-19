@@ -7,6 +7,7 @@ import { useCart } from '../../hooks/useCart.js';
 import styles from '../../style.js';
 import { Cart } from '../Cart/Cart.jsx';
 import { PersistentCart } from '../Cart/PersistentCart.jsx';
+import Footer from '../Footer.jsx';
 import { Navbar } from '../Navbar/Navbar.jsx';
 import { Filters } from '../Productsjson/Filters.jsx';
 import './Products.css';
@@ -56,6 +57,7 @@ export function ProductsSanguches({ products }) {
   };
 
   return (
+<>
     <div className='bg-[#F5F5F5] relative w-full'>
       <Navbar className={styles.navigation} />
 
@@ -145,6 +147,8 @@ export function ProductsSanguches({ products }) {
         </Dialog>
       </main>
     </div>
+    <Footer />
+    </>
   );
 }
 
