@@ -16,7 +16,7 @@ class Drink extends Model
         'type_drinks_id'
     ];
 
-    protected function typeDrink () {
+    public function typeDrink () {
         return $this->belongsTo( TypeDrink::class, 'type_drinks_id', 'id' );
     }
 

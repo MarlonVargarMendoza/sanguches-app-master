@@ -3,20 +3,67 @@
 namespace App\Http\Controllers\Product;
 
 use App\Http\Controllers\Controller;
+use App\Models\Ingredient;
+use App\Services\ProductService;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use PhpParser\Node\Stmt\TryCatch;
 
 class ProductController extends Controller
 {
+    protected $productService;
+
+    public function __construct(ProductService $productService) {
+        $this->productService = $productService;
+    }
 
     public function index()
     {
-        try {
-            $products = Product::where('type_products_id', 7)->select('id', 'image', 'name', 'description', 'basePrice')->get();
+        $result = $this->productService->getSandwichsHome();
 
-            if ($products->toArray()) {
-                return response()->json(['message' => 'Success', 'data' => $products,], 200);
-            } else {
+        if ($result['status'] == 200) {
+            return response()->json(['message' => 'Success', 'data' => $result['data']], 200);
+
+        } elseif ($result['status'] == 404) {
+            return response()->json(['message' => $result['message']], 404);
+
+         } else {
+            return response()->json(['message' => $result['message']], 500);
+        }
+    }
+
+    public function show(string $id)
+    {
+        $result = $this->productService->getProductType($id);
+
+        if ($result['status'] == 200) {
+            return response()->json(['message' => 'Success', 'data' => $result['data']], 200);
+
+        } elseif ($result['status'] == 400) {
+            return response()->json(['message' => $result['message']], 400);
+
+        } elseif ($result['status'] == 404) {
+            return response()->json(['message' => $result['message']], 404);
+
+         } else {
+            return response()->json(['message' => $result['message']], 500);
+        }
+    }
+
+    public function addition()
+    {
+        try {
+            $result = Ingredient::select(
+                'id',
+                DB::raw("CONCAT(name, ' --> $', ROUND(price, 0)) AS text"),
+                'price'
+            )->whereNot('addition', 0)->orderBy('name')->get();
+
+            if ($result->toArray()) {
+                return response()->json(['message' => 'Success', 'status' => 200, 'data' => $result], 200);
+    
+            } elseif ($result['status'] == 404) {
                 return response()->json(['message' => 'No products found'], 404);
             }
 
@@ -25,51 +72,4 @@ class ProductController extends Controller
         }
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
-    }
 }
