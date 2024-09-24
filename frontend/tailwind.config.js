@@ -2,12 +2,14 @@
 
 
 const colors = require("tailwindcss/colors");
+const withMT = require("@material-tailwind/react/utils/withMT");
+
 const {
   default: flattenColorPalette,
 } = require("tailwindcss/lib/util/flattenColorPalette");
 
 
-module.exports = {
+module.exports = withMT({
   content: ["./index.html", "./src/**/*.{js,jsx}"],
   mode: "jit",
   theme: {
@@ -44,4 +46,4 @@ module.exports = {
     },
   },
   plugins: [],
-};
+});

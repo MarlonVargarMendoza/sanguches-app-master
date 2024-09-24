@@ -6,6 +6,7 @@ const HomePage = lazy(() => import('../App'));
 const CustomizeSandwiches = lazy(() => import('../components/Pages/Customize'));
 const Menu = lazy(() => import('../components/Productsjson/ProductsSanguches'));
 const Local = lazy(() => import('../components/Pages/Local'));
+const Success = lazy(() => import('../components/Pages/Success.jsx'));
 
 import { CartProvider } from '../context/cart.jsx';
 import { useFilters } from '../hooks/useFilters.js';
@@ -28,6 +29,7 @@ export const AppRoute = () => {
         <Route path='/editaloTuMismo' element={<CustomizeSandwiches products={filteredProducts}/>} />
         <Route path='/menuSanguches' element={<Menu products={filteredProducts}/>} />
         <Route path='/local' element={<Local/>} />
+        <Route path='/success' element={<Success/>} />
       </Routes>
     </Suspense>
     </CartProvider>

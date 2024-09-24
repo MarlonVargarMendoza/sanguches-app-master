@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Cart, Combo, CTA, Favorites, Footer, Hero, Navbar, Promotions, Testimonials } from './components';
+import { Cart, Favorites, Footer, Hero, Navbar } from './components';
 import { Productsjson } from './components/Productsjson/Products.jsx';
 import { IS_DEVELOPMENT } from './config.js';
 import { CartProvider } from './context/cart.jsx';
@@ -28,15 +28,6 @@ const App = () => {
         
         <div className="bg-primary w-full overflow-hidden">
           <Productsjson products={filteredProducts} />
-        </div>
-
-        <div className={`bg-dimWhite ${styles.paddingX} ${styles.flexStart}`}>
-          <div className={`${styles.boxWidth}`}>
-            <Promotions />
-            <Combo /> 
-            <CTA />
-            <Testimonials />
-          </div>  {/* prueba  */}
         </div>
 
         <div className="bg-primary w-full overflow-hidden">

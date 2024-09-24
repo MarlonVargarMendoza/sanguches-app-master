@@ -2,6 +2,7 @@ import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import { Breadcrumbs, Checkbox, FormControl, Grid, ListItemText, MenuItem, Select, Typography } from '@mui/material';
 import Button from '@mui/material/Button';
+import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useCart } from '../../hooks/useCart';
@@ -13,23 +14,36 @@ import ProductCard from '../Productsjson/ProductCard.jsx';
 import RadioButtonGroup from '../ui/RadioButtonGroup.jsx';
 
 
-function Customize({ products }) {
+const API_URL = import.meta.env.VITE_APP_DOMAIN;
+function Customize() {
 
-    // Assuming 'product' prop contains the data from the API
-  
-  console.log('Customize products:', products);
-  
+  // Assuming 'product' prop contains the data from the API
+
   const location = useLocation();
-  const { selectedProduct } = location.state || {};
+  const { selectedProduct } = location.state || {}; // If coming from another page
+  const [error, setError] = useState(null);
+  const [products, setProducts] = useState([]);
+
   const [size, setSize] = React.useState('medium');
   const [additionalIngredients, setAdditionalIngredients] = React.useState([]);
   const [selectedSideDishes, setSelectedSideDishes] = React.useState([]);
   const [selectedDrink, setSelectedDrink] = React.useState(null);
   const [selectedDrinks, setSelectedDrinks] = React.useState([]);
-
   const { addToCart, removeFromCart, cart } = useCart(); // Destructure removeFromCart and cart
 
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await axios.get(`${API_URL}/api/products`);
+        setProducts(response.data.data);
+      } catch (error) {
+        setError('An unexpected error occurred while fetching products.');
+        console.error(error); // Log the error for debugging
+      }
+    };
 
+    fetchProducts();
+  }, []);
 
   useEffect(() => {
     if (selectedProduct) {
@@ -174,7 +188,13 @@ function Customize({ products }) {
       </div>
       <Grid className="container mx-auto px-4 py-12 md:py-16 bg-white" spacing={4}>
 
-        {selectedProduct ? (
+        {error ? (
+          <Grid item xs={12} style={{ height: '68vh' }}>
+            <div className="bg-white shadow-lg rounded-lg p-4 text-black overflow-hidden">
+              <p>{error}</p>
+            </div>
+          </Grid>
+        ): selectedProduct ? (
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div className='flex flex-col md:flex-row gap-8'>
@@ -271,6 +291,7 @@ function Customize({ products }) {
                   <div className="flex justify-between items-center mb-4">
                     <div className="flex items-center"> {/* Wrap quantity controls in a flex container */}
                       <Button
+
                         onClick={() => handleQuantityChange(-1)}
                         disabled={quantity === 1}
                         variant="outlined"
@@ -298,7 +319,6 @@ function Customize({ products }) {
                           },
                         }}
                       >
-
                       </Button>
                     </div>
 
@@ -331,7 +351,7 @@ function Customize({ products }) {
 
             <div className='maylike-products-wrapper'>
               <h2 className="text-2xl font-bold mb-4 text-[#525D5A]">Otros productos</h2>
-              
+
               <div className='marquee'>
                 <div className='maylike-products-container track  flex flex-row overflow-x-auto'>
                   {products.map((item) => (
@@ -349,6 +369,7 @@ function Customize({ products }) {
               <p>Por favor, selecciona un producto del menú.</p>
             </div>
           </Grid>
+    
         )}
       </Grid>
     </div>
