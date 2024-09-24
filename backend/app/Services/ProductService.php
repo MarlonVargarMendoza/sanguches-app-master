@@ -56,7 +56,7 @@ class ProductService
                     ->orderBy('name', 'ASC')
                     ->get();
 
-            } elseif ($id == 8 || $id == 7 || $id == 9 || $id == 10 || $id == 11 || $id == 12) {
+            } elseif ($id == 7 || $id == 8 || $id == 9 || $id == 10 || $id == 11 || $id == 12) {
                 $products = Product::with('sauces')
                 ->with('ingredients')
                 ->where('type_products_id', $id)

@@ -39,10 +39,11 @@ class DrinkController extends Controller
                 (
                     'drinks.id',
                     DB::raw("CONCAT(drinks.name, ' --> $', ROUND(drinks.basePrice, 0)) AS text"),
-                    'basePrice'
+                    'basePrice',
+                    'type.name'
                     
                 )
-                ->whereNot('type_drinks_id', 4)
+                //->whereNot('type_drinks_id', 4)
                 ->orderBy('type.name', 'ASC')->get();
 
             if ($result->toArray()) {
