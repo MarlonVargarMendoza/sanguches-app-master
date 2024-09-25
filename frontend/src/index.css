@@ -24,12 +24,14 @@
   scroll-behavior: smooth;
   font-family: 'Poppins', sans-serif;
 }
+
 .marquee {
   position: relative;
   height: 400px;
   width: 100%;
   overflow-x: hidden;
 }
+
 .track {
   position: absolute;
   white-space: nowrap;
@@ -37,36 +39,47 @@
   animation: marquee 15s linear infinite;
   width: 180%;
 }
+
 .track:hover {
   animation-play-state: paused;
 }
-.marquee-text{
+
+.marquee-text {
   font-size: 29px;
   font-weight: 600;
   margin: 60px 0px;
   color: #f02d34;
 }
 
-.maylike-products-wrapper{
+.maylike-products-wrapper {
   margin-top: 120px;
 }
-.maylike-products-wrapper h2{
+
+.maylike-products-wrapper h2 {
   text-align: center;
   margin: 50px;
   color: #324d67;
 
   font-size: 28px;
 }
-.maylike-products-container{
+
+.maylike-products-container {
   display: flex;
   justify-content: center;
   gap: 15px;
   margin-top: 20px;
 }
+
 @keyframes marquee {
-  from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
 }
+
 .text-gradient {
   background: linear-gradient(45deg,
       #ffffff 40%,
@@ -91,7 +104,8 @@
 
 
 .bg-gold-gradient {
-  background: linear-gradient(135deg, rgba(255, 215, 0, 0.8), rgba(255, 100, 100, 0.8));}
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.8), rgba(255, 100, 100, 0.8));
+}
 
 .bg-black-gradient {
   background: linear-gradient(144.39deg,
@@ -100,16 +114,20 @@
       #11101d 91.61%);
 
 }
+
 .scrolling-text {
-  animation: scrollText 30s linear infinite; /* Adjust duration as needed */
+  animation: scrollText 30s linear infinite;
+  /* Adjust duration as needed */
 }
 
 @keyframes scrollText {
   0% {
     transform: translateX(-100%);
   }
+
   100% {
-    transform: translateX(100%); /* Move text to the left until it's offscreen */
+    transform: translateX(100%);
+    /* Move text to the left until it's offscreen */
   }
 }
 
@@ -254,7 +272,7 @@
   display: none;
   justify-content: center;
   align-items: center;
-  border-bottom: 2px solid  #AB131B;
+  border-bottom: 2px solid #AB131B;
   background: radial-gradient(ellipse at bottom, 144.39deg,
       #ffffff -278.56%,
       #6d6d6d -78.47%,
@@ -365,9 +383,9 @@
 }
 
 .logo {
- /* 
+  /* 
   filter: drop-shadow(0px 4px 4px #F03153); */
-  background: #FFD33D;
+  background: #FFC603;
   border-radius: 50%;
   -webkit-animation: slide-top 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
   animation: slide-top 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
@@ -384,4 +402,78 @@
     }
   }
 
+}
+
+.success-wrapper,
+.cancel-wrapper {
+  background-color: white;
+  min-height: 60vh;
+
+}
+
+.success-wrapper,
+.cancel-wrapper {
+
+  min-height: 69vh;
+}
+
+.success,
+.cancel {
+  width: 370px;
+  margin-top: 100px;
+  padding: 20px;
+}
+
+.success {
+  height: 350px;
+}
+
+.success h2 {
+  font-size: 17px;
+}
+
+.btn-container {
+  width: 300px;
+  margin: auto;
+}
+
+.success .description {
+  font-size: 16px;
+  font-weight: 600;
+  text-align: center;
+  margin: 10px;
+  margin-top: 30px;
+}
+
+.success .description .email {
+  margin-left: 5px;
+  color: #f02d34;
+}
+
+.success .email-msg {
+  font-size: 16px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.cancel p {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.success .description {
+  font-size: 16px;
+  font-weight: 600;
+  text-align: center;
+  margin: 10px;
+  margin-top: 30px;
+}
+
+.success .description .email {
+  margin-left: 5px;
+  color: #f02d34;
+}
+
+.product-max-qty {
+  margin-top: 10px;
 }

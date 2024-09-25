@@ -5,12 +5,12 @@ export const ProductsContext = createContext();
 
 export const ProductsProvider = ({ children }) => {
     const [products, setProducts] = useState([]);
-
+   
     useEffect(() => {
         // Simula la carga de productos desde una fuente de datos
         setProducts(productsMock);
     }, []);
-
+    
     return (
         <ProductsContext.Provider value={{ products }}>
             {children}
