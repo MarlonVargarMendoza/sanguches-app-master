@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Product\DrinkController;
 use App\Http\Controllers\Product\ProductController;
+use App\Http\Controllers\Product\TypeProductController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -27,3 +28,5 @@ Route::prefix('drinks')->group(function () {
     Route::resource('', DrinkController::class)->except(['create', 'edit', 'store', 'show', 'edit', 'update', 'destroy']);
     Route::get('select', [DrinkController::class, 'selectDrinks']);
 });
+
+Route::resource('typeProduct', TypeProductController::class);
