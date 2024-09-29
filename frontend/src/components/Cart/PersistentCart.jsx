@@ -13,7 +13,7 @@ export const PersistentCart = () => {
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const sendToWhatsApp = () => {
         const cartItemsText = cart.map(item =>
-            `${item.title} x ${item.quantity} - $${(item.price * item.quantity).toFixed(2)}`
+            `${item.name} x ${item.quantity} - $${(item.basePrice * item.quantity).toFixed(2)}`
         ).join('\n');
         const totalPrice = calculateTotalPrice(cart);
         const message = `Hola, me interesa el siguiente pedido:\n\n${cartItemsText}\n\nTotal: $${totalPrice.toFixed(2)}`;

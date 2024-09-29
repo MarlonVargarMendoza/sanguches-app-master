@@ -27,7 +27,7 @@ export function Productsjson({ productService = getProducts }) {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const data = await productService();
+        const data = await getProducts();
         setProducts(data);
       } catch (error) {
         setError(error.message);
@@ -37,7 +37,7 @@ export function Productsjson({ productService = getProducts }) {
     };
 
     fetchProducts();
-  }, [productService]);
+  }, []);
 
   return (
     <main className='products relative w-full p-8 flex flex-col md:flex-row'>

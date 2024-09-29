@@ -24,57 +24,61 @@ const Local = () => {
 
     return (
         <>
-            <div className="bg-[#F5F5F5] min-h-screen pt-[200px] relative text-gray-800">
-                <Navbar />
+            <div className='flex flex-col min-h-screen'>
+                <div className="bg-[#F5F5F5] pt-[220px] relative text-gray-800 flex-grow">
+                    <Navbar />
 
-                {/* Layout principal con flex para pantallas grandes */}
-                <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
-                    <h1 className="text-4xl font-bold text-center text-[#ab131b] mb-6">¡Encuéntranos!</h1>
+                    {/* Layout principal con flex para pantallas grandes */}
+                    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
+                        <h1 className="text-4xl font-bold text-center text-[#ab131b] mb-6">¡Encuéntranos!</h1>
 
-                    {/* Flex para dividir el contenido y el mapa */}
-                    <div className="flex flex-col lg:flex-row lg:space-x-6">
+                        {/* Flex para dividir el contenido y el mapa */}
+                        <div className="flex flex-col lg:flex-row lg:space-x-6">
 
-                        {/* Sección de información y búsqueda */}
-                        <div className="w-full lg:w-1/2 space-y-6">
-                            <input
-                                type="text"
-                                placeholder="Ingresa tu dirección o busca por nombre"
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                className="w-full p-3 border border-[#ab131b] rounded-lg mb-4 bg-white shadow-md focus:outline-none focus:ring-2 focus:ring-[#FFC603]"
-                            />
-
-                            <ul className="list-none">
-                                {filteredLocations.map((location) => (
-                                    <li
-                                        key={location.name}
-                                        className={`p-4 border border-[#FFC603] rounded-lg cursor-pointer shadow-md transition-colors duration-300 ${selectedLocation === location ? 'bg-[#FFC603] text-black' : 'bg-white hover:bg-gray-100'
-                                            }`}
-                                        onClick={() => handleLocationSelect(location)}
-                                        aria-label={`Seleccionar ${location.name}`}
-                                    >
-                                        <h2 className="text-xl font-semibold">{location.name}</h2>
-                                        <p className="text-gray-600">{location.address}</p>
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-
-                        {/* Sección del mapa */}
-                        <div className="w-full lg:w-1/2 h-96 lg:h-auto mt-8 lg:mt-0">
-                            <div className="w-full h-full">
-                                <Map
-                                    locations={filteredLocations}
-                                    selectedLocation={selectedLocation}
-                                    onLocationSelect={handleLocationSelect}
+                            {/* Sección de información y búsqueda */}
+                            <div className="w-full lg:w-1/2 space-y-6">
+                                <input
+                                    type="text"
+                                    placeholder="Ingresa tu dirección o busca por nombre"
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    className="w-full p-3 border border-[#ab131b] rounded-lg mb-4 bg-white shadow-md focus:outline-none focus:ring-2 focus:ring-[#FFC603]"
                                 />
+
+                                <ul className="list-none">
+                                    {filteredLocations.map((location) => (
+                                        <li
+                                            key={location.name}
+                                            className={`p-4 border border-[#FFC603] rounded-lg cursor-pointer shadow-md transition-colors duration-300 ${selectedLocation === location ? 'bg-[#FFC603] text-black' : 'bg-white hover:bg-gray-100'
+                                                }`}
+                                            onClick={() => handleLocationSelect(location)}
+                                            aria-label={`Seleccionar ${location.name}`}
+                                        >
+                                            <h2 className="text-xl font-semibold">{location.name}</h2>
+                                            <p className="text-gray-600">{location.address}</p>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+
+                            {/* Sección del mapa */}
+                            <div className="w-full lg:w-1/2 flex-grow mt-8 lg:mt-0">
+                                <div className="w-full h-full">
+                                    <Map
+                                        locations={filteredLocations}
+                                        selectedLocation={selectedLocation}
+                                        onLocationSelect={handleLocationSelect}
+                                    />
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <Footer />
+            <div className=''>
+                <Footer />
+            </div>
         </>
     );
 };

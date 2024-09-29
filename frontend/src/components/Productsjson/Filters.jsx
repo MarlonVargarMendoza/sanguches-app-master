@@ -1,37 +1,38 @@
-import { useId, useState } from 'react';
-import { useFilters } from '../../hooks/useFilters.js';
+import React from 'react';
 
-export function Filters() {
-    const { filters, setFilters } = useFilters();
-    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-    const [selectedCategory, setSelectedCategory] = useState('all');
+import { useId } from 'react';
+
+export function Filters({ filters = { minPrice: 0, category: 'all' }, onFilterChange }) {
 
     const minPriceFilterId = useId();
     const categoryFilterId = useId();
-
+    // Función para cambiar el rango de precios
     const handleChangeMinPrice = (event) => {
-        setFilters(prevState => ({
-            ...prevState,
-            minPrice: event.target.value
-        }));
+        onFilterChange({ ...filters, minPrice: Number(event.target.value) });
     };
 
-    const handleSelectCategory = (category) => {
-        setSelectedCategory(category);
-        setFilters(prevState => ({
-            ...prevState,
-            category: category
-        }));
-        setIsDropdownOpen(false);
+    const handleChangeCategory = (event) => {
+        onFilterChange({ ...filters, category: event.target.value });
     };
-
-    const toggleDropdown = () => {
-        setIsDropdownOpen(prevState => !prevState);
+    const handleCategoryClick = (categoryId) => {
+        onFilterChange({ ...filters, category: categoryId });
     };
+    const categorias = [
+        { id: 'all', nombre: 'Todas' },
+        { id: 7, nombre: 'Tradicional' },
+        { id: 8, nombre: 'Sanguchito' },
+        { id: 9, nombre: 'Desayuno' },
+        { id: 10, nombre: 'Dona' },
+        { id: 11, nombre: 'Pastel' },
+        { id: 12, nombre: 'Otro' },
+        { id: 13, nombre: 'Papas a la francesa' },
+        { id: 14, nombre: 'Palos de yuca' },
+    ];
 
     return (
-        <section className='filters-container flex flex-col sm:flex-row w-full sm:w-3/4 lg:w-1/2 mx-auto mb-0 gap-4 sm:gap-6 px-4 sm:px-12'>
-            <div className='filter-item flex-2 w-full mb-4 sm:mb-0'>
+        <section className='filters flex flex-col sm:flex-row w-full sm:w-3/4 lg:w-1/2 mx-auto mb-6 gap-4 px-4'>
+
+            <div className='filter-item flex-1'>{/* filtro de precio */}
                 <label htmlFor={minPriceFilterId} className='block text-gray-700 font-semibold mb-2'>
                     Precio a partir de:
                 </label>
@@ -40,6 +41,7 @@ export function Filters() {
                     id={minPriceFilterId}
                     min='0'
                     max='1000'
+                    step='10'
                     onChange={handleChangeMinPrice}
                     value={filters.minPrice}
                     className='w-full accent-red-500 cursor-pointer'
@@ -47,41 +49,24 @@ export function Filters() {
                 <span className='block text-gray-700 mt-2'>${filters.minPrice}</span>
             </div>
 
-            <div className='filter-item flex-2 w-full relative inline-block text-left'>
+            <div className='filter-item flex-1'>
                 <label htmlFor={categoryFilterId} className='block text-gray-700 font-semibold mb-2'>
                     Categoría:
                 </label>
-                <div className="relative">
-                    <button
-                        type="button"
-                        className="w-full px-3 py-2 text-sm font-semibold text-gray-900 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 hover:bg-[#FFD33D] flex justify-between items-center"
-                        id={categoryFilterId}
-                        aria-expanded={isDropdownOpen}
-                        aria-haspopup="true"
-                        onClick={toggleDropdown}
-                    >
-                        {selectedCategory === 'all' ? 'Selecciona una categoría' : selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)}
-                        <svg
-                            className={`h-5 w-5 text-gray-400 transform transition-transform ${isDropdownOpen ? 'rotate-180' : 'rotate-0'}`}
-                            viewBox="0 0 20 20"
-                            fill="currentColor"
-                            aria-hidden="true"
-                        >
-                            <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clipRule="evenodd" />
-                        </svg>
-                    </button>
 
-                    {isDropdownOpen && (
-                        <div className="absolute right-0 z-10 mt-2 w-full rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                            <ul className="py-1" role="menu" aria-orientation="vertical" aria-labelledby={categoryFilterId}>
-                                <li onClick={() => handleSelectCategory('all')} className={`block px-4 py-2 text-sm text-gray-700 cursor-pointer hover:bg-[#FFC603] ${selectedCategory === 'all' ? 'bg-[#FFC603]' : ''}`} role="menuitem">Todas</li>
-                                <li onClick={() => handleSelectCategory('laptops')} className={`block px-4 py-2 text-sm text-gray-700 cursor-pointer hover:bg-[#FFC603] ${selectedCategory === 'laptops' ? 'bg-[#FFC603]' : ''}`} role="menuitem">Sanduches</li>
-                                <li onClick={() => handleSelectCategory('smartphones')} className={`block px-4 py-2 text-sm text-gray-700 cursor-pointer hover:bg-[#FFC603] ${selectedCategory === 'smartphones' ? 'bg-[#FFD33D]' : ''}`} role="menuitem">Bebidas</li>
-                                <li onClick={() => handleSelectCategory('smartphones')} className={`block px-4 py-2 text-sm text-gray-700 cursor-pointer hover:bg-[#FFC603] ${selectedCategory === 'smartphones' ? 'bg-[#FFD33D]' : ''}`} role="menuitem">Antojos</li>
-                            </ul>
-                        </div>
-                    )}
-                </div>
+                <select
+                    id={categoryFilterId}
+                    /*  onClick={(e) => handleCategoryClick(e.target.value)} // onClick en lugar de onChange */
+                    onChange={handleChangeCategory}
+                    value={filters.category}
+                    className='w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 bg-white text-sm text-gray-900'
+                >
+                    {categorias.map(categoria => (
+                        <option key={categoria.id} value={categoria.id}>
+                            {categoria.nombre}
+                        </option>
+                    ))}
+                </select>
             </div>
         </section>
     );

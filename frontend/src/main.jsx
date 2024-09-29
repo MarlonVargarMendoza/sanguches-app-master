@@ -29,7 +29,12 @@ const theme = createTheme({
     },
   },
 });
-
+window.addEventListener('error', (event) => {
+  if (event.message.includes('message channel closed')) {
+    console.warn('Se detectó un error de canal de mensajes cerrado. Este es un problema conocido y generalmente no afecta la funcionalidad de la aplicación.');
+    event.preventDefault(); // Previene que el error se propague
+  }
+});
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <BrowserRouter>
