@@ -1,32 +1,5 @@
-.cart {
-  background: #fffdf7;
-  color: #333333;
-  padding: 1.5rem; 
-  position: fixed;
-  right: 3rem; 
-  top: 9.5rem;
-  width: fit-content; 
-  z-index: 9999;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Softer shadow */
-  display: none;
-  transition: all 0.3s ease;
-  overflow: auto;
-  border-radius: 0.5rem; 
-  max-height: 80vh;
-}
 
-/* Always show PersistentCart */
-.persistent-cart {
-  background: white;
-  color: #333333;
-  padding: 0 0 0.5rem 0;
-  position: fixed;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-  /* Opcional: Agrega una sombra para destacarlo */
-  overflow: auto;
-  max-height: 44vh;
-  border-radius: 0.5rem;
-}
+
 
 
 .cart img, 

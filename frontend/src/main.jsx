@@ -29,6 +29,7 @@ const theme = createTheme({
     },
   },
 });
+
 window.addEventListener('error', (event) => {
   if (event.message.includes('message channel closed')) {
     console.warn('Se detectó un error de canal de mensajes cerrado. Este es un problema conocido y generalmente no afecta la funcionalidad de la aplicación.');

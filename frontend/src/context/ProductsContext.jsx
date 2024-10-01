@@ -1,19 +1,12 @@
-// src/context/ProductsContext.jsx
-import React, { createContext, useEffect, useState } from 'react';
-import productsMock from '../mocks/products.json';
-export const ProductsContext = createContext();
+import React, { createContext, useContext } from 'react';
+import { useProductData } from '../hooks/useProductData';
 
-export const ProductsProvider = ({ children }) => {
-    const [products, setProducts] = useState([]);
-   
-    useEffect(() => {
-        // Simula la carga de productos desde una fuente de datos
-        setProducts(productsMock);
-    }, []);
-    
-    return (
-        <ProductsContext.Provider value={{ products }}>
-            {children}
-        </ProductsContext.Provider>
-    );
+const ProductContext = createContext();
+
+export const useProduct = () => useContext(ProductContext);
+
+export const ProductProvider = ({ children }) => {
+    const productData = useProductData();
+
+    return <ProductContext.Provider value={productData}>{children}</ProductContext.Provider>;
 };

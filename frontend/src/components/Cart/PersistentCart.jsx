@@ -1,21 +1,39 @@
 import LocalMallIcon from '@mui/icons-material/LocalMall';
 import RemoveShoppingCartIcon from '@mui/icons-material/RemoveShoppingCart';
-import { Alert, Divider, Grid, Snackbar, Typography } from "@mui/material";
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import {
+    Alert, Badge, Button,
+    IconButton,
+    Snackbar, Typography
+} from '@mui/material';
+import Divider from '@mui/material/Divider';
 import React, { useState } from 'react';
-import { useCart } from '../../hooks/useCart.js';
-import styles from '../../style.js';
-import './Cart.css';
-import { CartItem } from './Cart.jsx';
-
+import { useCart } from '../../hooks/useCart';
+import { CartItem } from './CartItem';
 
 export const PersistentCart = () => {
-    const { cart, clearCart, addToCart } = useCart();
+    const { cart, clearCart, addToCart, updateCartItem } = useCart();
     const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [isCartOpen, setIsCartOpen] = useState(false);
+
+    const calculateTotalPrice = () => {
+        return cart.reduce((total, item) => total + item.basePrice * item.quantity, 0);
+    };
+
+    const handleQuantityChange = (productId, newQuantity) => {
+        updateCartItem(productId, { quantity: newQuantity });
+    };
+
+    const handleCustomizationChange = (productId, newCustomizations) => {
+        updateCartItem(productId, { customizations: newCustomizations });
+    };
+
     const sendToWhatsApp = () => {
         const cartItemsText = cart.map(item =>
-            `${item.name} x ${item.quantity} - $${(item.basePrice * item.quantity).toFixed(2)}`
-        ).join('\n');
-        const totalPrice = calculateTotalPrice(cart);
+            `${item.name} x ${item.quantity} - $${(item.basePrice * item.quantity).toFixed(2)}\n` +
+            `Customizations: ${JSON.stringify(item.customizations)}`
+        ).join('\n\n');
+        const totalPrice = calculateTotalPrice();
         const message = `Hola, me interesa el siguiente pedido:\n\n${cartItemsText}\n\nTotal: $${totalPrice.toFixed(2)}`;
 
         const encodedMessage = encodeURIComponent(message);
@@ -23,110 +41,112 @@ export const PersistentCart = () => {
 
         window.open(whatsappUrl);
         setSnackbarOpen(true);
-    }
+    };
+
     const handleSnackbarClose = () => {
         setSnackbarOpen(false);
     };
+
+    const toggleCart = () => {
+        setIsCartOpen(!isCartOpen);
+    };
+
     return (
+        <>
+            <IconButton
+                onClick={toggleCart}
+                className="ml-auto mr-4 "
+                style={{ color: 'white' }} // Color del icono
+            >
+                <Badge badgeContent={cart.length} color="error">
+                    <ShoppingCartIcon />
+                </Badge>
+            </IconButton>
 
-        <li className='persistent-cart'>
-
-            <Grid item>
-                <div className='container flex justify-between items-center mb-4 bg-white rounded p-2'> {/* Added flex and items-center */}
-                    <div className="flex items-center"> {/* Inner div to group text and icon */}
-                        <span className="inline-block bg-white rounded-full h-7 w-7 text-center text-[#FFC603]">
-                            <LocalMallIcon />
-                        </span>
-                        <Typography variant="h5" component="h2" className='font-bold text-black mr-2'> {/* Added margin-right */}
-                            Tu Carrito 
+            <div className={` fixed top-0  right-0 h-full w-80 bg-white shadow-lg transform transition-transform duration-300 ease-in-out ${isCartOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+                <div className='container flex justify-between items-center mb-4 bg-[#FFC603] p-4'>
+                    <div className="flex items-center">
+                        <LocalMallIcon className="text-white mr-2" />
+                        <Typography variant="h5" component="h2" className='font-bold text-white'>
+                            Tu Carrito
                         </Typography>
-
-
-                        <Divider />
                     </div>
+                    <IconButton onClick={toggleCart} className="text-white" style={{ color: '#C8151B' }}>
 
-                    <Divider />
-
+                        &times;
+                    </IconButton>
                 </div>
-            </Grid>
 
-            <Grid item className='overflow-y-auto sx={{ flexGrow: 1 }} no-scrollbar'>
-                {cart.length === 0 ? ( // Check if cart is empty
-                    <div className="empty-cart p-4 text-center"> {/* Center the message */}
-                        <Typography variant="h6" className="font-semibold text-gray-600">
-                            Tu carrito está vacío.
-                        </Typography>
-                        <Typography variant="body1" className="mt-2 text-gray-500">
-                            Los productos que agregues aparecerán aquí
-                        </Typography>
+                <div className='overflow-y-auto h-[calc(100%-200px)] p-4'>
+                    {cart.length === 0 ? (
+                        <div className="empty-cart p-4 text-center">
+                            <Typography variant="h6" className="font-semibold text-gray-600">
+                                Tu carrito está vacío.
+                            </Typography>
+                            <Typography variant="body1" className="mt-2 text-gray-500">
+                                Los productos que agregues aparecerán aquí
+                            </Typography>
+                        </div>
+                    ) : (
+                        <ul className='item-details'>
+                            {cart.map(product => (
+                                <React.Fragment key={product.id}>
+                                    <CartItem
+                                        addToCart={() => addToCart(product)}
+                                        removeFromCart={() => clearCart(product)}
+                                        {...product}
+                                        price={product.basePrice}
+                                        key={`${product.id}-${JSON.stringify(product.customizations)}`}
+                                        onQuantityChange={(newQuantity) => handleQuantityChange(product.id, newQuantity)} // Add this line
+
+                                    // onCustomizationChange={(newCustomizations) => handleCustomizationChange(item.id, newCustomizations)} */
+                                    />
+                                    <Divider />
+                                </React.Fragment>
+                            ))}
+                        </ul>
+                    )}
+                </div>
+
+                <div className="absolute bottom-0 left-0 right-0 p-4 bg-white border-t border-gray-200">
+                    <div className="flex justify-between items-center mb-4">
+                        <Typography variant="h6" className="font-bold text-black">Total</Typography>
+                        <Typography variant="h6" className='text-[#FFC603] font-bold'>${calculateTotalPrice().toFixed(2)}</Typography>
                     </div>
-                ) : (
-                    <ul className='item-details'>
-                        {cart.map(product => (
-                            <React.Fragment key={product.id}>
-                                <CartItem
-                                    addToCart={() => addToCart(product)}
-                                    removeFromCart={() => clearCart(product)}
-                                    {...product}
-                                    snackbarOpen={snackbarOpen} // Pass snackbarOpen 
-                                    handleSnackbarClose={handleSnackbarClose} // and handleSnackbarClose as prop
-                                />
-                                <Divider />
-                            </React.Fragment>
-                        ))}
-                    </ul>
-                )}
-            </Grid>
-            <Grid item>
-                <footer>
-                    <div className="flex justify-between items-center mb-2">
-                        <span className="font-bold text-black">Total</span>
-                        <span className='text-gray-700 font-bold'>${calculateTotalPrice(cart)}</span>
-                    </div>
-                    <div className="flex mt-4 border-t border-gray-300 pt-4">
-                        <button
-                            size="lg"
-                            className={`w-full bg-[#FFC603] hover:bg-orange-500 text-white font-bold py-2 
-                            rounded mr-2 transition-transform duration-300 transform
-                            ${cart.length === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:scale-105 shadow-md'}`}
+                    <div className="flex mt-4">
+                        <Button
+                            variant="contained"
+                            fullWidth
                             onClick={sendToWhatsApp}
                             disabled={cart.length === 0}
+                            className="mr-2 bg-[#FFC603] hover:bg-orange-500 text-white font-bold py-2 rounded transition-transform duration-300 transform hover:scale-105"
                         >
-                            Continuar
-                        </button>
-                        <button
+                            Hacer Pedido por WhatsApp
+                        </Button>
+                        <Button
+                            variant="contained"
                             onClick={clearCart}
-                            className={`bg-[#FFC603] hover:bg-orange-500 text-white font-bold rounded-full p-2 
-                            transition-transform duration-300 transform 
-                            ${cart.length === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:scale-105 shadow-md'}`}
                             disabled={cart.length === 0}
+                            className="bg-red-500 hover:bg-red-600 text-white"
                         >
                             <RemoveShoppingCartIcon />
-                        </button>
+                        </Button>
                     </div>
-                </footer>
-            </Grid>
+                </div>
+            </div>
+
             <Snackbar
                 open={snackbarOpen}
-                autoHideDuration={6000} // Adjust duration as needed
+                autoHideDuration={6000}
                 onClose={handleSnackbarClose}
-                anchorOrigin={{ vertical: 'top', horizontal: 'center', }} // Adjust position as needed
+                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
             >
-                <Alert onClose={handleSnackbarClose}
-                    severity="success"
-                    sx={{ width: '100%', ...styles.successAlert }}>
-                    <label class="container">
-                        <input checked="checked" type="checkbox" />
-                        <div class="checkmark"></div>
-                    </label>
-                    Pedido enviado a WhatsApp! 🚀 ¡Pronto estaremos en contacto!
+                <Alert onClose={handleSnackbarClose} severity="success" sx={{ width: '100%' }}>
+                    ¡Pedido enviado a WhatsApp! 🚀 Pronto estaremos en contacto.
                 </Alert>
             </Snackbar>
-        </li>
+        </>
     );
 };
-function calculateTotalPrice(cart) {
-    return cart.reduce((total, item) => total + item.price * item.quantity, 0);
-}
 
 export default PersistentCart;

@@ -36,6 +36,7 @@ function Customize() {
   const [selectedAdditions, setSelectedAdditions] = useState([]);
   const [selectedSauces, setSelectedSauces] = useState([]);
   const [selectedDrinks, setSelectedDrinks] = useState([]);
+
   const { addToCart } = useCart();
   const [quantity, setQuantity] = useState(1);
 
@@ -131,6 +132,7 @@ function Customize() {
       price: calculatePrice(),
     };
     addToCart(customizedProduct);
+    navigate('/menuSanguches');
     /* navigate('/cart'); */
   };
 

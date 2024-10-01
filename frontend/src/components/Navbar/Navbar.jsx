@@ -6,6 +6,7 @@ import { AppBar, IconButton, Toolbar } from '@mui/material';
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import logo from '../../assets/logo.svg';
+import { PersistentCart } from '../Cart/PersistentCart';
 
   export const Navbar = () => {
 
@@ -62,8 +63,11 @@ import logo from '../../assets/logo.svg';
                 </Link>
               </div>
             </div>
-
+            
+            
+            
           </div>
+          <PersistentCart />
 
           {/* Enlaces de navegación para pantallas pequeñas */}{/* 
 
@@ -71,7 +75,9 @@ import logo from '../../assets/logo.svg';
 
           {/* Botón del menú  para pantallas pequeñas */}
           <div className="md:hidden ml-4 strong">
+            
             <IconButton onClick={toggleMenu} aria-label="Menu" >
+            
               <svg
                 className="w-6 h-6 text-[#b01027]"
                 fill="none"
@@ -86,6 +92,7 @@ import logo from '../../assets/logo.svg';
                   d={isOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"}
                 ></path>
               </svg>
+              
             </IconButton>
           </div>
 
