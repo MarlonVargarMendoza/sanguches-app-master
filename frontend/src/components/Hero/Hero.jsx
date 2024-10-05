@@ -7,17 +7,17 @@ import { CarouselTransition } from '../ui/CarouselTransition';
 
 const Hero = () => {
   return (
-    <Box className="h-screen bg-[#D2E6E4] relative flex items-center justify-center w-full md:pt-[150px] lg:pt-[190px] overflow-hidden]"
+    <Box className="h-screen bg-[#D2E6E4] relative flex items-center justify-center w-full md:pt-[150px] lg:pt-[180px] overflow-hidden]"
     >
       <CarouselTransition className="absolute top-0 left-0 w-full h-full object-cover " />
       <Box
-        className="absolute top-0 left-0 w-full h-full  flex items-center justify-end z-10 pointer-events-none"
+        className="absolute sm:top-0 md:top-0 lg:top-20 left-0 w-full h-full  flex items-center justify-end z-10 pointer-events-none"
         data-aos="fade-up"
       >
         <Box
           className="text-right max-w-lg space-y-1 animate-fadeInUp relative"
         >
-          <div className="flex flex-row items-center font-black py-[9xpx] px-4 bg-discount-gradient rounded-[10px] mb-2">
+          <div className="flex flex-row items-center font-black pt-[9px] px-4 bg-discount-gradient rounded-[10px] mb-2">
             {/*   <img src={banner} alt="discount" className="w-[32px] h-[32px] bg-white rounded-full mr-2" />
            */}
             <p className={`${styles.paragraph} ml-2`}>

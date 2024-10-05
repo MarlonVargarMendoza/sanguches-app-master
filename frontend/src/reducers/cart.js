@@ -1,39 +1,56 @@
-export const cartInitialState = JSON.parse(localStorage.getItem('cart')) || []
-
-export const CART_ACTION_TYPES = {
-  ADD_TO_CART: 'ADD_TO_CART',
-  REMOVE_FROM_CART: 'REMOVE_FROM_CART',
-  UPDATE_CART_ITEM: 'UPDATE_CART_ITEM',
-  CLEAR_CART: 'CLEAR_CART'
-}
-
-const UPDATE_STATE_BY_ACTION = {
-  [CART_ACTION_TYPES.ADD_TO_CART]: (state, action) => {
-    const { id, customizations } = action.payload;
-    const productInCartIndex = state.findIndex(item => item.id === id && JSON.stringify(item.customizations) === JSON.stringify(customizations));
-
-    if (productInCartIndex >= 0) {
-      return state.map((item, index) => 
-        index === productInCartIndex ? { ...item, quantity: item.quantity + 1 } : item
-      );
+export const cartReducer = (state = { items: [], total: 0 }, action) => {
+  switch (action.type) {
+    case 'ADD_ITEM': {
+      const items = Array.isArray(state.items) ? state.items : [];
+      const existingItemIndex = items.findIndex(item => item.id === action.payload.id);
+      if (existingItemIndex >= 0) {
+        const newItems = items.map((item, index) => 
+          index === existingItemIndex 
+            ? { ...item, quantity: item.quantity + 1, calculatedPrice: item.calculatedPrice + (item.calculatedPrice / item.quantity) }
+            : item
+        );
+        return { ...state, items: newItems };
+      } else {
+        return {
+          ...state,
+          items: [...items, { ...action.payload, quantity: 1, calculatedPrice: action.payload.calculatedPrice }]
+        };
+      }
     }
-
-    return [...state, { ...action.payload, quantity: 1 }];
-  },
-  [CART_ACTION_TYPES.REMOVE_FROM_CART]: (state, action) => {
-    return state.filter(item => item.id !== action.payload.id || JSON.stringify(item.customizations) !== JSON.stringify(action.payload.customizations));
-  },
-  [CART_ACTION_TYPES.UPDATE_CART_ITEM]: (state, action) => {
-    const { productId, updates } = action.payload;
-    return state.map(item => 
-      item.id === productId ? { ...item, ...updates } : item
-    );
-  },
-  [CART_ACTION_TYPES.CLEAR_CART]: () => []
-};
-
-export const cartReducer = (state, action) => {
-  const { type: actionType } = action;
-  const updateState = UPDATE_STATE_BY_ACTION[actionType];
-  return updateState ? updateState(state, action) : state;
+    case 'REMOVE_ITEM':
+      return {
+        ...state,
+        items: Array.isArray(state.items) ? state.items.filter(item => item.id !== action.payload) : []
+      };
+    case 'UPDATE_ITEM':
+      return {
+        ...state,
+        items: Array.isArray(state.items) 
+          ? state.items.map(item =>
+              item.id === action.payload.id
+                ? { ...item, ...action.payload.updates }
+                : item
+            )
+          : []
+      };
+    case 'CLEAR_CART':
+      return {
+        ...state,
+        items: [],
+        total: 0
+      };
+    case 'LOAD_CART':
+      return {
+        ...state,
+        items: Array.isArray(action.payload.items) ? action.payload.items : [],
+        total: action.payload.total || 0
+      };
+    case 'UPDATE_TOTAL':
+      return {
+        ...state,
+        total: action.payload
+      };
+    default:
+      return state;
+  }
 };

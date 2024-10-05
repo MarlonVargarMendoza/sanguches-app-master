@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Cart, Favorites, Footer, Hero, Navbar } from './components';
-import { Productsjson } from './components/Productsjson/Products.jsx';
+import { Favorites, Hero, Navbar } from './components';
+import Footer from './components/Layout/Footer.jsx';
+import { Productsjson } from './components/Product/Products.jsx';
 import { IS_DEVELOPMENT } from './config.js';
 import { CartProvider } from './context/cart.jsx';
 import { useFilters } from './hooks/useFilters.js';
@@ -32,7 +33,6 @@ const App = () => {
 
         <div className="bg-primary w-full overflow-hidden">
           <Favorites />
-          <Cart />
           {IS_DEVELOPMENT && <Footer />}
         </div>
       </div>

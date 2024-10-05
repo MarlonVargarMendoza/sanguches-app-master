@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import banner from '../assets/banner.png';
+import banner from '/assets/banner.png';
 
 const images = [
   { src: banner, alt: 'Sándwich Favorito 1', text: 'Sándwich 1' },

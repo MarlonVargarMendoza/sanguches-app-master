@@ -46,15 +46,16 @@ export const getDrinks = async () => {
 export const getDrinksSelect = async () => {
     try {
         const response = await axios.get(`${API_URL}/api/drinks/select`);
-        return response.data;
+        return Array.isArray(response.data) ? response.data : [];
     } catch (error) {
-        handleAxiosError(error);
+        console.error('Error fetching drinks:', error);
+        return []; // Return an empty array if there's an error
     }
 };
 export const getSauces = async () => {
     // Valores predefinidos para las salsas
     const defaultSauces = [
-        { id: 1, name: 'Mayonesa', price: 0.5 },
+        { id: 1, name: 'Mayonesa --> 2500', price: 0.5 },
         { id: 2, name: 'Ketchup', price: 0.5 },
         { id: 3, name: 'Mostaza', price: 0.5 },
         { id: 4, name: 'BBQ', price: 0.75 },

@@ -5,8 +5,8 @@ import MenuBookIcon from '@mui/icons-material/MenuBook';
 import { AppBar, IconButton, Toolbar } from '@mui/material';
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import logo from '../../assets/logo.svg';
-import { PersistentCart } from '../Cart/PersistentCart';
+import PersistentCart from '../Cart/PersistentCart';
+import logo from '/assets/logo.svg';
 
   export const Navbar = () => {
 
@@ -103,9 +103,8 @@ import { PersistentCart } from '../Cart/PersistentCart';
           <div className="flex justify-between items-center px-4" role="menu" aria-orientation="vertical">
             <nav> 
               <ul className="flex space-x-4"> 
-                <li className={`text-xl text-black cursor-pointer hover:bg-[#FFC603] font-black text-shadow`} >BEBIDAS</li>
+                <li className={`text-xl text-black cursor-pointer hover:bg-[#FFC603] font-black text-shadow`} >DESAYUNOS</li>
                 <Link to='/menuSanguches' className={`text-xl text-black cursor-pointer hover:bg-[#FFC603] font-black  text-shadow`} >SANGUCHES</Link>
-                <li className={`text-xl text-black cursor-pointer hover:bg-[#FFC603] font-black  text-shadow `}>COMBOS</li>
                 <li className={`text-xl text-black cursor-pointer hover:bg-[#FFC603] font-black  text-shadow `}>ANTOJOS</li>
               </ul>
             </nav>

@@ -1,37 +1,34 @@
-import React, { lazy, Suspense, useState } from 'react';
+import React, { lazy, Suspense } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import './loader.css';
 
 const HomePage = lazy(() => import('../App'));
-const CustomizeSandwiches = lazy(() => import('../components/Pages/Customize'));
-const Menu = lazy(() => import('../components/Productsjson/ProductsSanguches'));
-const Local = lazy(() => import('../components/Pages/Local'));
-const Success = lazy(() => import('../components/Pages/Success.jsx'));
+const CustomizeSandwiches = lazy(() => import('../Pages/Customize.jsx'));
+const Menu = lazy(() => import('../components/Product/ProductsSanguches.jsx'));
+const Local = lazy(() => import('../Pages/Local.jsx'));
+const Success = lazy(() => import('../Pages/Success.jsx'));
+const Checkout = lazy(() => import('../Pages/Checkout.jsx'));
 
 import { CartProvider } from '../context/cart.jsx';
-import { useFilters } from '../hooks/useFilters.js';
-import { products as initialProducts } from '../mocks/products.json';
+import { FiltersProvider } from '../context/filters.jsx';
 
 export const AppRoute = () => {
-  const { filterProducts } = useFilters()
-  const filteredProducts = filterProducts(initialProducts)
-  const [cartItems, setCartItems] = useState([]);
-  const handleAddToCart = (product) => {
-    setCartItems([...cartItems, product]);
-  };
   return (
-    <CartProvider>
-    <Suspense fallback={<div class="loader">
-      <div class="justify-content-center jimu-primary-loading"></div>
-    </div>}>
-      <Routes>
-        <Route path="/" element={<HomePage/>} />
-        <Route path='/editaloTuMismo' element={<CustomizeSandwiches products={filteredProducts}/>} />
-        <Route path='/menuSanguches' element={<Menu products={filteredProducts}/>} />
-        <Route path='/local' element={<Local/>} />
-        <Route path='/success' element={<Success/>} />
-      </Routes>
-    </Suspense>
-    </CartProvider>
+    <FiltersProvider>
+      <CartProvider>
+        <Suspense fallback={<div className="loader">
+          <div className="justify-content-center jimu-primary-loading"></div>
+        </div>}>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path='/editaloTuMismo' element={<CustomizeSandwiches />} />
+            <Route path='/menuSanguches' element={<Menu />} />
+            <Route path='/local' element={<Local />} />
+            <Route path='/success' element={<Success />} />
+            <Route path='/checkout' element={<Checkout />} />
+          </Routes>
+        </Suspense>
+      </CartProvider>
+    </FiltersProvider>
   );
 };

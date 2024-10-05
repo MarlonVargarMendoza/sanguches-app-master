@@ -1,40 +1,42 @@
-import { createContext, useReducer } from 'react'
-import { cartInitialState, cartReducer } from '../reducers/cart.js'
+import React, { createContext, useEffect, useReducer } from 'react';
+import { cartReducer } from '../reducers/cart';
 
-export const CartContext = createContext()
+export const CartContext = createContext();
 
-function useCartReducer () {
-  const [state, dispatch] = useReducer(cartReducer, cartInitialState)
+const initialState = {
+  items: [],
+  total: 0,
+};
 
-  const addToCart = product => dispatch({
-    type: 'ADD_TO_CART',
-    payload: product
-  })
+export const CartProvider = ({ children }) => {
+  const [state, dispatch] = useReducer(cartReducer, initialState, () => {
+    try {
+      const localData = localStorage.getItem('cart');
+      return localData ? JSON.parse(localData) : initialState;
+    } catch (error) {
+      console.error('Error parsing cart data from localStorage:', error);
+      return initialState;
+    }
+  });
 
-  const removeFromCart = product => dispatch({
-    type: 'REMOVE_FROM_CART',
-    payload: product
-  })
+  useEffect(() => {
+    try {
+      localStorage.setItem('cart', JSON.stringify(state));
+    } catch (error) {
+      console.error('Error saving cart data to localStorage:', error);
+    }
+  }, [state]);
 
-  const clearCart = () => dispatch({ type: 'CLEAR_CART' })
-
-  return { state, addToCart, removeFromCart, clearCart }
-}
-
-// la dependencia de usar React Context
-// es MÍNIMA
-export function CartProvider ({ children }) {
-  const { state, addToCart, removeFromCart, clearCart } = useCartReducer()
+  useEffect(() => {
+    if (state && Array.isArray(state.items)) {
+      const total = state.items.reduce((sum, item) => sum + (item.calculatedPrice || 0), 0);
+      dispatch({ type: 'UPDATE_TOTAL', payload: total });
+    }
+  }, [state?.items]);
 
   return (
-    <CartContext.Provider value={{
-      cart: state,
-      addToCart,
-      removeFromCart,
-      clearCart
-    }}
-    >
+    <CartContext.Provider value={{ state, dispatch }}>
       {children}
     </CartContext.Provider>
-  )
-}
+  );
+};
