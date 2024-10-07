@@ -2,7 +2,10 @@ export const cartReducer = (state = { items: [], total: 0 }, action) => {
   switch (action.type) {
     case 'ADD_ITEM': {
       const items = Array.isArray(state.items) ? state.items : [];
-      const existingItemIndex = items.findIndex(item => item.id === action.payload.id);
+      const existingItemIndex = items.findIndex(item => 
+        item.id === action.payload.id && 
+        JSON.stringify(item.customizations) === JSON.stringify(action.payload.customizations)
+      );
       if (existingItemIndex >= 0) {
         const newItems = items.map((item, index) => 
           index === existingItemIndex 
@@ -13,7 +16,7 @@ export const cartReducer = (state = { items: [], total: 0 }, action) => {
       } else {
         return {
           ...state,
-          items: [...items, { ...action.payload, quantity: 1, calculatedPrice: action.payload.calculatedPrice }]
+          items: [...items, { ...action.payload, quantity: 1 }]
         };
       }
     }

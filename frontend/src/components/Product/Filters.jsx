@@ -1,5 +1,7 @@
+import { Slider } from '@mui/material';
 import React from 'react';
 
+import { alpha } from '@mui/material/styles';
 import { useId } from 'react';
 
 export function Filters({ filters = { minPrice: 0, category: 'all' }, onFilterChange }) {
@@ -36,15 +38,26 @@ export function Filters({ filters = { minPrice: 0, category: 'all' }, onFilterCh
                 <label htmlFor={minPriceFilterId} className='block text-gray-700 font-semibold mb-2'>
                     Precio a partir de:
                 </label>
-                <input
-                    type='range'
-                    id={minPriceFilterId}
-                    min='0'
-                    max='1000'
-                    step='10'
-                    onChange={handleChangeMinPrice}
+                <Slider
                     value={filters.minPrice}
-                    className='w-full accent-red-500 cursor-pointer'
+                    onChange={handleChangeMinPrice}
+                    aria-labelledby={minPriceFilterId}
+                    valueLabelDisplay="auto"
+                    step={1000}
+                    marks
+                    min={0}
+                    max={50000}
+                    sx={{
+                        color: '#FFC603',
+                        '& .MuiSlider-thumb': {
+                            '&:hover, &.Mui-focusVisible': {
+                                boxShadow: `0px 0px 0px 8px ${alpha('#FFC603', 0.16)}`,
+                            },
+                            '&.Mui-active': {
+                                boxShadow: `0px 0px 0px 14px ${alpha('#FFC603', 0.16)}`,
+                            },
+                        },
+                    }}
                 />
                 <span className='block text-gray-700 mt-2'>${filters.minPrice}</span>
             </div>

@@ -7,39 +7,33 @@ import {
   ShoppingCart as ShoppingCartIcon
 } from '@mui/icons-material';
 import {
-  Breadcrumbs,
-  Button,
-  Checkbox,
-  Chip,
-  CircularProgress,
-  Collapse,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Grid,
-  IconButton,
-  List, ListItem, ListItemText,
-  Snackbar,
-  Tooltip,
-  Typography
+  Box, Breadcrumbs, Button, Checkbox, Chip, CircularProgress, Collapse,
+  Dialog, DialogActions, DialogContent, DialogTitle, Grid, IconButton,
+  List, ListItem, ListItemText, Snackbar, Tooltip, Typography
 } from '@mui/material';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
+import { SideBySideMagnifier } from "react-image-magnifiers";
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+
 import Footer from '../components/Layout/Footer';
 import { Navbar } from '../components/Navbar/Navbar';
 import ProductCard from '../components/Product/ProductCard';
 import { useCart } from '../hooks/useCart';
-import { getAdditions, getAllProducts, getDrinksSelect, getSauces } from '../services/productService';
+import { getAdditions, getAllProducts, getDrinksSelect, getSaucesSelect } from '../services/productService';
 import styles from '../style';
 
 const DOMAIN = import.meta.env.VITE_APP_DOMAIN;
+const sectionLabels = {
+  additions: "Acompañamientos",
+  sauces: "Salsas",
+  drinks: "Bebidas"
+};
 
 function Customize() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { selectedProduct } = location.state || {};
   const { addToCart } = useCart();
+  const { selectedProduct } = location.state || {};
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -66,7 +60,7 @@ function Customize() {
       try {
         const [additionsData, saucesData, drinksData, relatedProductsData] = await Promise.all([
           getAdditions(),
-          getSauces(),
+          getSaucesSelect(),
           getDrinksSelect(),
           getAllProducts()
         ]);
@@ -74,9 +68,15 @@ function Customize() {
         setSauces(saucesData);
         setDrinks(drinksData);
         setProducts(relatedProductsData);
+        console.log('Sauces:', saucesData); // Para depuración
       } catch (error) {
         console.error('Error fetching data:', error);
         setError("Error al cargar las opciones de personalización.");
+        // Podrías también establecer arrays vacíos para evitar errores
+        setAdditions([]);
+        setSauces([]);
+        setDrinks([]);
+        setProducts([]);
       } finally {
         setLoading(false);
       }
@@ -84,25 +84,20 @@ function Customize() {
     fetchData();
   }, [selectedProduct]);
 
-  const handleSelectionChange = (type, value) => {
-    switch(type) {
-      case 'additions':
-        setSelectedAdditions(value);
-        break;
-      case 'sauces':
-        setSelectedSauces(value);
-        break;
-      case 'drinks':
-        setSelectedDrinks(value);
-        break;
-      default:
-        break;
-    }
-  };
+  const handleSelectionChange = useCallback((type, value) => {
+    const setters = {
+      additions: setSelectedAdditions,
+      sauces: setSelectedSauces,
+      drinks: setSelectedDrinks
+    };
+    setters[type](value);
+  }, []);
 
-  const handleQuantityChange = (change) => setQuantity(Math.max(1, quantity + change));
+  const handleQuantityChange = useCallback((change) => {
+    setQuantity(prev => Math.max(1, prev + change));
+  }, []);
 
-  const calculatePrice = () => {
+  const calculatePrice = useCallback(() => {
     if (!selectedProduct) return 0;
     let totalPrice = selectedProduct.basePrice;
     selectedAdditions.forEach(additionId => {
@@ -114,31 +109,40 @@ function Customize() {
       if (drink) totalPrice += drink.basePrice;
     });
     return totalPrice * quantity;
-  };
+  }, [selectedProduct, additions, drinks, selectedAdditions, selectedDrinks, quantity]);
 
-  const handleAddToCart = () => {
+  const handleAddToCart = useCallback(() => {
     if (!selectedProduct) return;
     const customizedProduct = {
       ...selectedProduct,
       customizations: {
-        additions: selectedAdditions,
-        sauces: selectedSauces,
-        drinks: selectedDrinks,
+        additions: selectedAdditions.map(id => {
+          const item = additions.find(a => a.id === id);
+          return { id: item.id, text: item.text || item.name, price: item.price };
+        }),
+        sauces: selectedSauces.map(id => {
+          const item = sauces.find(s => s.id === id);
+          return { id: item.id, text: item.text || item.name };
+        }),
+        drinks: selectedDrinks.map(id => {
+          const item = drinks.find(d => d.id === id);
+          return { id: item.id, text: item.text || item.name, price: item.basePrice };
+        }),
       },
       quantity,
       calculatedPrice: calculatePrice(),
     };
     addToCart(customizedProduct);
     setSnackbarOpen(true);
-  };
+  }, [selectedProduct, additions, sauces, drinks, selectedAdditions, selectedSauces, selectedDrinks, quantity, calculatePrice, addToCart]);
 
-  const renderSelectionDialog = (type, items, selected, onClose) => (
-    <Dialog open={dialogOpen[type]} onClose={onClose} fullWidth maxWidth="sm">
-      <DialogTitle>{`Seleccionar ${type}`}</DialogTitle>
+  const renderSelectionDialog = useCallback((type, items, selected, onClose) => (
+    <Dialog open={dialogOpen[type]} onClose={onClose} fullWidth maxWidth="sm" key={`dialog-${type}`}>
+      <DialogTitle>{`Seleccionar ${sectionLabels[type]}`}</DialogTitle>
       <DialogContent>
         <List>
           {items.map((item) => (
-            <ListItem key={item.id} dense button onClick={() => {
+            <ListItem key={`${type}-${item.id}`} dense button onClick={() => {
               const newSelection = selected.includes(item.id)
                 ? selected.filter(id => id !== item.id)
                 : [...selected, item.id];
@@ -150,25 +154,23 @@ function Customize() {
                 tabIndex={-1}
                 disableRipple
               />
-              <ListItemText 
-                primary={item.name || item.text} 
-                secondary={item.price ? `+$${item.price.toFixed(2)}` : null} 
+              <ListItemText
+                primary={item.text || item.name}
+                secondary={type !== 'sauces' && (item.price ? `+$${item.price.toFixed(2)}` : (item.basePrice ? `+$${item.basePrice.toFixed(2)}` : null))}
               />
             </ListItem>
           ))}
         </List>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose} color="primary">
-          Cerrar
-        </Button>
+        <Button onClick={onClose} color="primary">Cerrar</Button>
       </DialogActions>
     </Dialog>
-  );
+  ), [dialogOpen, handleSelectionChange, sectionLabels]);
 
-  const toggleSection = (section) => {
-    setExpandedSection(expandedSection === section ? null : section);
-  };
+  const toggleSection = useCallback((section) => {
+    setExpandedSection(prev => prev === section ? null : section);
+  }, []);
 
   if (loading) {
     return (
@@ -185,15 +187,13 @@ function Customize() {
         <Navbar className={`${styles.navigation} bg-[#FFC603]`} />
         <div className="container mx-auto px-4 py-12" style={{ paddingTop: '220px' }}>
           <Typography variant="h6" color="error">{error || "No se ha seleccionado ningún producto."}</Typography>
-          <Button 
-            variant="contained" 
+          <Button
+            variant="contained"
             onClick={() => navigate('/menuSanguches')}
             sx={{
               backgroundColor: '#FFC603',
               color: 'white',
-              '&:hover': {
-                backgroundColor: '#C8151B',
-              },
+              '&:hover': { backgroundColor: '#C8151B' },
               mt: 2
             }}
           >
@@ -207,7 +207,7 @@ function Customize() {
   return (
     <div className='bg-[#F5F5F5] min-h-screen'>
       <Navbar className={`${styles.navigation} bg-[#FFC603]`} />
-      
+
       <main className='main-container p-6' style={{ paddingTop: '220px' }}>
         <Breadcrumbs aria-label="breadcrumb" className="mb-6">
           <Link to="/" className="hover:text-[#C3151A]">Inicio</Link>
@@ -217,13 +217,22 @@ function Customize() {
 
         <Grid container spacing={4} className="bg-white rounded-lg shadow-lg p-6">
           <Grid item xs={12} md={6}>
-            <img
-              src={`${DOMAIN}${selectedProduct.image}`}
-              alt={selectedProduct.name}
-              className="w-full h-64 object-cover rounded-lg shadow-md"
-            />
+            <Box sx={{ borderRadius: '8px', overflow: 'hidden', boxShadow: '0 4px 8px rgba(0,0,0,0.1)' }}>
+              <SideBySideMagnifier
+                imageSrc={`${DOMAIN}${selectedProduct.image}`}
+                imageAlt={selectedProduct.name}
+                largeImageSrc={`${DOMAIN}${selectedProduct.image}`}
+                alwaysInPlace={true}
+                overlayBoxOpacity={0.8}
+                shadowColor="#000"
+                cursorStyle="crosshair"
+                transitionSpeed={0.1}
+                mouseActivation="hover"
+                touchActivation="tap"
+              />
+            </Box>
             <Typography variant="body1" className="mt-4 text-[#525D5A]">
-              {selectedProduct.description}
+              <strong>Ingredientes:</strong> {selectedProduct.ingredients ? selectedProduct.ingredients.map(ing => ing.name).join(', ') : 'Información no disponible'}
             </Typography>
           </Grid>
 
@@ -235,7 +244,7 @@ function Customize() {
               ${calculatePrice().toFixed(2)}
             </Typography>
 
-            {['additions', 'sauces', 'drinks'].map((type) => (
+            {Object.entries(sectionLabels).map(([type, label]) => (
               <div key={type} className="mb-4">
                 <Button
                   onClick={() => toggleSection(type)}
@@ -244,13 +253,11 @@ function Customize() {
                   sx={{
                     justifyContent: 'space-between',
                     backgroundColor: '#f5f5f5',
-                    '&:hover': {
-                      backgroundColor: '#e0e0e0',
-                    },
+                    '&:hover': { backgroundColor: '#e0e0e0' },
                   }}
                 >
                   <Typography variant="h6" className="font-bold text-[#525D5A]">
-                    {type.charAt(0).toUpperCase() + type.slice(1)}
+                    {label}
                   </Typography>
                 </Button>
                 <Collapse in={expandedSection === type}>
@@ -260,7 +267,7 @@ function Customize() {
                       return (
                         <Chip
                           key={id}
-                          label={item.name || item.text}
+                          label={item.text || item.name}
                           onDelete={() => handleSelectionChange(type, eval(`selected${type.charAt(0).toUpperCase() + type.slice(1)}`).filter(i => i !== id))}
                           color="primary"
                         />
@@ -280,19 +287,19 @@ function Customize() {
             <div className="flex justify-between items-center mt-6">
               <div className="flex items-center">
                 <Tooltip title="Disminuir cantidad">
-                  <IconButton
-                    onClick={() => handleQuantityChange(-1)}
-                    disabled={quantity === 1}
-                    sx={{
-                      backgroundColor: '#FFC603',
-                      color: 'black',
-                      '&:hover': {
-                        backgroundColor: '#e6b200',
-                      },
-                    }}
-                  >
-                    <RemoveIcon />
-                  </IconButton>
+                  <span>
+                    <IconButton
+                      onClick={() => handleQuantityChange(-1)}
+                      disabled={quantity === 1}
+                      sx={{
+                        backgroundColor: '#FFC603',
+                        color: 'black',
+                        '&:hover': { backgroundColor: '#e6b200' },
+                      }}
+                    >
+                      <RemoveIcon />
+                    </IconButton>
+                  </span>
                 </Tooltip>
                 <Typography variant="h6" className="mx-4 font-bold">
                   {quantity}
@@ -303,9 +310,7 @@ function Customize() {
                     sx={{
                       backgroundColor: '#FFC603',
                       color: 'black',
-                      '&:hover': {
-                        backgroundColor: '#e6b200',
-                      },
+                      '&:hover': { backgroundColor: '#e6b200' },
                     }}
                   >
                     <AddIcon />
@@ -319,10 +324,8 @@ function Customize() {
                 sx={{
                   backgroundColor: '#FFC603',
                   color: 'white',
-                  '&:hover': {
-                    backgroundColor: '#C8151B',
-                  },
-                  width: '60%',
+                  '&:hover': { backgroundColor: '#C8151B' },
+                  width: '80%',
                 }}
               >
                 Añadir al carrito
@@ -331,23 +334,56 @@ function Customize() {
           </Grid>
         </Grid>
 
-        <div className='maylike-products-wrapper mt-12'>
+        <Box className='mt-12'>
           <Typography variant="h5" className="font-bold mb-6 text-[#525D5A]">
             Otros productos que te pueden gustar
           </Typography>
-          <div className='marquee'>
-            <div className='maylike-products-container track flex flex-row overflow-x-auto'>
-              {products.slice(0, 6).map((item) => (
-                <ProductCard key={item.id} product={item} />
-              ))}
-            </div>
-          </div>
-        </div>
+          <Box
+            sx={{
+              display: 'flex',
+              overflowX: 'auto',
+              gap: '16px',
+              pb: 2,
+              '::-webkit-scrollbar': {
+                height: '8px',
+              },
+              '::-webkit-scrollbar-track': {
+                backgroundColor: '#f1f1f1',
+              },
+              '::-webkit-scrollbar-thumb': {
+                backgroundColor: '#FFC603',
+                borderRadius: '4px',
+              },
+              '::-webkit-scrollbar-thumb:hover': {
+                backgroundColor: '#C8151B',
+              },
+              scrollSnapType: 'x mandatory',
+            }}
+          >
+            {products.slice(0, 6).map((item) => (
+              <Box
+                key={item.id}
+                sx={{
+                  flexShrink: 0,
+                  width: { xs: '85%', sm: '45%', md: '30%' },
+                  scrollSnapAlign: 'start',
+                }}
+              >
+                <ProductCard product={item} />
+              </Box>
+            ))}
+          </Box>
+        </Box>
       </main>
 
-      {renderSelectionDialog('additions', additions, selectedAdditions, () => setDialogOpen({...dialogOpen, additions: false}))}
-      {renderSelectionDialog('sauces', sauces, selectedSauces, () => setDialogOpen({...dialogOpen, sauces: false}))}
-      {renderSelectionDialog('drinks', drinks, selectedDrinks, () => setDialogOpen({...dialogOpen, drinks: false}))}
+      {Object.entries(sectionLabels).map(([type, label]) => (
+        renderSelectionDialog(
+          type,
+          eval(type),
+          eval(`selected${type.charAt(0).toUpperCase() + type.slice(1)}`),
+          () => setDialogOpen({ ...dialogOpen, [type]: false })
+        )
+      ))}
 
       <Snackbar
         anchorOrigin={{

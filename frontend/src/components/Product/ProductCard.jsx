@@ -1,56 +1,65 @@
-import { Card, CardContent, CardMedia } from '@mui/material';
-import { Link as RouterLink } from 'react-router-dom';
+import { Button, Card, CardContent, CardMedia, Typography } from '@mui/material';
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const DOMAIN = import.meta.env.VITE_APP_DOMAIN;
-function ProductCard({ product, onAddToCart, onRemoveFromCart, isInCart }) {
-    
-    // Assuming 'product' prop contains the data from the API
-    const { id, name, basePrice, image } = product; 
-    // Check if basePrice exists and is a number before using toFixed
+
+function ProductCard({ product }) {
+    const { id, name, basePrice, image, ingredients } = product; 
     const formattedPrice = basePrice != null && !isNaN(basePrice) ? basePrice.toFixed(2) : '0.00';
     const formattedOldPrice = basePrice != null && !isNaN(basePrice) ? (basePrice * 1.2).toFixed(2) : '0.00'; 
+    const navigate = useNavigate();
 
-    const imageUrl = `${DOMAIN}${product.image}`
-    console.log(imageUrl);
-        
+    const imageUrl = `${DOMAIN}${image}`;
+
+    const handlePersonalize = () => {
+        navigate('/editaloTuMismo', { state: { selectedProduct: product } });
+    };
 
     return (
-        <Card key={id} className="product-card">
-            {/* Image */}
-            <div className="product-image">
-            <RouterLink to='/editaloTuMismo' state={{ selectedProduct: product }}>
+        <Card className="product-card h-full flex flex-col shadow-lg hover:shadow-xl transition-shadow duration-300">
             <CardMedia
-                    component="img"
-                    height="140"
-                    image={`${DOMAIN}${image}`}
-                    alt={name}
-                    className="w-full h-48 object-cover"
-                />
-            </RouterLink>
-            </div>
-            {/* Content */}
-         <CardContent className="p-4 flex flex-col flex-grow">
-                <h3 className="product-name">{name}</h3>
-                {/* Price & Button */}
-                <div className="mt-4 flex items-center justify-between">
-                    <div className="flex items-baseline">
-                        <span className="old-price text-gray-500 line-through mr-2 text-sm">
-                            ${formattedOldPrice} 
-                        </span>
-                        <span className="text-lg font-semibold">${formattedPrice}</span>
+                component="img"
+                image={imageUrl}
+                alt={name}
+                className="w-full h-48 sm:h-56 object-cover cursor-pointer"
+                onClick={handlePersonalize}
+            />
+            <CardContent className="flex-grow flex flex-col justify-between p-4">
+                <div>
+                    <Typography variant="h6" component="h3" className="font-semibold mb-2 text-[#C8151B]">
+                        {name}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary" className="mb-4 line-clamp-2 h-[3em]">
+                        {ingredients && ingredients.length > 0
+                            ? ingredients.map(ingredient => ingredient.name).join(', ')
+                            : "Ingredientes no disponibles"}
+                    </Typography>
+                </div>
+                <div className="mt-auto">
+                    <div className="flex items-baseline justify-between mb-2">
+                        <Typography variant="caption" className="line-through text-gray-500">
+                            ${formattedOldPrice}
+                        </Typography>
+                        <Typography variant="h6" className="font-bold text-[#C8151B]">
+                            ${formattedPrice}
+                        </Typography>
                     </div>
-                    <RouterLink to='/editaloTuMismo' state={{ selectedProduct: product }}>
-                        <button
-                            className={`px-3 py-2 rounded-lg text-white font-semibold transition-colors duration-300 
-                                ${isInCart 
-                                    ? 'bg-red-600 hover:bg-red-700' 
-                                    : 'bg-yellow-500 hover:bg-yellow-600'
-                                }`}
-                        >
-                            {isInCart ? 'En tu carrito' : 'Personalizar'}
-                        </button>
-                    </RouterLink>
-            
+                    <Button
+                        variant="contained"
+                        fullWidth
+                        onClick={handlePersonalize}
+                        style={{ 
+                            backgroundColor: '#FFC603', 
+                            color: 'black',
+                            '&:hover': {
+                                backgroundColor: '#C8151B',
+                                color: 'white'
+                            }
+                        }}
+                    >
+                        Personalizar
+                    </Button>
                 </div>
             </CardContent>
         </Card>

@@ -46,29 +46,24 @@ export const getDrinks = async () => {
 export const getDrinksSelect = async () => {
     try {
         const response = await axios.get(`${API_URL}/api/drinks/select`);
-        return Array.isArray(response.data) ? response.data : [];
+        return response.data.data || []; // Aseguramos que siempre devolvemos un array
     } catch (error) {
         console.error('Error fetching drinks:', error);
-        return []; // Return an empty array if there's an error
+        return []; // Devolvemos un array vacío en caso de error
     }
 };
-export const getSauces = async () => {
-    // Valores predefinidos para las salsas
-    const defaultSauces = [
-        { id: 1, name: 'Mayonesa --> 2500', price: 0.5 },
-        { id: 2, name: 'Ketchup', price: 0.5 },
-        { id: 3, name: 'Mostaza', price: 0.5 },
-        { id: 4, name: 'BBQ', price: 0.75 },
-    ];
-
+export const getSaucesSelect = async () => {
     try {
-        const response = await axios.get(`${API_URL}/api/sauces`);
-        return response.data.data;
+        // Cambia esta URL si es necesario para que coincida con tu backend
+        const response = await axios.get(`${API_URL}/api/sauces/select`);
+        return response.data.data || [];
     } catch (error) {
-        console.warn('API de salsas no disponible, usando valores predefinidos');
-        return defaultSauces;
+        console.error('Error fetching sauces:', error);
+        // Retorna un array vacío en caso de error, pero también podrías manejar esto de otra manera
+        return [];
     }
 };
+
 export const getAdditions = async () => {
     try {
         const response = await axios.get(`${API_URL}/api/additions`);
@@ -77,6 +72,7 @@ export const getAdditions = async () => {
         handleAxiosError(error);
     }
 };
+
 
 export const getProductById = async (id) => {
     try {

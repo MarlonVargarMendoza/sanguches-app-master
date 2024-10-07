@@ -33,7 +33,6 @@ export function ProductsSanguches() {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
-  const [cartOpen, setCartOpen] = useState(false);
 
   const navigate = useNavigate();
   const { cart, addToCart, updateCartItem, removeFromCart } = useCart();
@@ -70,14 +69,13 @@ export function ProductsSanguches() {
   const handleAddToCart = (product) => {
     const existingItem = cart.find((item) => item.id === product.id);
     if (existingItem) {
-      updateCartItem(product.id, existingItem.quantity + 1);
+      updateCartItem(product.id, { quantity: existingItem.quantity + 1 });
     } else {
       addToCart({ ...product, quantity: 1 });
     }
     setSnackbarMessage('¡Producto añadido al carrito!');
     setSnackbarOpen(true);
   };
-
 
   const handleRemoveFromCart = (product) => {
     removeFromCart(product.id);
@@ -112,10 +110,6 @@ export function ProductsSanguches() {
       return;
     }
     setSnackbarOpen(false);
-  };
-
-  const toggleCart = () => {
-    setCartOpen(!cartOpen);
   };
 
   const renderContent = () => {
@@ -157,9 +151,9 @@ export function ProductsSanguches() {
         </div>
       );
     }
-   
+
     return (
-      <ul className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8'>
+      <ul className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6'>
         {products.map((product) => {
           const isProductInCart = checkProductInCart(product);
           const quantity = getCartItemQuantity(product);
@@ -167,7 +161,7 @@ export function ProductsSanguches() {
           return (
             <li
               key={product.id}
-              className="product-card bg-white rounded-lg shadow-lg overflow-hidden transition-transform duration-300 hover:scale-105"
+              className="product-card bg-white rounded-lg shadow-lg overflow-hidden transition-transform duration-300 hover:shadow-xl"
             >
               <div className="relative product-image">
                 <img
@@ -196,22 +190,24 @@ export function ProductsSanguches() {
                       />
                     </IconButton>
                   </Tooltip>
-                 
+                  
                   {quantity > 0 && (
-                  <div className=" bottom-2 right-2 bg-[#FFC603] text-black rounded-full w-6 h-6 flex items-center justify-center">
-                    {quantity}
-                  </div>
-                )}
+                    <div className="bg-[#FFC603] text-black rounded-full w-6 h-6 flex items-center justify-center">
+                      {quantity}
+                    </div>
+                  )}
                 </div>
               </div>
               <div className="p-4 flex flex-col flex-grow">
                 <h3 className="product-name text-lg font-semibold mb-2">{product.name}</h3>
                 <p className="text-gray-600 text-sm mb-4 line-clamp-2">
-                  {product.descrption}
+                  {product.ingredients && product.ingredients.length > 0
+                    ? product.ingredients.map(ingredient => ingredient.name).join(', ')
+                    : "Ingredientes no disponibles"}
                 </p>
                 <div className="mt-auto flex items-center justify-between">
-                  <div className="flex items-baseline">
-                    <span className="text-gray-500 line-through mr-2 text-sm">
+                  <div className="flex flex-col">
+                    <span className="text-gray-500 line-through text-sm">
                       ${(product.basePrice * 1.2).toFixed(2)}
                     </span>
                     <span className="text-[#A4A4A4] font-bold">
