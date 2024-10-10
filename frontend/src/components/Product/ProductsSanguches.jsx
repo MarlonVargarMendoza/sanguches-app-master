@@ -2,27 +2,31 @@ import CloseIcon from '@mui/icons-material/Close';
 import EditIcon from '@mui/icons-material/Edit';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import {
-  Breadcrumbs, Button, Dialog, DialogActions, DialogContent, DialogTitle,
+  Alert, Breadcrumbs, Button, Dialog, DialogActions, DialogContent, DialogTitle,
   Grid, IconButton, Link, Snackbar, Tooltip, Typography
 } from '@mui/material';
 import Slide from '@mui/material/Slide';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import ContentLoader from "react-content-loader";
 import { useNavigate } from 'react-router-dom';
+
 import { useCart } from '../../hooks/useCart.js';
 import { getAllProducts } from '../../services/productService.js';
 import { Filters } from './Filters.jsx';
 import './Products.css';
 import logoSanguches from '/assets/logoSanguches.jpg';
 
-const Transition = React.forwardRef(function Transition(props, ref) {
-  return <Slide direction="up" ref={ref} {...props} />;
-});
-
 const DOMAIN = import.meta.env.VITE_APP_DOMAIN;
 
+const Transition = React.forwardRef((props, ref) => <Slide direction="up" ref={ref} {...props} />);
+
 export function ProductsSanguches() {
+  const navigate = useNavigate();
+  const { addToCart, removeFromCart, updateQuantity, cart } = useCart();
+
+  // Estado
   const [products, setProducts] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -30,55 +34,85 @@ export function ProductsSanguches() {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [isSearching, setIsSearching] = useState(false);
 
-  const navigate = useNavigate();
-  const { cart, addToCart, updateCartItem, removeFromCart } = useCart();
+  // Efectos
+  const fetchProducts = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const data = await getAllProducts(selectedCategory);
+      setProducts(data);
+      setFilteredProducts(data);
+    } catch (error) {
+      setError("Oops! No pudimos cargar los productos. Por favor, intenta de nuevo.");
+    } finally {
+      setIsLoading(false);
+    }
+  }, [selectedCategory]);
 
   useEffect(() => {
-    const fetchProducts = async () => {
-      setIsLoading(true);
-      try {
-        const data = await getAllProducts(selectedCategory);
-        setProducts(data);
-      } catch (error) {
-        setError("Oops! No pudimos cargar los productos. Por favor, intenta de nuevo.");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
     fetchProducts();
-  }, [selectedCategory]);
+  }, [fetchProducts]);
+
+  useEffect(() => {
+    if (searchTerm) {
+      const debounce = setTimeout(() => handleSearch(), 300);
+      return () => clearTimeout(debounce);
+    } else {
+      setFilteredProducts(products);
+    }
+  }, [searchTerm, products]);
+
+  // Funciones de manejo
+  const handleSearch = useCallback(() => {
+    setIsSearching(true);
+    const filtered = products.filter(product =>
+      product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      product.ingredients.some(ingredient =>
+        ingredient.name.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    );
+    setFilteredProducts(filtered);
+    setIsSearching(false);
+  }, [products, searchTerm]);
 
   const handleFilterChange = (newFilters) => {
     setSelectedCategory(newFilters.category);
   };
 
-  const checkProductInCart = (product) => {
-    return cart.some((item) => item.id === product.id);
-  };
-
-  const getCartItemQuantity = (product) => {
-    const cartItem = cart.find((item) => item.id === product.id);
-    return cartItem ? cartItem.quantity : 0;
-  };
-
-  const handleAddToCart = (product) => {
+  const handleAddToCart = useCallback((product) => {
     const existingItem = cart.find((item) => item.id === product.id);
     if (existingItem) {
-      updateCartItem(product.id, { quantity: existingItem.quantity + 1 });
+      updateQuantity(product.id, existingItem.quantity + 1);
     } else {
-      addToCart({ ...product, quantity: 1 });
+      addToCart({
+        ...product,
+        quantity: 1,
+        customizations: {},
+        calculatedPrice: product.basePrice
+      });
     }
     setSnackbarMessage('¡Producto añadido al carrito!');
     setSnackbarOpen(true);
-  };
+    setOpenDialog(false);
+    setSnackbarMessage('¡Producto añadido al carrito!');
 
-  const handleRemoveFromCart = (product) => {
-    removeFromCart(product.id);
+  }, [cart, addToCart, updateQuantity]);
+
+  const handleRemoveFromCart = useCallback((productId) => {
+    removeFromCart(productId);
     setSnackbarMessage('Producto eliminado del carrito');
     setSnackbarOpen(true);
-  };
+  }, [removeFromCart]);
+
+  const handleQuantityChange = useCallback((productId, newQuantity) => {
+    if (newQuantity > 0) {
+      updateQuantity(productId, newQuantity);
+    } else {
+      removeFromCart(productId);
+    }
+  }, [updateQuantity, removeFromCart]);
 
   const handleProductClick = (product) => {
     setSelectedProduct(product);
@@ -103,10 +137,86 @@ export function ProductsSanguches() {
   };
 
   const handleSnackbarClose = (event, reason) => {
-    if (reason === 'clickaway') {
-      return;
-    }
+    if (reason === 'clickaway') return;
     setSnackbarOpen(false);
+  };
+
+  // Funciones de utilidad
+  const checkProductInCart = useCallback((product) => {
+    return cart.some((item) => item.id === product.id);
+  }, [cart]);
+
+  const getCartItemQuantity = useCallback((product) => {
+    const cartItem = cart.find((item) => item.id === product.id);
+    return cartItem ? cartItem.quantity : 0;
+  }, [cart]);
+
+  // Renderizado
+  const renderProductCard = (product) => {
+    const isProductInCart = checkProductInCart(product);
+    const quantity = getCartItemQuantity(product);
+    const imageUrl = `${DOMAIN}${product.image}`;
+
+    return (
+      <li key={product.id} className="product-card bg-white rounded-lg shadow-lg overflow-hidden transition-transform duration-300 hover:shadow-xl hover:-translate-y-1">
+        <div className="relative product-image">
+          <img
+            src={imageUrl}
+            alt={product.name}
+            className="w-full h-48 object-cover cursor-pointer"
+            onClick={() => handleProductClick(product)}
+          />
+          <div className="absolute top-2 right-2 flex items-center space-x-2">
+            <Tooltip title={isProductInCart ? "Quitar del carrito" : "Añadir al carrito"}>
+              <IconButton
+                className="bg-white p-1 rounded-full transition-all duration-300 ease-in-out"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  isProductInCart ? handleRemoveFromCart(product.id) : handleAddToCart(product);
+                }}
+                style={{
+                  filter: isProductInCart ? 'none' : 'grayscale(100%)',
+                  transform: isProductInCart ? 'scale(1.1)' : 'scale(1)',
+                }}
+              >
+                <img src={logoSanguches} alt="Logo" className="w-6 h-6 rounded-full" />
+              </IconButton>
+            </Tooltip>
+            {quantity > 0 && (
+              <div className="bg-[#FFC603] text-black rounded-full w-6 h-6 flex items-center justify-center">
+                {quantity}
+              </div>
+            )}
+          </div>
+        </div>
+        <div className="p-4 flex flex-col flex-grow">
+          <h3 className="product-name text-lg font-semibold mb-2">{product.name}</h3>
+          <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+            {product.ingredients && product.ingredients.length > 0
+              ? product.ingredients.map(ingredient => ingredient.name).join(', ')
+              : "Ingredientes no disponibles"}
+          </p>
+          <div className="mt-auto flex items-center justify-between">
+            <div className="flex flex-col">
+              <span className="text-gray-500 line-through text-sm">
+                ${(product.basePrice * 1.2).toFixed(2)}
+              </span>
+              <span className="text-[#A4A4A4] font-bold">
+                ${product.basePrice.toFixed(2)}
+              </span>
+            </div>
+            <Button
+              variant="contained"
+              style={{ backgroundColor: '#FFC603', color: 'black' }}
+              onClick={() => handleProductClick(product)}
+              startIcon={<ShoppingCartIcon />}
+            >
+              {isProductInCart ? 'Actualizar' : 'AGREGAR'}
+            </Button>
+          </div>
+        </div>
+      </li>
+    );
   };
 
   const renderContent = () => {
@@ -135,102 +245,32 @@ export function ProductsSanguches() {
 
     if (error) {
       return (
-        <div className="text-center py-10">
-          <Typography variant="h6" color="error">{error}</Typography>
-          <Button
-            variant="contained"
-            style={{ backgroundColor: '#DB0E12', color: 'white' }}
-            onClick={() => window.location.reload()}
-            className="mt-4"
-          >
-            Intentar de nuevo
+        <Alert severity="error" className="my-4">
+          {error}
+          <Button color="inherit" size="small" onClick={fetchProducts} className="ml-2">
+            Reintentar
           </Button>
-        </div>
+        </Alert>
+      );
+    }
+
+    if (filteredProducts.length === 0) {
+      return (
+        <Alert severity="info" className="my-4">
+          No se encontraron productos. Intenta con otra búsqueda o categoría.
+        </Alert>
       );
     }
 
     return (
       <ul className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6'>
-        {products.map((product) => {
-          const isProductInCart = checkProductInCart(product);
-          const quantity = getCartItemQuantity(product);
-          const imageUrl = `${DOMAIN}${product.image}`;
-          return (
-            <li
-              key={product.id}
-              className="product-card bg-white rounded-lg shadow-lg overflow-hidden transition-transform duration-300 hover:shadow-xl"
-            >
-              <div className="relative product-image">
-                <img
-                  src={imageUrl}
-                  alt={product.name}
-                  className="w-full h-48 object-cover cursor-pointer"
-                  onClick={() => handleProductClick(product)}
-                />
-                <div className="absolute top-2 right-2 flex items-center space-x-2">
-                  <Tooltip title={isProductInCart ? "Quitar del carrito" : "Añadir al carrito"}>
-                    <IconButton
-                      className="bg-white p-1 rounded-full transition-all duration-300 ease-in-out"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        isProductInCart ? handleRemoveFromCart(product) : handleAddToCart(product);
-                      }}
-                      style={{
-                        filter: isProductInCart ? 'none' : 'grayscale(100%)',
-                        transform: isProductInCart ? 'scale(1.1)' : 'scale(1)',
-                      }}
-                    >
-                      <img
-                        src={logoSanguches}
-                        alt="Logo"
-                        className="w-6 h-6 rounded-full"
-                      />
-                    </IconButton>
-                  </Tooltip>
-                  
-                  {quantity > 0 && (
-                    <div className="bg-[#FFC603] text-black rounded-full w-6 h-6 flex items-center justify-center">
-                      {quantity}
-                    </div>
-                  )}
-                </div>
-              </div>
-              <div className="p-4 flex flex-col flex-grow">
-                <h3 className="product-name text-lg font-semibold mb-2">{product.name}</h3>
-                <p className="text-gray-600 text-sm mb-4 line-clamp-2">
-                  {product.ingredients && product.ingredients.length > 0
-                    ? product.ingredients.map(ingredient => ingredient.name).join(', ')
-                    : "Ingredientes no disponibles"}
-                </p>
-                <div className="mt-auto flex items-center justify-between">
-                  <div className="flex flex-col">
-                    <span className="text-gray-500 line-through text-sm">
-                      ${(product.basePrice * 1.2).toFixed(2)}
-                    </span>
-                    <span className="text-[#A4A4A4] font-bold">
-                      ${product.basePrice.toFixed(2)}
-                    </span>
-                  </div>
-                  <Button
-                    variant="contained"
-                    style={{ backgroundColor: '#FFC603', color: 'black' }}
-                    onClick={() => handleProductClick(product)}
-                    startIcon={<ShoppingCartIcon />}
-                  >
-                    {isProductInCart ? 'Actualizar' : 'AGREGAR'}
-                  </Button>
-                </div>
-              </div>
-            </li>
-          );
-        })}
+        {filteredProducts.map(renderProductCard)}
       </ul>
     );
   };
 
   return (
     <div className='bg-[#F5F5F5] min-h-screen'>
-
       <main className='main-container p-6' style={{ paddingTop: '220px' }}>
         <Breadcrumbs aria-label="breadcrumb" className="mb-6">
           <Link color='inherit' href="/" className="hover:text-[#C3151A]">
@@ -239,7 +279,7 @@ export function ProductsSanguches() {
           <Typography color="text.primary">Menu</Typography>
         </Breadcrumbs>
 
-        <div className='filters-container'>
+        <div className='filters-container mb-6'>
           <Filters
             filters={{ minPrice: 0, category: selectedCategory }}
             onFilterChange={handleFilterChange}
@@ -252,7 +292,7 @@ export function ProductsSanguches() {
           </Grid>
         </Grid>
 
-        <Dialog 
+        <Dialog
           open={openDialog}
           onClose={handleCloseDialog}
           maxWidth="sm"
@@ -267,12 +307,9 @@ export function ProductsSanguches() {
             }
           }}
         >
-          <DialogTitle className='flex justify-center items-center'>
+          <DialogTitle className='flex justify-between items-center'>
             {selectedProduct?.name}
-            <IconButton 
-              onClick={handleCloseDialog} 
-              style={{ position: 'absolute', right: 8, top: 8 }}
-            >
+            <IconButton onClick={handleCloseDialog} aria-label="close">
               <CloseIcon />
             </IconButton>
           </DialogTitle>
@@ -285,6 +322,14 @@ export function ProductsSanguches() {
             <Typography variant="body1" paragraph>
               {selectedProduct?.description}
             </Typography>
+            <Typography variant="subtitle1" className="font-semibold mb-2">
+              Ingredientes:
+            </Typography>
+            <ul className="list-disc pl-5 mb-4">
+              {selectedProduct?.ingredients.map((ingredient, index) => (
+                <li key={index}>{ingredient.name}</li>
+              ))}
+            </ul>
             <Typography variant="h6" style={{ color: '#A4A4A4', fontWeight: 'bold' }}>
               ${selectedProduct?.basePrice.toFixed(2)}
             </Typography>
@@ -296,10 +341,10 @@ export function ProductsSanguches() {
               style={{ backgroundColor: '#FFC603', color: 'black' }}
               startIcon={<ShoppingCartIcon />}
             >
-              Añadir al carrito
+              {checkProductInCart(selectedProduct) ? 'Ya en el carrito' : 'Añadir al carrito'}
             </Button>
             <Button
-              onClick={() => handleCustomize(selectedProduct)}
+              onClick={handleCustomize}
               variant="contained"
               style={{ backgroundColor: '#DB0E12', color: 'white' }}
               startIcon={<EditIcon />}
@@ -312,7 +357,7 @@ export function ProductsSanguches() {
 
       <Snackbar
         anchorOrigin={{
-          vertical: 'bottom',
+          vertical: 'top',
           horizontal: 'center',
         }}
         open={snackbarOpen}
@@ -330,7 +375,6 @@ export function ProductsSanguches() {
           </IconButton>
         }
       />
-
     </div>
   );
 }

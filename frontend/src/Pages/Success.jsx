@@ -50,7 +50,7 @@ const Success = () => {
     if (!orderDetails) return null;
 
     return (
-        <Box className="success-wrapper min-h-screen bg-gradient-to-br from-[#FFC603] to-[#C8151B] flex items-center justify-center p-4 py-[250px] relative overflow-hidden">
+        <Box className="success-wrapper bg-[#D2E6E4] min-h-screen flex items-center justify-center p-4 py-[200px] relative overflow-hidden">
             {/* Logo animado de Sanguches */}
             <motion.div
                 animate={controls}
@@ -83,7 +83,7 @@ const Success = () => {
                         >
                             <BsBagCheckFill className="text-green-500 text-[80px] mx-auto mb-6" />
                         </motion.div>
-                        <Typography variant="h3" className="mb-4 font-bold text-[#C8151B]">
+                        <Typography variant="h3" className="  mb-4 font-black text-[#C8151B]">
                             ¡Gracias por tu pedido!
                         </Typography>
                         <Typography variant="h6" className="mb-8 text-gray-600">

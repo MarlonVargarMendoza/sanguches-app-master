@@ -36,7 +36,7 @@ const Checkout = () => {
     };
 
     return (
-        <Box className="checkout min-h-screen bg-gradient-to-br from-[#FFC603] to-[#C8151B] flex items-center justify-center p-4">
+        <Box className="checkout py-[250px] min-h-screen bg-[#EFEFEF] flex items-center justify-center p-4">
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}

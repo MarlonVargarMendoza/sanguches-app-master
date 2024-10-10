@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Hero } from './components';
+import { Favorites, Hero } from './components';
 import { Productsjson } from './components/Product/Products.jsx';
 import { CartProvider } from './context/cart.jsx';
 import { useFilters } from './hooks/useFilters.js';
@@ -27,7 +27,9 @@ const App = () => {
           <Productsjson products={filteredProducts} />
         </div>
 
-        
+        <div className="bg-primary w-full overflow-hidden">
+          <Favorites />
+        </div>
       </div>
     </CartProvider>
   );

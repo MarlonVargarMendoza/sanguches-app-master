@@ -1,241 +1,160 @@
-import {
-    Add as AddIcon,
-    Close as CloseIcon,
-    Delete as DeleteIcon,
-    Edit as EditIcon,
-    ExpandLess as ExpandLessIcon,
-    ExpandMore as ExpandMoreIcon,
-    Remove as RemoveIcon,
-    ShoppingCart as ShoppingCartIcon
-} from '@mui/icons-material';
+import { Close as CloseIcon, ShoppingCart as ShoppingCartIcon } from '@mui/icons-material';
 import {
     Alert,
-    Badge,
-    Box,
-    Button,
-    Collapse,
-    IconButton,
-    List,
-    ListItem,
-    ListItemText,
-    Snackbar,
-    Typography
+    Badge, Box, Button, Drawer, IconButton, Snackbar, Typography
 } from '@mui/material';
 import { AnimatePresence, motion } from 'framer-motion';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../../hooks/useCart';
 import { useVoucherGenerator } from '../../hooks/useVoucherGenerator';
 import { sendToWhatsApp } from '../../services/notificationService';
+import CartItem from './CartItem';
 
 const CART_WIDTH = 'w-full sm:w-96 md:w-120';
 
 export const PersistentCart = () => {
-    const { cart, updateCartItem, removeFromCart, calculateTotalPrice, calculateItemPrice } = useCart();
-    const generateVoucher = useVoucherGenerator();
-    const [isCartOpen, setIsCartOpen] = useState(false);
-    const [expandedItems, setExpandedItems] = useState({});
-    const [snackbarOpen, setSnackbarOpen] = useState(false);
-    const navigate = useNavigate();
+  const { cart, totalPrice, clearCart, generateVoucher } = useCart();
+  const voucherGenerator = useVoucherGenerator();
+  const navigate = useNavigate();
+  const [isCartOpen, setIsCartOpen] = useState(false);
+  const [snackbarState, setSnackbarState] = useState({ open: false, message: '', severity: 'success' });
+  const [cartAnimation, setCartAnimation] = useState(false);
 
-    const toggleCart = useCallback(() => setIsCartOpen(prev => !prev), []);
+  const toggleCart = useCallback(() => setIsCartOpen(prev => !prev), []);
 
-    const toggleItemExpansion = useCallback((itemId) => {
-        setExpandedItems(prev => ({ ...prev, [itemId]: !prev[itemId] }));
-    }, []);
+  const handleSnackbarMessage = useCallback((message, severity = 'success') => {
+    setSnackbarState({ open: true, message, severity });
+  }, []);
 
-    const handleQuantityChange = useCallback((itemId, newQuantity) => {
-        if (newQuantity > 0) {
-            updateCartItem(itemId, { quantity: newQuantity });
-        } else {
-            removeFromCart(itemId);
-        }
-    }, [updateCartItem, removeFromCart]);
+  const handleSendToWhatsApp = useCallback(() => {
+    const voucherText = voucherGenerator(generateVoucher(), totalPrice);
+    sendToWhatsApp(voucherText);
+    handleSnackbarMessage('¡Pedido enviado a WhatsApp! 🚀 Pronto estaremos en contacto.');
+    setIsCartOpen(false);
+  }, [generateVoucher, totalPrice, voucherGenerator]);
 
-    const handleEditProduct = useCallback((product) => {
-        navigate('/editaloTuMismo', { state: { selectedProduct: product } });
-        setIsCartOpen(false);
-    }, [navigate]);
+  const handleCheckout = useCallback(() => {
+    if (cart.length === 0) {
+      handleSnackbarMessage('Tu carrito está vacío. Añade algunos productos antes de hacer checkout.', 'warning');
+    } else {
+      navigate('/checkout');
+      setIsCartOpen(false);
+    }
+  }, [navigate, cart.length]);
 
-    const handleSendToWhatsApp = useCallback(() => {
-        const voucherText = generateVoucher();
-        sendToWhatsApp(voucherText);
-        setSnackbarOpen(true);
-    }, [generateVoucher]);
-    const handleCheckout = useCallback(() => {
-        navigate('/checkout');
-        setIsCartOpen(false);
-    }, [navigate]);
-    const renderCustomizations = (item) => {
-        if (!item.customizations) return null;
+  useEffect(() => {
+    if (cart.length > 0) {
+      setCartAnimation(true);
+      const timer = setTimeout(() => setCartAnimation(false), 300);
+      return () => clearTimeout(timer);
+    }
+  }, [cart]);
 
-        return (
-            <>
-                <Button
-                    onClick={() => toggleItemExpansion(item.id)}
-                    endIcon={expandedItems[item.id] ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-                    fullWidth
-                    className="mt-2 justify-start text-[#C8151B] hover:bg-[#FFC603]/10"
-                >
-                    {expandedItems[item.id] ? 'Ver menos' : 'Ver personalizaciones'}
-                </Button>
-                <Collapse in={expandedItems[item.id]}>
-                    <List dense>
-                        {item.customizations.additions?.length > 0 && (
-                            <ListItem>
-                                <ListItemText
-                                    primary="Adiciones"
-                                    secondary={item.customizations.additions.join(', ')}
-                                />
-                            </ListItem>
-                        )}
-                        {item.customizations.drinks?.length > 0 && (
-                            <ListItem>
-                                <ListItemText
-                                    primary="Bebidas"
-                                    secondary={item.customizations.drinks.map(drink =>
-                                        `${drink.name} (${drink.price ? `$${drink.price.toFixed(2)}` : 'N/A'})`
-                                    ).join(', ')}
-                                />
-                            </ListItem>
-                        )}
-                        {item.customizations.sauces?.length > 0 && (
-                            <ListItem>
-                                <ListItemText
-                                    primary="Salsas"
-                                    secondary={item.customizations.sauces.join(', ')}
-                                />
-                            </ListItem>
-                        )}
-                    </List>
-                </Collapse>
-            </>
-        );
-    };
+  return (
+    <>
+      <motion.div 
+        whileHover={{ scale: 1.1 }} 
+        whileTap={{ scale: 0.9 }}
+        animate={cartAnimation ? { scale: [1, 1.2, 1] } : {}}
+      >
+        <IconButton onClick={toggleCart} className="ml-auto mr-4" style={{ color: 'white' }}>
+          <Badge badgeContent={cart.length} color="error">
+            <ShoppingCartIcon />
+          </Badge>
+        </IconButton>
+      </motion.div>
 
-    const renderCartItem = (item) => (
-        <motion.li
-            key={item.id}
-            layout
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="mb-4 pb-4 border-b"
-        >
-            <Box className="flex items-center w-full">
-                <img src={item.image} alt={item.name} className="w-16 h-16 object-cover rounded-md mr-4" />
-                <Box className="flex-grow">
-                    <Typography variant="subtitle1" className="font-bold text-[#C8151B]">
-                        {item.name}
-                    </Typography>
-                    <Box className="flex justify-between items-center mt-2">
-                        <Box className="flex items-center border rounded-md overflow-hidden">
-                            <IconButton onClick={() => handleQuantityChange(item.id, item.quantity - 1)} size="small" className="text-[#C8151B]">
-                                <RemoveIcon />
-                            </IconButton>
-                            <Typography className="mx-2 font-bold">{item.quantity}</Typography>
-                            <IconButton onClick={() => handleQuantityChange(item.id, item.quantity + 1)} size="small" className="text-[#C8151B]">
-                                <AddIcon />
-                            </IconButton>
-                        </Box>
-                        <Typography variant="subtitle1" className="font-bold text-[#C8151B]">
-                            ${calculateItemPrice(item).toFixed(2)}
-                        </Typography>
-                    </Box>
-                    {renderCustomizations(item)}
-                </Box>
-                <Box className="flex flex-col ml-2">
-                    <IconButton onClick={() => handleEditProduct(item)} size="small" className="text-[#FFC603]">
-                        <EditIcon />
-                    </IconButton>
-                    <IconButton onClick={() => removeFromCart(item.id)} size="small" className="text-[#C8151B]">
-                        <DeleteIcon />
-                    </IconButton>
-                </Box>
-            </Box>
-        </motion.li>
-    );
+      <Drawer
+        anchor="right"
+        open={isCartOpen}
+        onClose={toggleCart}
+        classes={{ paper: CART_WIDTH }}
+      >
+        <Box className="h-full flex flex-col">
+          <Box className="flex justify-between items-center p-4 border-b bg-[#FFC603]">
+            <Typography variant="h6" className="font-bold text-white">Carrito Sanguches</Typography>
+            <IconButton onClick={toggleCart} className="text-white">
+              <CloseIcon />
+            </IconButton>
+          </Box>
 
-    return (
-        <>
-            <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-                <IconButton onClick={toggleCart} className="ml-auto mr-4" style={{ color: 'white' }}>
-                    <Badge badgeContent={cart.length} color="error">
-                        <ShoppingCartIcon />
-                    </Badge>
-                </IconButton>
-            </motion.div>
-
+          <Box className="flex-grow overflow-y-auto p-4">
             <AnimatePresence>
-                {isCartOpen && (
-                    <motion.div
-                        initial={{ x: '100%' }}
-                        animate={{ x: 0 }}
-                        exit={{ x: '100%' }}
-                        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                        className={`fixed top-0 right-0 h-full ${CART_WIDTH} bg-white shadow-lg z-50`}
-                    >
-                        <Box className='flex justify-between items-center p-4 border-b bg-[#FFC603]'>
-                            <Typography variant="h6" className="font-bold text-white">
-                                Carrito Sanguches
-                            </Typography>
-                            <IconButton onClick={toggleCart} className="text-white">
-                                <CloseIcon />
-                            </IconButton>
-                        </Box>
-
-                        <Box className='overflow-y-auto h-[calc(100%-200px)] p-4'>
-                            {cart.length === 0 ? (
-                                <Box className="empty-cart p-4 text-center">
-                                    <Typography variant="body1" className="text-gray-500">
-                                        Tu carrito está vacío.
-                                    </Typography>
-                                </Box>
-                            ) : (
-                                <motion.ul layout>
-                                    <AnimatePresence>
-                                        {cart.map(renderCartItem)}
-                                    </AnimatePresence>
-                                </motion.ul>
-                            )}
-                        </Box>
-
-                        <Box className="absolute bottom-0 left-0 right-0 p-4 bg-[#FFF9C4]">
-                            <Box className="flex justify-between mb-2">
-                                <Typography variant="subtitle1">Total</Typography>
-                                <Typography variant="subtitle1" className="font-bold text-[#C8151B]">
-                                    ${calculateTotalPrice().toFixed(2)}
-                                </Typography>
-                            </Box>
-                            <Typography variant="caption" className="mb-4 block text-gray-600">
-                                Tasas y fletes calculados en el carrito
-                            </Typography>
-                            <Button
-                                variant="contained"
-                                fullWidth
-                                onClick={handleCheckout}
-                                disabled={cart.length === 0}
-                                className="bg-[#FFC603] hover:bg-[#C8151B] text-white font-bold py-3 rounded-full transition-all duration-300 transform hover:scale-105"
-                            >
-                                IR A CHECKOUT
-                            </Button>
-                        </Box>
-                    </motion.div>
-                )}
+              {cart.length === 0 ? (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="empty-cart p-4 text-center"
+                >
+                  <Typography variant="body1" className="text-gray-500 mb-4">
+                    Tu carrito está vacío.
+                  </Typography>
+                  <Button
+                    variant="contained"
+                    onClick={toggleCart}
+                    className="bg-[#FFC603] hover:bg-[#C8151B] text-white"
+                  >
+                    Continuar comprando
+                  </Button>
+                </motion.div>
+              ) : (
+                cart.map(item => (
+                  <CartItem
+                    key={item.id}
+                    item={item}
+                    onSnackbarMessage={handleSnackbarMessage}
+                  />
+                ))
+              )}
             </AnimatePresence>
+          </Box>
 
-            <Snackbar
-                open={snackbarOpen}
-                autoHideDuration={6000}
-                onClose={() => setSnackbarOpen(false)}
-                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-            >
-                <Alert onClose={() => setSnackbarOpen(false)} severity="success" sx={{ width: '100%' }}>
-                    ¡Pedido enviado a WhatsApp! 🚀 Pronto estaremos en contacto.
-                </Alert>
-            </Snackbar>
-        </>
-    );
+          {cart.length > 0 && (
+            <Box className="p-4 bg-[#FFF9C4]">
+              <Box className="flex justify-between mb-2">
+                <Typography variant="subtitle1">Total</Typography>
+                <Typography variant="subtitle1" className="font-bold text-[#C8151B]">
+                  ${totalPrice.toFixed(2)}
+                </Typography>
+              </Box>
+              <Typography variant="caption" className="mb-4 block text-gray-600">
+                Tasas y fletes calculados en el checkout
+              </Typography>
+              <Button
+                variant="contained"
+                fullWidth
+                onClick={handleCheckout}
+                className="bg-[#FFC603] hover:bg-[#C8151B] text-white font-bold py-3 rounded-full transition-all duration-300 transform hover:scale-105 mb-2"
+              >
+                IR A CHECKOUT
+              </Button>
+              <Button
+                variant="outlined"
+                fullWidth
+                onClick={handleSendToWhatsApp}
+                className="border-[#C8151B] text-[#C8151B] hover:bg-[#C8151B] hover:text-white font-bold py-2 rounded-full transition-all duration-300"
+              >
+                PEDIR POR WHATSAPP
+              </Button>
+            </Box>
+          )}
+        </Box>
+      </Drawer>
+
+      <Snackbar
+        open={snackbarState.open}
+        autoHideDuration={3000}
+        onClose={() => setSnackbarState(prev => ({ ...prev, open: false }))}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert onClose={() => setSnackbarState(prev => ({ ...prev, open: false }))} severity={snackbarState.severity} sx={{ width: '100%' }}>
+          {snackbarState.message}
+        </Alert>
+      </Snackbar>
+    </>
+  );
 };
 
 export default PersistentCart;
