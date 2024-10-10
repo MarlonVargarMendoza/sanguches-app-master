@@ -1,4 +1,4 @@
-// src/hooks/useVoucherGenerator.js
+// useVoucherGenerator.js
 import { useCallback } from 'react';
 import { useCart } from './useCart';
 
@@ -19,17 +19,17 @@ export const useVoucherGenerator = () => {
                 if (item.customizations.additions?.length > 0) {
                     voucherText += "   Adiciones:\n";
                     item.customizations.additions.forEach(addition => {
-                        voucherText += `     - ${addition || 'Sin nombre'}\n`;
+                        voucherText += `     - ${addition.text || addition.name}: $${addition.price.toFixed(2)}\n`;
                     });
                 }
                 if (item.customizations.drinks?.length > 0) {
                     voucherText += "   Bebidas:\n";
                     item.customizations.drinks.forEach(drink => {
-                        voucherText += `     - ${drink.name || 'Sin nombre'}: $${drink.price ? drink.price.toFixed(2) : 'N/A'}\n`;
+                        voucherText += `     - ${drink.text || drink.name}: $${drink.price.toFixed(2)}\n`;
                     });
                 }
                 if (item.customizations.sauces?.length > 0) {
-                    voucherText += `   Salsas: ${item.customizations.sauces.join(', ')}\n`;
+                    voucherText += `   Salsas: ${item.customizations.sauces.map(sauce => sauce.text || sauce.name).join(', ')}\n`;
                 }
             }
             voucherText += '\n';

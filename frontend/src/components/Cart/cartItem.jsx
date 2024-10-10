@@ -55,7 +55,7 @@ const CartItem = memo(({ item, onSnackbarMessage }) => {
           <ListItemText
             primary="Adiciones"
             secondary={item.customizations.additions.map(addition => 
-              `${addition.name} (+$${addition.price.toFixed(2)})`
+              `${addition.text || addition.name} (+$${addition.price.toFixed(2)})`
             ).join(', ')}
           />
         </ListItem>
@@ -64,7 +64,9 @@ const CartItem = memo(({ item, onSnackbarMessage }) => {
         <ListItem>
           <ListItemText
             primary="Salsas"
-            secondary={item.customizations.sauces.join(', ')}
+            secondary={item.customizations.sauces.map(sauce => 
+              sauce.text || sauce.name
+            ).join(', ')}
           />
         </ListItem>
       )}
@@ -73,7 +75,7 @@ const CartItem = memo(({ item, onSnackbarMessage }) => {
           <ListItemText
             primary="Bebidas"
             secondary={item.customizations.drinks.map(drink => 
-              `${drink.name} (+$${drink.price.toFixed(2)})`
+              `${drink.text || drink.name} (+$${drink.price.toFixed(2)})`
             ).join(', ')}
           />
         </ListItem>
@@ -147,6 +149,7 @@ const CartItem = memo(({ item, onSnackbarMessage }) => {
             <Divider />
             <Button
               onClick={toggleExpanded}
+              color='secondary'
               fullWidth
               endIcon={expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
               className="justify-between py-2 px-4 bg-[#FFC603] text-white hover:bg-[#e6b200] transition-colors duration-300"

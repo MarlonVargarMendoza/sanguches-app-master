@@ -5,7 +5,7 @@ import MenuBookIcon from '@mui/icons-material/MenuBook';
 import { AppBar, IconButton, Toolbar } from '@mui/material';
 import { motion } from 'framer-motion';
 import React, { useCallback, useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import PersistentCart from '../../Cart/PersistentCart';
 import logo from '/assets/logo.svg';
 
@@ -123,8 +123,23 @@ const MobileNavMenu = ({ isOpen, toggleMenu }) => (
   </>
 );
 
-const Submenu = () => (
-  <motion.div
+
+const Submenu = () => {
+  const navigate = useNavigate();
+
+  const handleCategoryClick = (category) => {
+    if (category === 'all') {
+      navigate('/menuSanguches');
+    } else if (Array.isArray(category)) {
+      const categoryString = category.join(',');
+      navigate(`/menuSanguches?categories=${categoryString}`);
+    } else {
+      navigate(`/menuSanguches?category=${category}`);
+    }
+  };
+
+  return (
+    <motion.div
     className="bg-white shadow-lg"
     initial={{ opacity: 0, y: -20 }}
     animate={{ opacity: 1, y: 0 }}
@@ -133,19 +148,23 @@ const Submenu = () => (
     <div className="container mx-auto px-4 py-3 flex justify-between items-center">
       <nav>
         <ul className="flex space-x-6">
-          {['DESAYUNOS', 'SANGUCHES', 'ANTOJOS'].map((item, index) => (
+          {[
+            { name: 'DESAYUNOS', category: '9' },
+            { name: 'SANGUCHES', category: 'all' },
+            { name: 'ANTOJOS', category: ['10', '11', '12', '13', '14'] }
+          ].map((item) => (
             <motion.li
-              key={item}
+              key={item.name}
               className="relative"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              <Link
-                to={item === 'SANGUCHES' ? '/menuSanguches' : '#'}
+              <button
+                onClick={() => handleCategoryClick(item.category)}
                 className="text-lg font-bold text-gray-800 hover:text-[#C8151B] transition-colors duration-300"
               >
-                {item}
-              </Link>
+                {item.name}
+              </button>
               <motion.div
                 className="absolute bottom-0 left-0 w-full h-0.5 bg-[#FFC603]"
                 initial={{ scaleX: 0 }}
@@ -157,16 +176,16 @@ const Submenu = () => (
         </ul>
       </nav>
       <motion.div
-        className="flex items-center text-gray-600"
-        whileHover={{ scale: 1.05 }}
-      >
-        <AvTimerIcon className="mr-2 text-[#C8151B]" />
-        <span className="text-sm font-medium">Entrega en 45 min</span>
-      </motion.div>
+          className="flex items-center text-gray-600"
+          whileHover={{ scale: 1.05 }}
+        >
+          <AvTimerIcon className="mr-2 text-[#C8151B]" />
+          <span className="text-sm font-medium">Entrega en 45 min</span>
+        </motion.div>
     </div>
   </motion.div>
 );
-
+};
 
 // Main Navbar component
 export const Navbar = () => {

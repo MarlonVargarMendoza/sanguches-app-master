@@ -27,13 +27,11 @@ export const cartReducer = (state = initialState, action) => {
         ...state,
         items: state.items.filter(item => item.id !== action.payload)
       };
-    case 'UPDATE_ITEM':
+      case 'UPDATE_ITEM':
       return {
         ...state,
         items: state.items.map(item =>
-          item.id === action.payload.id
-            ? { ...item, ...action.payload.updates }
-            : item
+          item.id === action.payload.id ? { ...item, ...action.payload.updates } : item
         )
       };
     case 'CLEAR_CART':

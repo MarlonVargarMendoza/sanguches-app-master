@@ -24,6 +24,27 @@ export const getProducts = async () => {
         }
     }
 };
+export const getProductsByCategory = async (categoryId) => {
+    try {
+        const response = await axios.get(`${API_URL}/api/products/${categoryId}`);
+        return response.data.data;
+    } catch (error) {
+        handleAxiosError(error);
+    }
+};
+
+export const getProductsByCategories = async (categories) => {
+    try {
+        if (categories.includes('all')) {
+            return getAllProducts();
+        }
+        const promises = categories.map(category => getProductsByCategory(category));
+        const results = await Promise.all(promises);
+        return results.flat();
+    } catch (error) {
+        handleAxiosError(error);
+    }
+};
 export const getAllProducts = async (categoryId = 'all') => {
     try {
         const url = categoryId === 'all'

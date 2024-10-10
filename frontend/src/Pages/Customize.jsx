@@ -30,8 +30,8 @@ const sectionLabels = {
 function Customize() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { addToCart } = useCart();
-  const { selectedProduct } = location.state || {};
+  const { addToCart, updateCartItem  } = useCart();
+  const { selectedProduct, isEditing } = location.state || {};
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -109,6 +109,7 @@ function Customize() {
 
   const handleAddToCart = useCallback(() => {
     if (!selectedProduct) return;
+
     const customizedProduct = {
       ...selectedProduct,
       customizations: {
@@ -128,9 +129,16 @@ function Customize() {
       quantity,
       calculatedPrice: calculatePrice(),
     };
-    addToCart(customizedProduct);
+
+    if (isEditing) {
+      updateCartItem(selectedProduct.id, customizedProduct);
+    } else {
+      addToCart(customizedProduct);
+    }
+
     setSnackbarOpen(true);
-  }, [selectedProduct, additions, sauces, drinks, selectedAdditions, selectedSauces, selectedDrinks, quantity, calculatePrice, addToCart]);
+    navigate(-1); // Volver a la página anterior
+  }, [selectedProduct, additions, sauces, drinks, selectedAdditions, selectedSauces, selectedDrinks, quantity, calculatePrice, isEditing, updateCartItem, addToCart, navigate]);
 
   const renderSelectionDialog = useCallback((type, items, selected, onClose) => (
     <Dialog open={dialogOpen[type]} onClose={onClose} fullWidth maxWidth="sm" key={`dialog-${type}`}>

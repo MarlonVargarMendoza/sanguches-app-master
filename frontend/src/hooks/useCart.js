@@ -26,8 +26,8 @@ export const useCart = () => {
     setTotalPrice(calculateTotalPrice());
   }, [state.items, calculateTotalPrice]);
 
-  const updateCartItem = useCallback((itemId, updates) => {
-    dispatch({ type: 'UPDATE_ITEM', payload: { id: itemId, updates } });
+  const updateCartItem = useCallback((itemId, updatedItem) => {
+    dispatch({ type: 'UPDATE_ITEM', payload: { id: itemId, updates:updatedItem } });
   }, [dispatch]);
 
   const removeFromCart = useCallback((itemId) => {
@@ -60,6 +60,7 @@ export const useCart = () => {
     clearCart,
     calculateItemPrice,
     calculateTotalPrice,
+    updateCartItem,
     generateVoucher
   };
 };

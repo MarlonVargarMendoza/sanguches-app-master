@@ -8,10 +8,10 @@ import {
 import Slide from '@mui/material/Slide';
 import React, { useCallback, useEffect, useState } from 'react';
 import ContentLoader from "react-content-loader";
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import { useCart } from '../../hooks/useCart.js';
-import { getAllProducts } from '../../services/productService.js';
+import { getProductsByCategories } from '../../services/productService.js';
 import { Filters } from './Filters.jsx';
 import './Products.css';
 import logoSanguches from '/assets/logoSanguches.jpg';
@@ -22,64 +22,78 @@ const Transition = React.forwardRef((props, ref) => <Slide direction="up" ref={r
 
 export function ProductsSanguches() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { addToCart, removeFromCart, updateQuantity, cart } = useCart();
+  const queryParams = new URLSearchParams(location.search);
+  const initialCategory = queryParams.get('category') || 'all';
+  const initialCategories = queryParams.get('categories')?.split(',') || [];
 
   // Estado
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [selectedCategory, setSelectedCategory] = useState(initialCategory);
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
-  const [searchTerm, setSearchTerm] = useState('');
-  const [isSearching, setIsSearching] = useState(false);
+  const [selectedCategories, setSelectedCategories] = useState(
+    initialCategories.length > 0 ? initialCategories : [initialCategory]
+  );
 
   // Efectos
   const fetchProducts = useCallback(async () => {
     setIsLoading(true);
+    setError(null);
     try {
-      const data = await getAllProducts(selectedCategory);
+      const data = await getProductsByCategories(selectedCategories);
       setProducts(data);
       setFilteredProducts(data);
     } catch (error) {
+      console.error('Error fetching products:', error);
       setError("Oops! No pudimos cargar los productos. Por favor, intenta de nuevo.");
     } finally {
       setIsLoading(false);
     }
-  }, [selectedCategory]);
+  }, [selectedCategories]);
 
   useEffect(() => {
     fetchProducts();
   }, [fetchProducts]);
 
   useEffect(() => {
-    if (searchTerm) {
-      const debounce = setTimeout(() => handleSearch(), 300);
-      return () => clearTimeout(debounce);
+    const category = queryParams.get('category');
+    const categories = queryParams.get('categories')?.split(',');
+    if (categories && categories.length > 0) {
+      setSelectedCategories(categories);
+    } else if (category) {
+      setSelectedCategories([category]);
     } else {
-      setFilteredProducts(products);
+      setSelectedCategories(['all']);
     }
-  }, [searchTerm, products]);
-
-  // Funciones de manejo
-  const handleSearch = useCallback(() => {
-    setIsSearching(true);
-    const filtered = products.filter(product =>
-      product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.ingredients.some(ingredient =>
-        ingredient.name.toLowerCase().includes(searchTerm.toLowerCase())
-      )
-    );
-    setFilteredProducts(filtered);
-    setIsSearching(false);
-  }, [products, searchTerm]);
-
-  const handleFilterChange = (newFilters) => {
-    setSelectedCategory(newFilters.category);
-  };
+  }, [location.search]);
+  //manejo de categorias en el menu de filtros  submenu ()
+  useEffect(() => {
+    const category = queryParams.get('category');
+    const categories = queryParams.get('categories')?.split(',');
+    if (categories && categories.length > 0) {
+      setSelectedCategories(categories);
+    } else if (category) {
+      setSelectedCategories([category]);
+    } else {
+      setSelectedCategories(['all']);
+    }
+  }, [location.search]);
+  const handleFilterChange = useCallback((newFilters) => {
+    const newCategory = newFilters.category;
+    setSelectedCategories([newCategory]);
+    if (newCategory === 'all') {
+      navigate('/menuSanguches');
+    } else {
+      navigate(`/menuSanguches?category=${newCategory}`);
+    }
+  }, [navigate]);
 
   const handleAddToCart = useCallback((product) => {
     const existingItem = cart.find((item) => item.id === product.id);
@@ -125,15 +139,21 @@ export function ProductsSanguches() {
   };
 
   const handleCustomize = () => {
-    navigate('/editaloTuMismo', {
-      state: {
-        selectedProduct: {
-          ...selectedProduct,
-          basePrice: selectedProduct.basePrice || 0,
+    if (selectedProduct) {
+      const existingCartItem = cart.find(item => item.id === selectedProduct.id);
+      navigate('/editaloTuMismo', {
+        state: {
+          selectedProduct: existingCartItem || {
+            ...selectedProduct,
+            basePrice: selectedProduct.basePrice || 0,
+            quantity: 1,
+            customizations: {}
+          },
+          isEditing: !!existingCartItem
         }
-      }
-    });
-    handleCloseDialog();
+      });
+      handleCloseDialog();
+    }
   };
 
   const handleSnackbarClose = (event, reason) => {
@@ -143,7 +163,7 @@ export function ProductsSanguches() {
 
   // Funciones de utilidad
   const checkProductInCart = useCallback((product) => {
-    return cart.some((item) => item.id === product.id);
+    return product && cart.some((item) => item.id === product.id);
   }, [cart]);
 
   const getCartItemQuantity = useCallback((product) => {
@@ -281,7 +301,7 @@ export function ProductsSanguches() {
 
         <div className='filters-container mb-6'>
           <Filters
-            filters={{ minPrice: 0, category: selectedCategory }}
+            filters={{ minPrice: 0, category: selectedCategories[0] }}
             onFilterChange={handleFilterChange}
           />
         </div>
