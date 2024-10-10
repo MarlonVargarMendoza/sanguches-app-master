@@ -1,24 +1,53 @@
 .filters {
     display: flex;
-    flex-direction: column; /* Columna por defecto para todos los dispositivos */
-    align-items: flex-start;
+    flex-direction: column;
+    align-items: stretch;
     justify-content: space-between;
     font-size: 14px;
     font-weight: 700;
     gap: 1rem;
-    margin-bottom: 1rem; /* Agregar margen inferior para evitar superposición */
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
-
 
 @media (min-width: 640px) {
     .filters {
-        flex-direction: row; /* Fila en dispositivos medianos en adelante */
+        flex-direction: row;
         align-items: center;
     }
 }
 
-.filters>div {
+.filters > div {
+    flex: 1;
+    min-width: 0;
+}
+
+.filter-item {
     display: flex;
-    gap: 1rem;
-    width: 100%; /* Mantener ancho completo para cada div en dispositivos pequeños */
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.MuiSlider-root {
+    color: #FFC603;
+}
+
+.MuiSlider-thumb {
+    &:hover, &.Mui-focusVisible {
+        box-shadow: 0px 0px 0px 8px rgba(255, 198, 3, 0.16);
+    }
+    &.Mui-active {
+        box-shadow: 0px 0px 0px 14px rgba(255, 198, 3, 0.16);
+    }
+}
+
+.MuiSelect-select {
+    padding: 10px;
+}
+
+.MuiFormControl-root {
+    width: 100%;
 }

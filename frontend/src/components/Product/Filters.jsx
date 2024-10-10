@@ -1,24 +1,17 @@
-import { Slider } from '@mui/material';
+import { Box, FormControl, InputLabel, MenuItem, Select, Slider, Typography } from '@mui/material';
+import { alpha } from '@mui/material/styles';
+import { motion } from 'framer-motion';
 import React from 'react';
 
-import { alpha } from '@mui/material/styles';
-import { useId } from 'react';
-
 export function Filters({ filters = { minPrice: 0, category: 'all' }, onFilterChange }) {
-
-    const minPriceFilterId = useId();
-    const categoryFilterId = useId();
-    // Función para cambiar el rango de precios
-    const handleChangeMinPrice = (event) => {
-        onFilterChange({ ...filters, minPrice: Number(event.target.value) });
+    const handleChangeMinPrice = (event, newValue) => {
+        onFilterChange({ ...filters, minPrice: Number(newValue) });
     };
 
     const handleChangeCategory = (event) => {
         onFilterChange({ ...filters, category: event.target.value });
     };
-    const handleCategoryClick = (categoryId) => {
-        onFilterChange({ ...filters, category: categoryId });
-    };
+
     const categorias = [
         { id: 'all', nombre: 'Todas' },
         { id: 7, nombre: 'Tradicional' },
@@ -32,16 +25,19 @@ export function Filters({ filters = { minPrice: 0, category: 'all' }, onFilterCh
     ];
 
     return (
-        <section className='filters flex flex-col sm:flex-row w-full sm:w-3/4 lg:w-1/2 mx-auto mb-6 gap-4 px-4'>
-
-            <div className='filter-item flex-1'>{/* filtro de precio */}
-                <label htmlFor={minPriceFilterId} className='block text-gray-700 font-semibold mb-2'>
+        <motion.section 
+            className='filters flex flex-col sm:flex-row w-full sm:w-3/4 lg:w-1/2 mx-auto mb-6 gap-4 px-4'
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+        >
+            <Box className='filter-item flex-1'>
+                <Typography variant="subtitle1" className='text-gray-700 font-semibold mb-2'>
                     Precio a partir de:
-                </label>
+                </Typography>
                 <Slider
                     value={filters.minPrice}
                     onChange={handleChangeMinPrice}
-                    aria-labelledby={minPriceFilterId}
                     valueLabelDisplay="auto"
                     step={1000}
                     marks
@@ -59,28 +55,28 @@ export function Filters({ filters = { minPrice: 0, category: 'all' }, onFilterCh
                         },
                     }}
                 />
-                <span className='block text-gray-700 mt-2'>${filters.minPrice}</span>
-            </div>
+                <Typography variant="body2" className='text-gray-700 mt-2'>
+                    ${filters.minPrice}
+                </Typography>
+            </Box>
 
-            <div className='filter-item flex-1'>
-                <label htmlFor={categoryFilterId} className='block text-gray-700 font-semibold mb-2'>
-                    Categoría:
-                </label>
-
-                <select
-                    id={categoryFilterId}
-                    /*  onClick={(e) => handleCategoryClick(e.target.value)} // onClick en lugar de onChange */
-                    onChange={handleChangeCategory}
+            <FormControl className='filter-item flex-1'>
+                <InputLabel id="category-select-label">Categoría</InputLabel>
+                <Select
+                    labelId="category-select-label"
                     value={filters.category}
-                    className='w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 bg-white text-sm text-gray-900'
+                    onChange={handleChangeCategory}
+                    label="Categoría"
                 >
                     {categorias.map(categoria => (
-                        <option key={categoria.id} value={categoria.id}>
+                        <MenuItem key={categoria.id} value={categoria.id}>
                             {categoria.nombre}
-                        </option>
+                        </MenuItem>
                     ))}
-                </select>
-            </div>
-        </section>
+                </Select>
+            </FormControl>
+        </motion.section>
     );
 }
+
+export default Filters;

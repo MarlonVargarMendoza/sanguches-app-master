@@ -1,7 +1,13 @@
+import { AnimatePresence, motion } from 'framer-motion';
 import React, { lazy, Suspense } from 'react';
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes, useLocation } from 'react-router-dom';
+import Footer from '../components/Layout/Footer.jsx';
+import Navbar from '../components/Layout/Navbar/Navbar.jsx';
+import { CartProvider } from '../context/cart.jsx';
+import { FiltersProvider } from '../context/filters.jsx';
 import './loader.css';
 
+// Lazy-loaded components
 const HomePage = lazy(() => import('../App'));
 const CustomizeSandwiches = lazy(() => import('../Pages/Customize.jsx'));
 const Menu = lazy(() => import('../components/Product/ProductsSanguches.jsx'));
@@ -9,26 +15,81 @@ const Local = lazy(() => import('../Pages/Local.jsx'));
 const Success = lazy(() => import('../Pages/Success.jsx'));
 const Checkout = lazy(() => import('../Pages/Checkout.jsx'));
 
-import { CartProvider } from '../context/cart.jsx';
-import { FiltersProvider } from '../context/filters.jsx';
+// Enhanced loader component
+const Loader = () => (
+  <div className="loader-container">
+    <div className="loader">
+      <div className="justify-content-center jimu-primary-loading"></div>
+    </div>
+    <h2 className="loader-text">Cargando deliciosos sanguches...</h2>
+  </div>
+);
+
+// Layout component
+const Layout = ({ children }) => (
+  <div className="flex flex-col min-h-screen">
+    <Navbar />
+    <main className="flex-grow">
+      {children}
+    </main>
+    <Footer />
+  </div>
+);
+
+// Page transition variants
+const pageVariants = {
+  initial: { opacity: 0, y: 20 },
+  in: { opacity: 1, y: 0 },
+  out: { opacity: 0, y: -20 }
+};
+
+const pageTransition = {
+  type: 'tween',
+  ease: 'anticipate',
+  duration: 0.5
+};
 
 export const AppRoute = () => {
+  const location = useLocation();
+
   return (
     <FiltersProvider>
       <CartProvider>
-        <Suspense fallback={<div className="loader">
-          <div className="justify-content-center jimu-primary-loading"></div>
-        </div>}>
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path='/editaloTuMismo' element={<CustomizeSandwiches />} />
-            <Route path='/menuSanguches' element={<Menu />} />
-            <Route path='/local' element={<Local />} />
-            <Route path='/success' element={<Success />} />
-            <Route path='/checkout' element={<Checkout />} />
-          </Routes>
-        </Suspense>
+        <Layout>
+          <AnimatePresence mode="wait">
+            <Suspense fallback={<Loader />}>
+              <Routes location={location} key={location.pathname}>
+                {[
+                  { path: "/", element: <HomePage /> },
+                  { path: "/editaloTuMismo", element: <CustomizeSandwiches /> },
+                  { path: "/menuSanguches", element: <Menu /> },
+                  { path: "/local", element: <Local /> },
+                  { path: "/success", element: <Success /> },
+                  { path: "/checkout", element: <Checkout /> }
+                ].map(({ path, element }) => (
+                  <Route
+                    key={path}
+                    path={path}
+                    element={
+                      <motion.div
+                        initial="initial"
+                        animate="in"
+                        exit="out"
+                        variants={pageVariants}
+                        transition={pageTransition}
+                      >
+                        {element}
+                      </motion.div>
+                    }
+                  />
+                ))}
+              </Routes>
+            </Suspense>
+          </AnimatePresence>
+        </Layout>
       </CartProvider>
     </FiltersProvider>
   );
 };
+
+export default AppRoute;

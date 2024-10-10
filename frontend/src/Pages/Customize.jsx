@@ -11,16 +11,14 @@ import {
   Dialog, DialogActions, DialogContent, DialogTitle, Grid, IconButton,
   List, ListItem, ListItemText, Snackbar, Tooltip, Typography
 } from '@mui/material';
+import { motion } from 'framer-motion';
 import React, { useCallback, useEffect, useState } from 'react';
 import { SideBySideMagnifier } from "react-image-magnifiers";
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 
-import Footer from '../components/Layout/Footer';
-import { Navbar } from '../components/Navbar/Navbar';
 import ProductCard from '../components/Product/ProductCard';
 import { useCart } from '../hooks/useCart';
 import { getAdditions, getAllProducts, getDrinksSelect, getSaucesSelect } from '../services/productService';
-import styles from '../style';
 
 const DOMAIN = import.meta.env.VITE_APP_DOMAIN;
 const sectionLabels = {
@@ -68,11 +66,9 @@ function Customize() {
         setSauces(saucesData);
         setDrinks(drinksData);
         setProducts(relatedProductsData);
-        console.log('Sauces:', saucesData); // Para depuración
       } catch (error) {
         console.error('Error fetching data:', error);
         setError("Error al cargar las opciones de personalización.");
-        // Podrías también establecer arrays vacíos para evitar errores
         setAdditions([]);
         setSauces([]);
         setDrinks([]);
@@ -175,7 +171,7 @@ function Customize() {
   if (loading) {
     return (
       <div className='bg-[#F5F5F5] min-h-screen flex justify-center items-center'>
-        <Navbar className={`${styles.navigation} bg-[#FFC603]`} />
+      
         <CircularProgress />
       </div>
     );
@@ -184,7 +180,7 @@ function Customize() {
   if (error || !selectedProduct) {
     return (
       <div className='bg-[#F5F5F5] min-h-screen'>
-        <Navbar className={`${styles.navigation} bg-[#FFC603]`} />
+      
         <div className="container mx-auto px-4 py-12" style={{ paddingTop: '220px' }}>
           <Typography variant="h6" color="error">{error || "No se ha seleccionado ningún producto."}</Typography>
           <Button
@@ -206,10 +202,16 @@ function Customize() {
 
   return (
     <div className='bg-[#F5F5F5] min-h-screen'>
-      <Navbar className={`${styles.navigation} bg-[#FFC603]`} />
+   
 
-      <main className='main-container p-6' style={{ paddingTop: '220px' }}>
-        <Breadcrumbs aria-label="breadcrumb" className="mb-6">
+      <motion.main 
+        className='main-container p-6'
+        style={{ paddingTop: '220px' }}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <Breadcrumbs aria-label="breadcrumb" className="mb-6 py-5">
           <Link to="/" className="hover:text-[#C3151A]">Inicio</Link>
           <Link to="/menuSanguches" className="hover:text-[#C3151A]">Menú</Link>
           <Typography color="text.primary">Personaliza tu sándwich</Typography>
@@ -217,124 +219,152 @@ function Customize() {
 
         <Grid container spacing={4} className="bg-white rounded-lg shadow-lg p-6">
           <Grid item xs={12} md={6}>
-            <Box sx={{ borderRadius: '8px', overflow: 'hidden', boxShadow: '0 4px 8px rgba(0,0,0,0.1)' }}>
-              <SideBySideMagnifier
-                imageSrc={`${DOMAIN}${selectedProduct.image}`}
-                imageAlt={selectedProduct.name}
-                largeImageSrc={`${DOMAIN}${selectedProduct.image}`}
-                alwaysInPlace={true}
-                overlayBoxOpacity={0.8}
-                shadowColor="#000"
-                cursorStyle="crosshair"
-                transitionSpeed={0.1}
-                mouseActivation="hover"
-                touchActivation="tap"
-              />
-            </Box>
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5 }}
+            >
+              <Box sx={{ borderRadius: '8px', overflow: 'hidden', boxShadow: '0 4px 8px rgba(0,0,0,0.1)' }}>
+                <SideBySideMagnifier
+                  imageSrc={`${DOMAIN}${selectedProduct.image}`}
+                  imageAlt={selectedProduct.name}
+                  largeImageSrc={`${DOMAIN}${selectedProduct.image}`}
+                  alwaysInPlace={true}
+                  overlayBoxOpacity={0.8}
+                  shadowColor="#000"
+                  cursorStyle="crosshair"
+                  transitionSpeed={0.1}
+                  mouseActivation="hover"
+                  touchActivation="tap"
+                />
+              </Box>
+            </motion.div>
             <Typography variant="body1" className="mt-4 text-[#525D5A]">
               <strong>Ingredientes:</strong> {selectedProduct.ingredients ? selectedProduct.ingredients.map(ing => ing.name).join(', ') : 'Información no disponible'}
             </Typography>
           </Grid>
 
           <Grid item xs={12} md={6}>
-            <Typography variant="h4" className="font-bold mb-4 text-[#525D5A]">
-              {selectedProduct.name}
-            </Typography>
-            <Typography variant="h5" className="font-black text-[#FFC603] mb-4">
-              ${calculatePrice().toFixed(2)}
-            </Typography>
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+            >
+              <Typography variant="h4" className="font-bold mb-4 text-[#525D5A]">
+                {selectedProduct.name}
+              </Typography>
+              <Typography variant="h5" className="font-black text-[#FFC603] mb-4">
+                ${calculatePrice().toFixed(2)}
+              </Typography>
 
-            {Object.entries(sectionLabels).map(([type, label]) => (
-              <div key={type} className="mb-4">
-                <Button
-                  onClick={() => toggleSection(type)}
-                  endIcon={expandedSection === type ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-                  fullWidth
-                  sx={{
-                    justifyContent: 'space-between',
-                    backgroundColor: '#f5f5f5',
-                    '&:hover': { backgroundColor: '#e0e0e0' },
-                  }}
+              {Object.entries(sectionLabels).map(([type, label]) => (
+                <motion.div 
+                  key={type} 
+                  className="mb-4"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.3 }}
                 >
-                  <Typography variant="h6" className="font-bold text-[#525D5A]">
-                    {label}
-                  </Typography>
-                </Button>
-                <Collapse in={expandedSection === type}>
-                  <div className="flex flex-wrap gap-2 mt-2">
-                    {eval(`selected${type.charAt(0).toUpperCase() + type.slice(1)}`).map((id) => {
-                      const item = eval(type).find(i => i.id === id);
-                      return (
-                        <Chip
-                          key={id}
-                          label={item.text || item.name}
-                          onDelete={() => handleSelectionChange(type, eval(`selected${type.charAt(0).toUpperCase() + type.slice(1)}`).filter(i => i !== id))}
-                          color="primary"
-                        />
-                      );
-                    })}
-                    <Chip
-                      icon={<AddIcon />}
-                      label={`Añadir ${type}`}
-                      onClick={() => setDialogOpen({ ...dialogOpen, [type]: true })}
-                      color="default"
-                    />
-                  </div>
-                </Collapse>
-              </div>
-            ))}
+                  <Button
+                    onClick={() => toggleSection(type)}
+                    endIcon={expandedSection === type ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                    fullWidth
+                    sx={{
+                      justifyContent: 'space-between',
+                      backgroundColor: '#f5f5f5',
+                      '&:hover': { backgroundColor: '#e0e0e0' },
+                    }}
+                  >
+                    <Typography variant="h6" className="font-bold text-[#525D5A]">
+                      {label}
+                    </Typography>
+                  </Button>
+                  <Collapse in={expandedSection === type}>
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      {eval(`selected${type.charAt(0).toUpperCase() + type.slice(1)}`).map((id) => {
+                        const item = eval(type).find(i => i.id === id);
+                        return (
+                          <Chip
+                            key={id}
+                            label={item.text || item.name}
+                            onDelete={() => handleSelectionChange(type, eval(`selected${type.charAt(0).toUpperCase() + type.slice(1)}`).filter(i => i !== id))}
+                            color="primary"
+                          />
+                        );
+                      })}
+                      <Chip
+                        icon={<AddIcon />}
+                        label={`Añadir ${type}`}
+                        onClick={() => setDialogOpen({ ...dialogOpen, [type]: true })}
+                        color="default"
+                      />
+                    </div>
+                  </Collapse>
+                </motion.div>
+              ))}
 
-            <div className="flex justify-between items-center mt-6">
-              <div className="flex items-center">
-                <Tooltip title="Disminuir cantidad">
-                  <span>
+              <motion.div 
+                className="flex justify-between items-center mt-6"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.4 }}
+              >
+                <div className="flex items-center">
+                  <Tooltip title="Disminuir cantidad">
+                    <span>
+                      <IconButton
+                        onClick={() => handleQuantityChange(-1)}
+                        disabled={quantity === 1}
+                        sx={{
+                          backgroundColor: '#FFC603',
+                          color: 'black',
+                          '&:hover': { backgroundColor: '#e6b200' },
+                        }}
+                      >
+                        <RemoveIcon />
+                      </IconButton>
+                    </span>
+                  </Tooltip>
+                  <Typography variant="h6" className="mx-4 font-bold">
+                    {quantity}
+                  </Typography>
+                  <Tooltip title="Aumentar cantidad">
                     <IconButton
-                      onClick={() => handleQuantityChange(-1)}
-                      disabled={quantity === 1}
+                      onClick={() => handleQuantityChange(1)}
                       sx={{
                         backgroundColor: '#FFC603',
                         color: 'black',
                         '&:hover': { backgroundColor: '#e6b200' },
                       }}
                     >
-                      <RemoveIcon />
+                      <AddIcon />
                     </IconButton>
-                  </span>
-                </Tooltip>
-                <Typography variant="h6" className="mx-4 font-bold">
-                  {quantity}
-                </Typography>
-                <Tooltip title="Aumentar cantidad">
-                  <IconButton
-                    onClick={() => handleQuantityChange(1)}
-                    sx={{
-                      backgroundColor: '#FFC603',
-                      color: 'black',
-                      '&:hover': { backgroundColor: '#e6b200' },
-                    }}
-                  >
-                    <AddIcon />
-                  </IconButton>
-                </Tooltip>
-              </div>
-              <Button
-                onClick={handleAddToCart}
-                variant="contained"
-                startIcon={<ShoppingCartIcon />}
-                sx={{
-                  backgroundColor: '#FFC603',
-                  color: 'white',
-                  '&:hover': { backgroundColor: '#C8151B' },
-                  width: '80%',
-                }}
-              >
-                Añadir al carrito
-              </Button>
-            </div>
+                  </Tooltip>
+                </div>
+                <Button
+                  onClick={handleAddToCart}
+                  variant="contained"
+                  startIcon={<ShoppingCartIcon />}
+                  sx={{
+                    backgroundColor: '#FFC603',
+                    color: 'white',
+                    '&:hover': { backgroundColor: '#C8151B' },
+                    width: '80%',
+                  }}
+                >
+                  Añadir al carrito
+                </Button>
+              </motion.div>
+            </motion.div>
           </Grid>
         </Grid>
 
-        <Box className='mt-12'>
+        <motion.div
+          className='mt-12'
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.5 }}
+        >
           <Typography variant="h5" className="font-bold mb-6 text-[#525D5A]">
             Otros productos que te pueden gustar
           </Typography>
@@ -360,9 +390,12 @@ function Customize() {
               scrollSnapType: 'x mandatory',
             }}
           >
-            {products.slice(0, 6).map((item) => (
-              <Box
+            {products.slice(0, 6).map((item, index) => (
+              <motion.div
                 key={item.id}
+                initial={{ opacity: 0, x: 50 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.5, delay: 0.1 * index }}
                 sx={{
                   flexShrink: 0,
                   width: { xs: '85%', sm: '45%', md: '30%' },
@@ -370,11 +403,11 @@ function Customize() {
                 }}
               >
                 <ProductCard product={item} />
-              </Box>
+              </motion.div>
             ))}
           </Box>
-        </Box>
-      </main>
+        </motion.div>
+      </motion.main>
 
       {Object.entries(sectionLabels).map(([type, label]) => (
         renderSelectionDialog(
@@ -406,7 +439,6 @@ function Customize() {
         }
       />
 
-      <Footer />
     </div>
   );
 }

@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import ContentLoader from "react-content-loader";
-import { Button } from '../../components'; // Asegúrate de importar Grid
 import { useCart } from '../../hooks/useCart.js';
 import { getProducts } from '../../services/productService';
 import ProductCard from '../Product/ProductCard.jsx';
+import Button from '../ui/Button';
 import './Products.css';
 export function Productsjson({ productService = getProducts }) {
   const { addToCart, removeFromCart, cart } = useCart();

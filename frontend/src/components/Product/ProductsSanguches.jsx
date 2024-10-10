@@ -11,9 +11,6 @@ import ContentLoader from "react-content-loader";
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../../hooks/useCart.js';
 import { getAllProducts } from '../../services/productService.js';
-import styles from '../../style.js';
-import Footer from '../Layout/Footer.jsx';
-import { Navbar } from '../Navbar/Navbar.jsx';
 import { Filters } from './Filters.jsx';
 import './Products.css';
 import logoSanguches from '/assets/logoSanguches.jpg';
@@ -233,7 +230,6 @@ export function ProductsSanguches() {
 
   return (
     <div className='bg-[#F5F5F5] min-h-screen'>
-      <Navbar className={`${styles.navigation} bg-[#FFC603]`} />
 
       <main className='main-container p-6' style={{ paddingTop: '220px' }}>
         <Breadcrumbs aria-label="breadcrumb" className="mb-6">
@@ -335,7 +331,6 @@ export function ProductsSanguches() {
         }
       />
 
-      <Footer />
     </div>
   );
 }

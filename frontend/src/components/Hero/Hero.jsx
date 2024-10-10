@@ -1,7 +1,7 @@
 import { Box } from '@mui/material';
 import React from 'react';
-import { Button } from '../../components';
 import styles from '../../style';
+import Button from '../ui/Button';
 import { CarouselTransition } from '../ui/CarouselTransition';
 
 

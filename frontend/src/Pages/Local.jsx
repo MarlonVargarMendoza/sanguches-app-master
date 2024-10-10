@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
-import Footer from '../components/Layout/Footer';
-import Map from '../components/Map';
-import Navbar from '../components/Navbar/Navbar';
+import Map from '../Pages/Map';
 
 const Local = () => {
     const [locations] = useState([
@@ -26,7 +24,7 @@ const Local = () => {
         <>
             <div className='flex flex-col min-h-screen'>
                 <div className="bg-[#F5F5F5] pt-[220px] relative text-gray-800 flex-grow">
-                    <Navbar />
+                 
 
                     {/* Layout principal con flex para pantallas grandes */}
                     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
@@ -76,9 +74,7 @@ const Local = () => {
                 </div>
             </div>
 
-            <div className=''>
-                <Footer />
-            </div>
+           
         </>
     );
 };
