@@ -22,4 +22,4 @@ export const generateVoucherDetails = (items) => {
         price: calculateItemPrice(item),
         customizations: item.customizations
     }));
-};
+};  

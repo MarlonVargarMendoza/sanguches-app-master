@@ -1,5 +1,40 @@
 import { about, facebook, instagram, linkedin, people01, people03, send, shield, twitter } from "../assets";
 
+
+export const ROUTES = {
+    HOME: '/',
+    MENU: '/menuSanguches',
+    LOCAL: '/Local',
+};
+
+export const CATEGORIES = [
+    { name: 'DESAYUNOS', category: '9' },
+    { name: 'SANGUCHES', category: 'all' },
+    { name: 'ANTOJOS', category: ['10', '11', '12', '13', '14'] },
+];
+
+export const CART_WIDTH = 'w-full sm:w-96 md:w-120';
+export const ANIMATION_DURATION = 300;
+export const MIN_QUANTITY = 1;
+export const COLORS = Object.freeze({
+    PRIMARY: '#FFC603',
+    SECONDARY: '#C8151B',
+    BACKGROUND: '#FFF9C4',
+    TEXT: '#333333',
+});
+
+export const SNACKBAR_DURATION = 3000;
+export const SNACKBAR_POSITION = Object.freeze({
+    vertical: 'top',
+    horizontal: 'center',
+});
+
+export const CUSTOMIZATION_TYPES = Object.freeze({
+    ADDITIONS: 'additions',
+    SAUCES: 'sauces',
+    DRINKS: 'drinks',
+});
+
 export const navLinks = [
     {
         id: "home",

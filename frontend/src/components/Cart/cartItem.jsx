@@ -1,20 +1,11 @@
-import {
-  Add as AddIcon,
-  Delete as DeleteIcon,
-  Edit as EditIcon, ExpandLess as ExpandLessIcon, ExpandMore as ExpandMoreIcon,
-  Remove as RemoveIcon
-} from '@mui/icons-material';
-import {
-  Box, Button, Collapse, Dialog, DialogActions, DialogContent, DialogTitle,
-  Divider, Fade, IconButton, List, ListItem, ListItemText,
-  Tooltip, Typography
-} from '@mui/material';
+import { Add as AddIcon, Delete as DeleteIcon, Edit as EditIcon, ExpandLess as ExpandLessIcon, ExpandMore as ExpandMoreIcon, Remove as RemoveIcon } from '@mui/icons-material';
+import { Box, Button, Collapse, Dialog, DialogActions, DialogContent, DialogTitle, Divider, Fade, IconButton, List, ListItem, ListItemText, Tooltip, Typography } from '@mui/material';
 import { motion } from 'framer-motion';
-import React, { memo, useCallback, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../../hooks/useCart';
 
-const CartItem = memo(({ item, onSnackbarMessage }) => {
+const CartItem = React.memo(({ item, onSnackbarMessage }) => {
   const { updateCartItem, removeFromCart, calculateItemPrice } = useCart();
   const [expanded, setExpanded] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
@@ -182,10 +173,10 @@ const CartItem = memo(({ item, onSnackbarMessage }) => {
           </Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setConfirmDelete(false)} color="primary">
+          <Button onClick={() => setConfirmDelete(false)} color="secondary">
             Cancelar
           </Button>
-          <Button onClick={handleRemove} color="primary" autoFocus>
+          <Button onClick={handleRemove} color="secondary" autoFocus>
             Confirmar
           </Button>
         </DialogActions>
