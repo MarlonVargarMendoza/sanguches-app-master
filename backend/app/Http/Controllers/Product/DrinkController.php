@@ -40,7 +40,7 @@ class DrinkController extends Controller
                     'drinks.id',
                     DB::raw("CONCAT(drinks.name, ' --> $', ROUND(drinks.basePrice, 0)) AS text"),
                     'basePrice',
-                    'type.name'
+                    'type.name AS typeDrink'
                     
                 )
                 //->whereNot('type_drinks_id', 4)
