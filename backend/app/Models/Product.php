@@ -14,7 +14,7 @@ class Product extends Model
         'basePrice',
         'image',
         'type_sandwiches_id',
-        'type_sandwiches_id',
+        'type_products_id',
         'description'
     ];
 
