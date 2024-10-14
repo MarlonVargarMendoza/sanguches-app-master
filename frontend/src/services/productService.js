@@ -76,7 +76,7 @@ export const getDrinksSelect = async () => {
 export const getSaucesSelect = async () => {
     try {
         // Cambia esta URL si es necesario para que coincida con tu backend
-        const response = await axios.get(`${API_URL}/api/sauces/select`);
+        const response = await axios.get(`${API_URL}/api/sauces`);
         return response.data.data || [];
     } catch (error) {
         console.error('Error fetching sauces:', error);
