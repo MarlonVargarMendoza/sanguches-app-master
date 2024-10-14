@@ -1,11 +1,9 @@
 import React, { useState } from 'react';
-import { Cart, Favorites, Footer, Hero, Navbar } from './components';
-import { Productsjson } from './components/Productsjson/Products.jsx';
-import { IS_DEVELOPMENT } from './config.js';
+import { Favorites, Hero } from './components';
+import { Productsjson } from './components/Product/Products.jsx';
 import { CartProvider } from './context/cart.jsx';
 import { useFilters } from './hooks/useFilters.js';
 import { products as initialProducts } from './mocks/products.json';
-import styles from './style.js';
 
 const App = () => {
 
@@ -19,7 +17,6 @@ const App = () => {
 
   return (
     <CartProvider>
-      <Navbar cartItems={cartItems} className={styles.navigation}/>
       
       <div className="bg-primary ">
         <div >
@@ -32,8 +29,6 @@ const App = () => {
 
         <div className="bg-primary w-full overflow-hidden">
           <Favorites />
-          <Cart />
-          {IS_DEVELOPMENT && <Footer />}
         </div>
       </div>
     </CartProvider>

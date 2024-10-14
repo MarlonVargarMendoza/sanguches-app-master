@@ -23,13 +23,13 @@ class ProductController extends Controller
         $result = $this->productService->getSandwichsHome();
 
         if ($result['status'] == 200) {
-            return response()->json(['message' => 'Success', 'data' => $result['data']], 200);
+            return response()->json(['status' => $result['status'], 'message' => 'Success', 'data' => $result['data']], 200);
 
         } elseif ($result['status'] == 404) {
-            return response()->json(['message' => $result['message']], 404);
+            return response()->json(['status' => $result['status'], 'message' => $result['message']], 404);
 
          } else {
-            return response()->json(['message' => $result['message']], 500);
+            return response()->json(['status' => $result['status'], 'message' => $result['message']], 500);
         }
     }
 
@@ -38,20 +38,20 @@ class ProductController extends Controller
         $result = $this->productService->getProductType($id);
 
         if ($result['status'] == 200) {
-            return response()->json(['message' => 'Success', 'data' => $result['data']], 200);
+            return response()->json(['status' => $result['status'], 'message' => 'Success', 'data' => $result['data']], 200);
 
         } elseif ($result['status'] == 400) {
-            return response()->json(['message' => $result['message']], 400);
+            return response()->json(['status' => $result['status'], 'message' => $result['message']], 400);
 
         } elseif ($result['status'] == 404) {
-            return response()->json(['message' => $result['message']], 404);
+            return response()->json(['status' => $result['status'], 'message' => $result['message']], 404);
 
          } else {
-            return response()->json(['message' => $result['message']], 500);
+            return response()->json(['status' => $result['status'], 'message' => $result['message']], 500);
         }
     }
 
-    public function addition()
+    public function additions()
     {
         try {
             $result = Ingredient::select(

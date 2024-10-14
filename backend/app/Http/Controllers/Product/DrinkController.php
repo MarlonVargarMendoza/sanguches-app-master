@@ -16,7 +16,7 @@ class DrinkController extends Controller
     {
         try {
             $result = Drink::leftJoin('type_drinks AS type', 'type.id', '=', 'drinks.type_drinks_id')
-                ->select('drinks.id', 'drinks.name', 'drinks.basePrice', 'drinks.image', 'type.name AS type_name')
+                ->select('drinks.id', 'drinks.name', 'drinks.basePrice', 'drinks.image', 'type.name AS type_drink')
                 ->orderBy('type.name', 'DESC')->get();
 
             if ($result->toArray()) {
@@ -39,10 +39,11 @@ class DrinkController extends Controller
                 (
                     'drinks.id',
                     DB::raw("CONCAT(drinks.name, ' --> $', ROUND(drinks.basePrice, 0)) AS text"),
-                    'basePrice'
+                    'basePrice',
+                    'type.name AS typeDrink'
                     
                 )
-                ->whereNot('type_drinks_id', 4)
+                //->whereNot('type_drinks_id', 4)
                 ->orderBy('type.name', 'ASC')->get();
 
             if ($result->toArray()) {
