@@ -1,11 +1,11 @@
 import { AppBar, Toolbar } from '@mui/material';
 import React, { useCallback, useState } from 'react';
 import PersistentCart from '../../Cart/PersistentCart';
-import DesktopNavLinks from './DesktopNavLinks ';
+import DesktopNavLinks from './DesktopNavLinks';
 import Logo from './Logo';
 import MobileNavMenu from './MobileNavMenu';
 import PromotionBanner from './PromotionBanner';
-import Submenu from './Submenu ';
+import Submenu from './Submenu';
 import useScrollDetection from './useScrollDetection';
 
 export const Navbar = () => {
