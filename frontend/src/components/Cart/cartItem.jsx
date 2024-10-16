@@ -4,12 +4,14 @@ import { motion } from 'framer-motion';
 import React, { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../../hooks/useCart';
+import { useProductImage } from '../../hooks/useProductImage';
 
 const CartItem = React.memo(({ item, onSnackbarMessage }) => {
   const { updateCartItem, removeFromCart, calculateItemPrice } = useCart();
   const [expanded, setExpanded] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const navigate = useNavigate();
+  const imageUrl = useProductImage(item.id);
 
   const handleQuantityChange = useCallback((change) => {
     const newQuantity = Math.max(1, item.quantity + change);
@@ -86,7 +88,11 @@ const CartItem = React.memo(({ item, onSnackbarMessage }) => {
     >
       <Box className="cart-item bg-white rounded-lg shadow-md mb-4 overflow-hidden border border-gray-200 hover:shadow-lg transition-shadow duration-300">
         <Box className="flex items-center p-4">
-          <img src={item.image} alt={item.name} className="w-20 h-20 object-cover rounded-lg mr-4 shadow-sm" />
+          <img 
+            src={imageUrl} 
+            alt={item.name} 
+            className="w-20 h-20 object-cover rounded-lg mr-4 shadow-sm" 
+            />
           <Box className="flex-grow">
             <Typography variant="subtitle1" className="font-bold text-[#C8151B]">
               {item.name}
@@ -153,11 +159,7 @@ const CartItem = React.memo(({ item, onSnackbarMessage }) => {
           </>
         )}
 
-        <Box className="p-4 bg-gray-100">
-          <Typography variant="subtitle1" className="font-bold text-[#C8151B] text-right">
-            Total: ${(itemPrice * item.quantity).toFixed(2)}
-          </Typography>
-        </Box>
+      
       </Box>
 
       <Dialog

@@ -18,20 +18,22 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 import ProductCard from '../components/Product/ProductCard';
 import { useCart } from '../hooks/useCart';
+import { useProductImage } from '../hooks/useProductImage';
 import { getAdditions, getAllProducts, getDrinksSelect, getSaucesSelect } from '../services/productService';
 
 const DOMAIN = import.meta.env.VITE_APP_DOMAIN;
 const sectionLabels = {
-  additions: "Acompañamientos",
-  sauces: "Salsas",
-  drinks: "Bebidas"
+  additions: "Añadir Acompañamientos",
+  sauces: "Añadir Salsas",
+  drinks: "Añadir Bebidas"
 };
 
 function Customize() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { addToCart, updateCartItem  } = useCart();
+  const { addToCart, updateCartItem } = useCart();
   const { selectedProduct, isEditing } = location.state || {};
+  const imageUrl = useProductImage(selectedProduct);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -179,7 +181,7 @@ function Customize() {
   if (loading) {
     return (
       <div className='bg-[#F5F5F5] min-h-screen flex justify-center items-center'>
-      
+
         <CircularProgress />
       </div>
     );
@@ -188,7 +190,7 @@ function Customize() {
   if (error || !selectedProduct) {
     return (
       <div className='bg-[#F5F5F5] min-h-screen'>
-      
+
         <div className="container mx-auto px-4 py-12" style={{ paddingTop: '220px' }}>
           <Typography variant="h6" color="error">{error || "No se ha seleccionado ningún producto."}</Typography>
           <Button
@@ -210,9 +212,9 @@ function Customize() {
 
   return (
     <div className='bg-[#F5F5F5] min-h-screen'>
-   
 
-      <motion.main 
+
+      <motion.main
         className='main-container p-6'
         style={{ paddingTop: '220px' }}
         initial={{ opacity: 0, y: 20 }}
@@ -227,16 +229,16 @@ function Customize() {
 
         <Grid container spacing={4} className="bg-white rounded-lg shadow-lg p-6">
           <Grid item xs={12} md={6}>
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.5 }}
             >
               <Box sx={{ borderRadius: '8px', overflow: 'hidden', boxShadow: '0 4px 8px rgba(0,0,0,0.1)' }}>
                 <SideBySideMagnifier
-                  imageSrc={`${DOMAIN}${selectedProduct.image}`}
+                  imageSrc={selectedProduct.imageUrl || imageUrl}
                   imageAlt={selectedProduct.name}
-                  largeImageSrc={`${DOMAIN}${selectedProduct.image}`}
+                  largeImageSrc={selectedProduct.imageUrl || imageUrl}
                   alwaysInPlace={true}
                   overlayBoxOpacity={0.8}
                   shadowColor="#000"
@@ -266,8 +268,8 @@ function Customize() {
               </Typography>
 
               {Object.entries(sectionLabels).map(([type, label]) => (
-                <motion.div 
-                  key={type} 
+                <motion.div
+                  key={type}
                   className="mb-4"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -302,7 +304,7 @@ function Customize() {
                       })}
                       <Chip
                         icon={<AddIcon />}
-                        label={`Añadir ${type}`}
+                        label={`Click para anadir`}
                         onClick={() => setDialogOpen({ ...dialogOpen, [type]: true })}
                         color="default"
                       />
@@ -311,7 +313,7 @@ function Customize() {
                 </motion.div>
               ))}
 
-              <motion.div 
+              <motion.div
                 className="flex justify-between items-center mt-6"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}

@@ -1,6 +1,8 @@
 import AvTimerIcon from '@mui/icons-material/AvTimer';
+import MenuIcon from '@mui/icons-material/Menu';
+import { Drawer, IconButton, List, ListItem, ListItemText, useMediaQuery, useTheme } from '@mui/material';
 import { motion } from 'framer-motion';
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const CATEGORIES = [
@@ -11,6 +13,9 @@ const CATEGORIES = [
 
 const Submenu = () => {
   const navigate = useNavigate();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   const handleCategoryClick = useCallback((category) => {
     if (category === 'all') {
@@ -21,7 +26,8 @@ const Submenu = () => {
     } else {
       navigate(`/menuSanguches?category=${category}`);
     }
-  }, [navigate]);
+    if (isMobile) setIsDrawerOpen(false);
+  }, [navigate, isMobile]);
 
   return (
     <motion.div
@@ -31,20 +37,37 @@ const Submenu = () => {
       transition={{ duration: 0.3 }}
     >
       <div className="container mx-auto px-4 py-3 flex justify-between items-center">
-        <nav>
-          <ul className="flex space-x-6">
-            {CATEGORIES.map((item) => (
-              <CategoryButton key={item.name} item={item} onClick={handleCategoryClick} />
-            ))}
-          </ul>
-        </nav>
+        {isMobile ? (
+          <>
+            <IconButton onClick={() => setIsDrawerOpen(true)} aria-label="menu">
+              <MenuIcon />
+            </IconButton>
+            <Drawer anchor="left" open={isDrawerOpen} onClose={() => setIsDrawerOpen(false)}>
+              <List>
+                {CATEGORIES.map((item) => (
+                  <ListItem button key={item.name} onClick={() => handleCategoryClick(item.category)}>
+                    <ListItemText primary={item.name} />
+                  </ListItem>
+                ))}
+              </List>
+            </Drawer>
+          </>
+        ) : (
+          <nav>
+            <ul className="flex space-x-6">
+              {CATEGORIES.map((item) => (
+                <CategoryButton key={item.name} item={item} onClick={handleCategoryClick} />
+              ))}
+            </ul>
+          </nav>
+        )}
         <DeliveryTime />
       </div>
     </motion.div>
   );
 };
 
-const CategoryButton = ({ item, onClick }) => (
+const CategoryButton = React.memo(({ item, onClick }) => (
   <motion.li
     className="relative"
     whileHover={{ scale: 1.05 }}
@@ -52,7 +75,7 @@ const CategoryButton = ({ item, onClick }) => (
   >
     <button
       onClick={() => onClick(item.category)}
-      className="text-lg font-bold text-gray-800 hover:text-[#C8151B] transition-colors duration-300"
+      className="text-base sm:text-lg font-bold text-gray-800 hover:text-[#C8151B] transition-colors duration-300"
     >
       {item.name}
     </button>
@@ -63,16 +86,16 @@ const CategoryButton = ({ item, onClick }) => (
       transition={{ duration: 0.2 }}
     />
   </motion.li>
-);
+));
 
-const DeliveryTime = () => (
+const DeliveryTime = React.memo(() => (
   <motion.div
     className="flex items-center text-gray-600 bg-[#FFC603] px-3 py-1 rounded-full"
     whileHover={{ scale: 1.05 }}
   >
     <AvTimerIcon className="mr-2 text-[#C8151B]" />
-    <span className="text-sm font-medium">Entrega en 45 min</span>
+    <span className="text-xs sm:text-sm font-medium">Entrega en 45 min</span>
   </motion.div>
-);
+));
 
 export default React.memo(Submenu);

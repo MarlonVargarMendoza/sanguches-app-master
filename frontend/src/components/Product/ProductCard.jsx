@@ -1,19 +1,25 @@
+// components/Product/ProductCard.jsx
+
 import { Button, Card, CardContent, CardMedia, Typography } from '@mui/material';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-
-const DOMAIN = import.meta.env.VITE_APP_DOMAIN;
+import { useProductImage } from '../../hooks/useProductImage';
 
 function ProductCard({ product }) {
-    const { id, name, basePrice, image, ingredients } = product; 
+    const { id, name, basePrice, ingredients } = product;
     const formattedPrice = basePrice != null && !isNaN(basePrice) ? basePrice.toFixed(2) : '0.00';
-    const formattedOldPrice = basePrice != null && !isNaN(basePrice) ? (basePrice * 1.2).toFixed(2) : '0.00'; 
     const navigate = useNavigate();
-
-    const imageUrl = `${DOMAIN}${image}`;
+    const imageUrl = useProductImage(id);
 
     const handlePersonalize = () => {
-        navigate('/editaloTuMismo', { state: { selectedProduct: product } });
+        navigate('/editaloTuMismo', { 
+            state: { 
+                selectedProduct: {
+                    ...product,
+                    imageUrl // Añadimos la URL de la imagen al estado
+                }
+            } 
+        });
     };
 
     return (
@@ -37,20 +43,15 @@ function ProductCard({ product }) {
                     </Typography>
                 </div>
                 <div className="mt-auto">
-                    <div className="flex items-baseline justify-between mb-2">
-                        <Typography variant="caption" className="line-through text-gray-500">
-                            ${formattedOldPrice}
-                        </Typography>
-                        <Typography variant="h6" className="font-bold text-[#C8151B]">
-                            ${formattedPrice}
-                        </Typography>
-                    </div>
+                    <Typography variant="h6" className="font-bold text-gray mb-2">
+                        ${formattedPrice}
+                    </Typography>
                     <Button
                         variant="contained"
                         fullWidth
                         onClick={handlePersonalize}
-                        style={{ 
-                            backgroundColor: '#FFC603', 
+                        style={{
+                            backgroundColor: '#FFC603',
                             color: 'black',
                             '&:hover': {
                                 backgroundColor: '#C8151B',
@@ -66,4 +67,4 @@ function ProductCard({ product }) {
     );
 }
 
-export default ProductCard;
+export default React.memo(ProductCard);

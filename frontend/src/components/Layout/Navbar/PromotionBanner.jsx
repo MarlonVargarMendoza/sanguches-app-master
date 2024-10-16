@@ -3,7 +3,7 @@ import React from 'react';
 
 const PromotionBanner = () => (
   <motion.div
-    className="bg-[#C8151B] text-white py-1 overflow-hidden"
+    className="bg-[#C8151B] text-white py-1 md:1 sm:py-1 overflow-hidden"
     initial={{ opacity: 0, height: 0 }}
     animate={{ opacity: 1, height: 'auto' }}
     transition={{ duration: 0.5 }}
@@ -13,8 +13,8 @@ const PromotionBanner = () => (
       animate={{ x: ['100%', '-100%'] }}
       transition={{ repeat: Infinity, duration: 25, ease: 'linear' }}
     >
-      <span className="font-semibold mr-2">🚀 Sangudays Especial:</span>
-      <span className="font-bold bg-white text-[#C8151B] px-2 py-0.5 rounded-full mx-2">$22.900</span>
+      <span className="font-semibold">🚀 Sangudays Especial:</span>
+      <span className="font-bold bg-white text-[#C8151B] px-1 py-0.5 rounded-full mx-1">$22.900</span>
       <span className="italic">Mejores ingredientes, mejor sabor</span>
     </motion.div>
   </motion.div>
