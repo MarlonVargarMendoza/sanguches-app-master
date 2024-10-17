@@ -3,20 +3,18 @@
 import { Button, Card, CardContent, CardMedia, Typography } from '@mui/material';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useProductImage } from '../../hooks/useProductImage';
 
 function ProductCard({ product }) {
     const { id, name, basePrice, ingredients } = product;
     const formattedPrice = basePrice != null && !isNaN(basePrice) ? basePrice.toFixed(2) : '0.00';
     const navigate = useNavigate();
-    const imageUrl = useProductImage(id);
 
     const handlePersonalize = () => {
         navigate('/editaloTuMismo', { 
             state: { 
                 selectedProduct: {
                     ...product,
-                    imageUrl // Añadimos la URL de la imagen al estado
+                    ...product.image
                 }
             } 
         });
@@ -26,7 +24,7 @@ function ProductCard({ product }) {
         <Card className="product-card h-full flex flex-col shadow-lg hover:shadow-xl transition-shadow duration-300">
             <CardMedia
                 component="img"
-                image={imageUrl}
+                image={product.image}
                 alt={name}
                 className="w-full h-48 sm:h-56 object-cover cursor-pointer"
                 onClick={handlePersonalize}

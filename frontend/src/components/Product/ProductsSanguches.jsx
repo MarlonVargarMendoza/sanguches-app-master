@@ -8,7 +8,6 @@ import React, { useCallback, useEffect, useState } from 'react';
 import ContentLoader from "react-content-loader";
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useCart } from '../../hooks/useCart';
-import { useProductImage } from '../../hooks/useProductImage';
 import { getProductsByCategories } from '../../services/productService';
 import { Filters } from './Filters';
 import './Products.css';
@@ -17,18 +16,17 @@ import logoSanguches from '/assets/logoSanguches.jpg';
 const DOMAIN = import.meta.env.VITE_APP_DOMAIN;
 
 const ProductCard = React.memo(({ product, onAddToCart, onRemoveFromCart, onProductClick, isInCart, quantity }) => {
-  const imageUrl = useProductImage(product.id);
 
   const handleClick = (e) => {
     e.stopPropagation();
-    onProductClick(product, imageUrl);
+    onProductClick(product, product.image);
   };
 
   return (
     <li className="product-card bg-white rounded-lg shadow-lg overflow-hidden transition-transform duration-300 hover:shadow-xl hover:-translate-y-1">
       <div className="relative product-image">
         <img
-          src={imageUrl}
+          src={product.image}
           alt={product.name}
           className="w-full h-48 object-cover cursor-pointer"
           onClick={handleClick}
@@ -191,8 +189,7 @@ export function ProductsSanguches() {
           basePrice: product.basePrice || 0,
           quantity: 1,
           customizations: {},
-          imageUrl: imageUrl,
-          ingredients: product.ingredients || [],
+          imageUrl: imageUrl
         },
         isEditing: !!existingCartItem
       }

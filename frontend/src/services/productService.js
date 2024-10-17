@@ -33,22 +33,16 @@ export const getProductsByCategory = async (categoryId) => {
     }
 };
 
-
 export const getProductsByCategories = async (categories) => {
     try {
-        let url = `${API_URL}/api/products`;
-        if (categories && !categories.includes('all')) {
-            url += `?categories=${categories.join(',')}`;
+        if (categories.includes('all')) {
+            return getAllProducts();
         }
-        const response = await axios.get(url);
-        return response.data.data.map(product => ({
-            ...product,
-            ingredients: product.ingredients || [],
-            basePrice: product.basePrice || 0,
-        }));
+        const promises = categories.map(category => getProductsByCategory(category));
+        const results = await Promise.all(promises);
+        return results.flat();
     } catch (error) {
-        console.error('Error fetching products:', error);
-        throw error;
+        handleAxiosError(error);
     }
 };
 export const getAllProducts = async (categoryId = 'all') => {
@@ -82,7 +76,7 @@ export const getDrinksSelect = async () => {
 export const getSaucesSelect = async () => {
     try {
         // Cambia esta URL si es necesario para que coincida con tu backend
-        const response = await axios.get(`${API_URL}/api/sauces`);
+        const response = await axios.get(`${API_URL}/api/sauces/select`);
         return response.data.data || [];
     } catch (error) {
         console.error('Error fetching sauces:', error);

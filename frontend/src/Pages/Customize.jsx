@@ -18,7 +18,6 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 import ProductCard from '../components/Product/ProductCard';
 import { useCart } from '../hooks/useCart';
-import { useProductImage } from '../hooks/useProductImage';
 import { getAdditions, getAllProducts, getDrinksSelect, getSaucesSelect } from '../services/productService';
 
 const DOMAIN = import.meta.env.VITE_APP_DOMAIN;
@@ -35,7 +34,6 @@ function Customize() {
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const { addToCart, updateCartItem } = useCart();
   const { selectedProduct, isEditing } = location.state || {};
-  const imageUrl = selectedProduct?.imageUrl || useProductImage(selectedProduct?.id);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -267,24 +265,24 @@ function Customize() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <Breadcrumbs aria-label="breadcrumb" className="mb-6 py-5">
+        <Breadcrumbs aria-label="breadcrumb" className="mb-6 ">
           <Link to="/" className="hover:text-[#C3151A]">Inicio</Link>
           <Link to="/menuSanguches" className="hover:text-[#C3151A]">Menú</Link>
           <Typography color="text.primary">Personaliza tu sándwich</Typography>
         </Breadcrumbs>
 
-        <Grid container spacing={4} className="bg-white rounded-lg shadow-lg p-6">
-          <Grid item xs={12} md={6}>
+        <Grid container spacing={6} className="bg-white rounded-lg shadow-lg p-2">
+          <Grid item xs={12} md={5}>
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.5 }}
             >
-              <Box sx={{ borderRadius: '8px', overflow: 'hidden', boxShadow: '0 4px 8px rgba(0,0,0,0.1)' }}>
+              <Box sx={{ borderRadius: '12px', overflow: 'hidden', boxShadow: '0 4px 8px rgba(0,0,0,0.1)' }}>
                 <SideBySideMagnifier
-                  imageSrc={selectedProduct.imageUrl || imageUrl}
+                  imageSrc={selectedProduct.image}
                   imageAlt={selectedProduct.name}
-                  largeImageSrc={selectedProduct.imageUrl || imageUrl}
+                  largeImageSrc={selectedProduct.image }
                   alwaysInPlace={true}
                   overlayBoxOpacity={0.8}
                   shadowColor="#000"
@@ -347,7 +345,7 @@ function Customize() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.4 }}
               >
-                <div className="flex items-center">
+                <div className="flex items-center border">
                   <Tooltip title="Disminuir cantidad">
                     <span>
                       <IconButton
@@ -356,6 +354,7 @@ function Customize() {
                         sx={{
                           backgroundColor: '#FFC603',
                           color: 'black',
+                          borderRadius: '50%',
                           '&:hover': { backgroundColor: '#e6b200' },
                         }}
                       >
@@ -363,7 +362,7 @@ function Customize() {
                       </IconButton>
                     </span>
                   </Tooltip>
-                  <Typography variant="h6" className="mx-4 font-bold">
+                  <Typography variant="h6" className="mx-4 font-bold text-black">
                     {quantity}
                   </Typography>
                   <Tooltip title="Aumentar cantidad">
@@ -372,6 +371,7 @@ function Customize() {
                       sx={{
                         backgroundColor: '#FFC603',
                         color: 'black',
+                        borderRadius: '50%',
                         '&:hover': { backgroundColor: '#e6b200' },
                       }}
                     >
