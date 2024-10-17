@@ -1,15 +1,34 @@
-import React, { useState } from 'react';
+import { LocationOn as LocationIcon, Restaurant as RestaurantIcon, Search as SearchIcon } from '@mui/icons-material';
+import {
+    Box, Button,
+    Container,
+    Fade,
+    Grid,
+    List, ListItem, ListItemText, Paper, Skeleton,
+    TextField, Typography, useMediaQuery, useTheme
+} from '@mui/material';
+import { AnimatePresence, motion } from 'framer-motion';
+import React, { useEffect, useState } from 'react';
 import Map from '../Pages/Map';
 
 const Local = () => {
-    const [locations] = useState([
-        { name: 'Animal (Sede 1 Floresta)', address: 'Carrera 84 45124.050032. Medellin, Antioquia Colombia' },
-        { name: 'Animal (Sede 4 Provenza)', address: 'Carrera 36 8A-53, 050021. Medellín. Antioquia, Colombia' },
-        { name: 'Animal (Sede 5 Cristo Rey)', address: 'Carrera 516 #3 Sur-46 050024 Medellin Antioquia, Colombia' },
-    ]);
-
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+    const [locations, setLocations] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedLocation, setSelectedLocation] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        setTimeout(() => {
+            setLocations([
+                { id: 1, name: 'Sanguches Floresta', address: 'Carrera 84 #45-124, Medellín' },
+                { id: 2, name: 'Sanguches Provenza', address: 'Carrera 36 #8A-53, Medellín' },
+                { id: 3, name: 'Sanguches Cristo Rey', address: 'Carrera 51B #3 Sur-46, Medellín' },
+            ]);
+            setIsLoading(false);
+        }, 1000);
+    }, []);
 
     const filteredLocations = locations.filter((location) =>
         location.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -21,61 +40,140 @@ const Local = () => {
     };
 
     return (
-        <>
-            <div className='flex flex-col min-h-screen'>
-                <div className="bg-[#F5F5F5] pt-[220px] relative text-gray-800 flex-grow">
-                 
+        <Box className="min-h-screen py-[80px] bg-gradient-to-b from-[#FFC603] to-[#EFEFEF]">
+            <Container maxWidth="lg" sx={{ pt: { xs: 12, sm: 16, md: 20 }, pb: 8 }}>
+                <Typography 
+                    variant="h2" 
+                    className="text-center text-[#C8151B] mb-8"
+                    sx={{ 
+                        fontWeight: 'bold', 
+                        fontSize: { xs: '2rem', sm: '2.5rem', md: '3rem' },
+                        textShadow: '2px 2px 4px rgba(0,0,0,0.1)'
+                    }}
+                >
+                    ¡Encuentra tu Sanguches más cercano!
+                </Typography>
 
-                    {/* Layout principal con flex para pantallas grandes */}
-                    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
-                        <h1 className="text-4xl font-bold text-center text-[#ab131b] mb-6">¡Encuéntranos!</h1>
+                <Grid container spacing={4}>
+                    <Grid item xs={12} md={5}>
+                        <Paper elevation={3} className="p-4 mb-4">
+                            <TextField
+                                fullWidth
+                                variant="outlined"
+                                placeholder="Busca por nombre o dirección"
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                InputProps={{
+                                    startAdornment: <SearchIcon color="action" />,
+                                }}
+                                sx={{
+                                    '& .MuiOutlinedInput-root': {
+                                        '& fieldset': { borderColor: '#FFC603' },
+                                        '&:hover fieldset': { borderColor: '#C8151B' },
+                                        '&.Mui-focused fieldset': { borderColor: '#C8151B' },
+                                    },
+                                }}
+                            />
+                        </Paper>
 
-                        {/* Flex para dividir el contenido y el mapa */}
-                        <div className="flex flex-col lg:flex-row lg:space-x-6">
-
-                            {/* Sección de información y búsqueda */}
-                            <div className="w-full lg:w-1/2 space-y-6">
-                                <input
-                                    type="text"
-                                    placeholder="Ingresa tu dirección o busca por nombre"
-                                    value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="w-full p-3 border border-[#ab131b] rounded-lg mb-4 bg-white shadow-md focus:outline-none focus:ring-2 focus:ring-[#FFC603]"
-                                />
-
-                                <ul className="list-none">
-                                    {filteredLocations.map((location) => (
-                                        <li
-                                            key={location.name}
-                                            className={`p-4 border border-[#FFC603] rounded-lg cursor-pointer shadow-md transition-colors duration-300 ${selectedLocation === location ? 'bg-[#FFC603] text-black' : 'bg-white hover:bg-gray-100'
-                                                }`}
-                                            onClick={() => handleLocationSelect(location)}
-                                            aria-label={`Seleccionar ${location.name}`}
-                                        >
-                                            <h2 className="text-xl font-semibold">{location.name}</h2>
-                                            <p className="text-gray-600">{location.address}</p>
-                                        </li>
+                        <AnimatePresence>
+                            {isLoading ? (
+                                <Box>
+                                    {[...Array(3)].map((_, index) => (
+                                        <Skeleton key={index} variant="rectangular" height={80} sx={{ mb: 2, borderRadius: 2 }} />
                                     ))}
-                                </ul>
-                            </div>
+                                </Box>
+                            ) : (
+                                <List>
+                                    {filteredLocations.map((location) => (
+                                        <motion.div
+                                            key={location.id}
+                                            initial={{ opacity: 0, y: 20 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            exit={{ opacity: 0, y: -20 }}
+                                            transition={{ duration: 0.3 }}
+                                        >
+                                            <ListItem 
+                                                component={Paper} 
+                                                elevation={3}
+                                                onClick={() => handleLocationSelect(location)}
+                                                sx={{ 
+                                                    mb: 2, 
+                                                    cursor: 'pointer', 
+                                                    transition: 'all 0.3s',
+                                                    '&:hover': { 
+                                                        backgroundColor: '#FFC603',
+                                                        transform: 'translateY(-5px)',
+                                                    },
+                                                    ...(selectedLocation === location && {
+                                                        backgroundColor: '#C8151B',
+                                                        color: 'white',
+                                                    }),
+                                                }}
+                                            >
+                                                <ListItemText
+                                                    primary={
+                                                        <Typography variant="h6" component="h3">
+                                                            <RestaurantIcon sx={{ mr: 1, verticalAlign: 'bottom' }} />
+                                                            {location.name}
+                                                        </Typography>
+                                                    }
+                                                    secondary={
+                                                        <Typography variant="body2" color={selectedLocation === location ? 'white' : 'text.secondary'}>
+                                                            <LocationIcon fontSize="small" sx={{ mr: 1, verticalAlign: 'middle' }} />
+                                                            {location.address}
+                                                        </Typography>
+                                                    }
+                                                />
+                                            </ListItem>
+                                        </motion.div>
+                                    ))}
+                                </List>
+                            )}
+                        </AnimatePresence>
+                    </Grid>
 
-                            {/* Sección del mapa */}
-                            <div className="w-full lg:w-1/2 flex-grow mt-8 lg:mt-0">
-                                <div className="w-full h-full">
-                                    <Map
-                                        locations={filteredLocations}
-                                        selectedLocation={selectedLocation}
-                                        onLocationSelect={handleLocationSelect}
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                    <Grid item xs={12} md={7}>
+                        <Paper elevation={3} sx={{ height: '400px', borderRadius: '8px', overflow: 'hidden' }}>
+                            <Map
+                                locations={filteredLocations}
+                                selectedLocation={selectedLocation}
+                                onLocationSelect={handleLocationSelect}
+                            />
+                        </Paper>
+                    </Grid>
+                </Grid>
 
-           
-        </>
+                <Fade in={selectedLocation !== null}>
+                    <Box mt={4}>
+                        {selectedLocation && (
+                            <Paper elevation={3} className="p-4 bg-white">
+                                <Typography variant="h5" component="h3" gutterBottom color="primary" sx={{ fontWeight: 'bold' }}>
+                                    <RestaurantIcon sx={{ mr: 1, verticalAlign: 'bottom' }} />
+                                    {selectedLocation.name}
+                                </Typography>
+                                <Typography variant="body1" paragraph>
+                                    <LocationIcon fontSize="small" sx={{ mr: 1, verticalAlign: 'middle' }} />
+                                    {selectedLocation.address}
+                                </Typography>
+                                <Button 
+                                    variant="contained" 
+                                    color="primary"
+                                    startIcon={<LocationIcon />}
+                                    sx={{ 
+                                        backgroundColor: '#C8151B',
+                                        '&:hover': { backgroundColor: '#FFC603', color: 'black' }
+                                    }}
+                                    onClick={() => window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(selectedLocation.address)}`, '_blank')}
+                                >
+                                    Cómo llegar
+                                </Button>
+                            </Paper>
+                        )}
+                    </Box>
+                </Fade>
+            </Container>
+        </Box>
     );
 };
 

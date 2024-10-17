@@ -50,7 +50,7 @@ const Success = () => {
     if (!orderDetails) return null;
 
     return (
-        <Box className="success-wrapper bg-[#D2E6E4] min-h-screen flex items-center justify-center p-4 py-[200px] relative overflow-hidden">
+        <Box className="success-wrapper bg-[#D2E6E4] min-h-screen flex items-center justify-center p-4 py-[220px] relative overflow-hidden">
             {/* Logo animado de Sanguches */}
             <motion.div
                 animate={controls}
@@ -83,9 +83,9 @@ const Success = () => {
                         >
                             <BsBagCheckFill className="text-green-500 text-[80px] mx-auto mb-6" />
                         </motion.div>
-                        <Typography variant="h3" className="  mb-4 font-black text-[#C8151B]">
+                        <h3  className=" font-poppins font-semibold xs:text-[48px] text-[40px] text-green-500 xs:leading-[76.8px] leading-[66.8px] w-full">
                             ¡Gracias por tu pedido!
-                        </Typography>
+                        </h3>
                         <Typography variant="h6" className="mb-8 text-gray-600">
                             Tu pedido ha sido enviado a WhatsApp. Pronto nos pondremos en contacto contigo.
                         </Typography>

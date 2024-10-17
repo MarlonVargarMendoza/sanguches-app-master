@@ -19,6 +19,11 @@ const DOMAIN = import.meta.env.VITE_APP_DOMAIN;
 const ProductCard = React.memo(({ product, onAddToCart, onRemoveFromCart, onProductClick, isInCart, quantity }) => {
   const imageUrl = useProductImage(product.id);
 
+  const handleClick = (e) => {
+    e.stopPropagation();
+    onProductClick(product, imageUrl);
+  };
+
   return (
     <li className="product-card bg-white rounded-lg shadow-lg overflow-hidden transition-transform duration-300 hover:shadow-xl hover:-translate-y-1">
       <div className="relative product-image">
@@ -26,8 +31,8 @@ const ProductCard = React.memo(({ product, onAddToCart, onRemoveFromCart, onProd
           src={imageUrl}
           alt={product.name}
           className="w-full h-48 object-cover cursor-pointer"
-          onClick={() => onProductClick(product)}
-          
+          onClick={handleClick}
+          loading="lazy"
         />
         <div className="absolute top-2 right-2 flex items-center space-x-2">
           <Tooltip title={isInCart ? "Quitar del carrito" : "Añadir al carrito"}>
@@ -59,9 +64,7 @@ const ProductCard = React.memo(({ product, onAddToCart, onRemoveFromCart, onProd
         </p>
         <div className="mt-auto flex items-center justify-between">
           <div className="flex flex-col">
-            <span className="text-gray-500 line-through text-sm">
-              ${(product.basePrice * 1.2).toFixed(2)}
-            </span>
+            
             <span className="text-[#A4A4A4] font-bold">
               ${product.basePrice.toFixed(2)}
             </span>
@@ -69,7 +72,7 @@ const ProductCard = React.memo(({ product, onAddToCart, onRemoveFromCart, onProd
           <Button
             variant="contained"
             style={{ backgroundColor: '#FFC603', color: 'black' }}
-            onClick={() => onProductClick(product)}
+            onClick={handleClick}
             startIcon={<ShoppingCartIcon />}
           >
             {isInCart ? 'Actualizar' : 'AGREGAR'}
@@ -179,17 +182,17 @@ export function ProductsSanguches() {
     setSnackbarState({ open: true, message: 'Producto eliminado del carrito' });
   }, [removeFromCart]);
 
-  const handleProductClick = useCallback((product) => {
+  const handleProductClick = useCallback((product, imageUrl) => {
     const existingCartItem = cart.find(item => item.id === product.id);
-    const imageUrl = useProductImage(product.id);
     navigate('/editaloTuMismo', {
       state: {
         selectedProduct: existingCartItem || {
           ...product,
           basePrice: product.basePrice || 0,
           quantity: 1,
-          customizations: {}.
-          imageUrl
+          customizations: {},
+          imageUrl: imageUrl,
+          ingredients: product.ingredients || [],
         },
         isEditing: !!existingCartItem
       }
@@ -255,4 +258,5 @@ export function ProductsSanguches() {
     </div>
   );
 }
+
 export default ProductsSanguches;

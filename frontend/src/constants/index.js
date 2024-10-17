@@ -8,7 +8,7 @@ export const ROUTES = {
 
 export const PRODUCT_IMAGES = {
     33: '/assets/products/especial.png',
-    34: '/assets/products/carneBoloñesa.png',
+    34: '/assets/products/carneBolonesa.png',
     35: '/assets/products/pernilCerdo.png',
     36: '/assets/products/cordero.png',
     37: '/assets/products/hawaiano.png',
@@ -16,10 +16,10 @@ export const PRODUCT_IMAGES = {
     41: '/assets/products/polloDesmechado.png',
     42: '/assets/products/polloMielMostaza.png',
     43: '/assets/products/polloSalsaBlanca.png',
-  };
-  export const getProductImage = (productId) => {
+};
+export const getProductImage = (productId) => {
     return PRODUCT_IMAGES[productId] || '/assets/products/default.png';
-  };
+};
 export const CATEGORIES = [
     { name: 'DESAYUNOS', category: '9' },
     { name: 'SANGUCHES', category: 'all' },

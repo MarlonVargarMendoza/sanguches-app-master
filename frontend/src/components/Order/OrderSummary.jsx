@@ -5,7 +5,7 @@ import React from 'react';
 
 const OrderSummary = ({ items, total }) => (
     <Box className="bg-white p-6 rounded-lg shadow-md">
-        <Typography variant="h5" className="mb-4 font-semibold text-[#C8151B]">
+        <Typography variant="h5" className="mb-4 font-semibold text-black">
             Resumen del pedido
         </Typography>
         <Divider className="mb-4" />

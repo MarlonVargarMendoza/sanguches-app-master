@@ -9,7 +9,7 @@ import {
 import {
   Box, Breadcrumbs, Button, Checkbox, Chip, CircularProgress, Collapse,
   Dialog, DialogActions, DialogContent, DialogTitle, Grid, IconButton,
-  List, ListItem, ListItemText, Snackbar, Tooltip, Typography
+  List, ListItem, ListItemText, Snackbar, Tooltip, Typography, useMediaQuery, useTheme
 } from '@mui/material';
 import { motion } from 'framer-motion';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -31,9 +31,11 @@ const sectionLabels = {
 function Customize() {
   const location = useLocation();
   const navigate = useNavigate();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const { addToCart, updateCartItem } = useCart();
   const { selectedProduct, isEditing } = location.state || {};
-  const imageUrl = useProductImage(selectedProduct);
+  const imageUrl = selectedProduct?.imageUrl || useProductImage(selectedProduct?.id);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -71,10 +73,6 @@ function Customize() {
       } catch (error) {
         console.error('Error fetching data:', error);
         setError("Error al cargar las opciones de personalización.");
-        setAdditions([]);
-        setSauces([]);
-        setDrinks([]);
-        setProducts([]);
       } finally {
         setLoading(false);
       }
@@ -143,17 +141,35 @@ function Customize() {
   }, [selectedProduct, additions, sauces, drinks, selectedAdditions, selectedSauces, selectedDrinks, quantity, calculatePrice, isEditing, updateCartItem, addToCart, navigate]);
 
   const renderSelectionDialog = useCallback((type, items, selected, onClose) => (
-    <Dialog open={dialogOpen[type]} onClose={onClose} fullWidth maxWidth="sm" key={`dialog-${type}`}>
-      <DialogTitle>{`Seleccionar ${sectionLabels[type]}`}</DialogTitle>
+    <Dialog 
+      open={dialogOpen[type]} 
+      onClose={onClose} 
+      fullWidth 
+      maxWidth="sm" 
+      key={`dialog-${type}`}
+    >
+      <DialogTitle>
+        <Box display="flex" alignItems="center" justifyContent="space-between">
+          <Typography variant="h6">{`Seleccionar ${sectionLabels[type]}`}</Typography>
+          <IconButton onClick={onClose} size="small">
+            <CloseIcon />
+          </IconButton>
+        </Box>
+      </DialogTitle>
       <DialogContent>
         <List>
           {items.map((item) => (
-            <ListItem key={`${type}-${item.id}`} dense button onClick={() => {
-              const newSelection = selected.includes(item.id)
-                ? selected.filter(id => id !== item.id)
-                : [...selected, item.id];
-              handleSelectionChange(type, newSelection);
-            }}>
+            <ListItem 
+              key={`${type}-${item.id}`} 
+              dense 
+              button 
+              onClick={() => {
+                const newSelection = selected.includes(item.id)
+                  ? selected.filter(id => id !== item.id)
+                  : [...selected, item.id];
+                handleSelectionChange(type, newSelection);
+              }}
+            >
               <Checkbox
                 edge="start"
                 checked={selected.includes(item.id)}
@@ -162,17 +178,51 @@ function Customize() {
               />
               <ListItemText
                 primary={item.text || item.name}
-                secondary={type !== 'sauces' && (item.price ? `+$${item.price.toFixed(2)}` : (item.basePrice ? `+$${item.basePrice.toFixed(2)}` : null))}
+                /* secondary={type !== 'sauces' && (item.price ? `+$${item.price.toFixed(2)}` : (item.basePrice ? `+$${item.basePrice.toFixed(2)}` : null))} */
               />
             </ListItem>
           ))}
         </List>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose} color="primary">Cerrar</Button>
+        <Button onClick={onClose} color="primary" variant="outlined">
+          Cerrar
+        </Button>
+        <Button 
+          onClick={onClose} 
+          color="primary" 
+          variant="contained"
+          startIcon={<ShoppingCartIcon />}
+        >
+          Confirmar selección
+        </Button>
       </DialogActions>
     </Dialog>
   ), [dialogOpen, handleSelectionChange, sectionLabels]);
+
+  const renderSelectedItems = useCallback((type, items) => (
+    <Box className="flex flex-wrap gap-2 mt-2">
+      {items.map((id) => {
+        const item = eval(type).find(i => i.id === id);
+        return (
+          <Chip
+            key={id}
+            label={item.text || item.name}
+            onDelete={() => handleSelectionChange(type, items.filter(i => i !== id))}
+            color="primary"
+            size="small"
+          />
+        );
+      })}
+      <Chip
+        icon={<AddIcon />}
+        label={`Añadir más`}
+        onClick={() => setDialogOpen({ ...dialogOpen, [type]: true })}
+        color="default"
+        size="small"
+      />
+    </Box>
+  ), [dialogOpen, handleSelectionChange]);
 
   const toggleSection = useCallback((section) => {
     setExpandedSection(prev => prev === section ? null : section);
@@ -181,7 +231,6 @@ function Customize() {
   if (loading) {
     return (
       <div className='bg-[#F5F5F5] min-h-screen flex justify-center items-center'>
-
         <CircularProgress />
       </div>
     );
@@ -190,7 +239,6 @@ function Customize() {
   if (error || !selectedProduct) {
     return (
       <div className='bg-[#F5F5F5] min-h-screen'>
-
         <div className="container mx-auto px-4 py-12" style={{ paddingTop: '220px' }}>
           <Typography variant="h6" color="error">{error || "No se ha seleccionado ningún producto."}</Typography>
           <Button
@@ -212,11 +260,9 @@ function Customize() {
 
   return (
     <div className='bg-[#F5F5F5] min-h-screen'>
-
-
       <motion.main
         className='main-container p-6'
-        style={{ paddingTop: '220px' }}
+        style={{ paddingTop: isMobile ? '180px' : '220px' }}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
@@ -290,25 +336,7 @@ function Customize() {
                     </Typography>
                   </Button>
                   <Collapse in={expandedSection === type}>
-                    <div className="flex flex-wrap gap-2 mt-2">
-                      {eval(`selected${type.charAt(0).toUpperCase() + type.slice(1)}`).map((id) => {
-                        const item = eval(type).find(i => i.id === id);
-                        return (
-                          <Chip
-                            key={id}
-                            label={item.text || item.name}
-                            onDelete={() => handleSelectionChange(type, eval(`selected${type.charAt(0).toUpperCase() + type.slice(1)}`).filter(i => i !== id))}
-                            color="primary"
-                          />
-                        );
-                      })}
-                      <Chip
-                        icon={<AddIcon />}
-                        label={`Click para anadir`}
-                        onClick={() => setDialogOpen({ ...dialogOpen, [type]: true })}
-                        color="default"
-                      />
-                    </div>
+                    {renderSelectedItems(type, eval(`selected${type.charAt(0).toUpperCase() + type.slice(1)}`))}
                   </Collapse>
                 </motion.div>
               ))}
@@ -339,7 +367,7 @@ function Customize() {
                     {quantity}
                   </Typography>
                   <Tooltip title="Aumentar cantidad">
-                    <IconButton
+                  <IconButton
                       onClick={() => handleQuantityChange(1)}
                       sx={{
                         backgroundColor: '#FFC603',
@@ -362,7 +390,7 @@ function Customize() {
                     width: '80%',
                   }}
                 >
-                  Añadir al carrito
+                  {isEditing ? 'Actualizar carrito' : 'Añadir al carrito'}
                 </Button>
               </motion.div>
             </motion.div>
@@ -436,7 +464,7 @@ function Customize() {
         open={snackbarOpen}
         autoHideDuration={3000}
         onClose={() => setSnackbarOpen(false)}
-        message="¡Producto añadido al carrito!"
+        message={isEditing ? "¡Producto actualizado en el carrito!" : "¡Producto añadido al carrito!"}
         action={
           <IconButton
             size="small"
@@ -448,7 +476,6 @@ function Customize() {
           </IconButton>
         }
       />
-
     </div>
   );
 }

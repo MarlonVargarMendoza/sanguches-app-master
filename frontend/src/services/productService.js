@@ -33,16 +33,22 @@ export const getProductsByCategory = async (categoryId) => {
     }
 };
 
+
 export const getProductsByCategories = async (categories) => {
     try {
-        if (categories.includes('all')) {
-            return getAllProducts();
+        let url = `${API_URL}/api/products`;
+        if (categories && !categories.includes('all')) {
+            url += `?categories=${categories.join(',')}`;
         }
-        const promises = categories.map(category => getProductsByCategory(category));
-        const results = await Promise.all(promises);
-        return results.flat();
+        const response = await axios.get(url);
+        return response.data.data.map(product => ({
+            ...product,
+            ingredients: product.ingredients || [],
+            basePrice: product.basePrice || 0,
+        }));
     } catch (error) {
-        handleAxiosError(error);
+        console.error('Error fetching products:', error);
+        throw error;
     }
 };
 export const getAllProducts = async (categoryId = 'all') => {
