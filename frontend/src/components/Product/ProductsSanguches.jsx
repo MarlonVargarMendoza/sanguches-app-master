@@ -62,9 +62,9 @@ const ProductCard = React.memo(({ product, onAddToCart, onRemoveFromCart, onProd
         </p>
         <div className="mt-auto flex items-center justify-between">
           <div className="flex flex-col">
-            
+
             <span className="text-[#A4A4A4] font-bold">
-              ${product.basePrice.toFixed(2)}
+              ${product.basePrice}
             </span>
           </div>
           <Button
@@ -130,12 +130,15 @@ export function ProductsSanguches() {
   const [selectedCategories, setSelectedCategories] = useState(
     queryParams.get('categories')?.split(',') || [queryParams.get('category') || 'all']
   );
+  const [filters, setFilters] = useState({ minPrice: 0, category: 'all' });
 
   const fetchProducts = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     try {
       const data = await getProductsByCategories(selectedCategories);
+      // Filtrar los productos por precio mínimo
+      const filteredData = data.filter(product => product.basePrice >= filters.minPrice);
       setProducts(data);
     } catch (error) {
       console.error('Error fetching products:', error);
@@ -147,7 +150,7 @@ export function ProductsSanguches() {
 
   useEffect(() => {
     fetchProducts();
-  }, [fetchProducts]);
+  }, [fetchProducts, filters.minPrice]);
 
   useEffect(() => {
     const categories = queryParams.get('categories')?.split(',');
@@ -156,6 +159,7 @@ export function ProductsSanguches() {
   }, [location.search]);
 
   const handleFilterChange = useCallback((newFilters) => {
+    setFilters(newFilters);
     const newCategory = newFilters.category;
     navigate(newCategory === 'all' ? '/menuSanguches' : `/menuSanguches?category=${newCategory}`);
   }, [navigate]);
@@ -196,9 +200,9 @@ export function ProductsSanguches() {
     });
   }, [navigate, cart]);
 
-  const checkProductInCart = useCallback((product) => 
+  const checkProductInCart = useCallback((product) =>
     product && cart.some((item) => item.id === product.id),
-  [cart]);
+    [cart]);
 
   const getCartItemQuantity = useCallback((product) => {
     const cartItem = cart.find((item) => item.id === product.id);
@@ -234,7 +238,7 @@ export function ProductsSanguches() {
             <Box className="bg-white rounded-lg shadow-lg p-4">
               <Typography variant="h6" className="font-bold mb-4">Filtros</Typography>
               <Filters
-                filters={{ minPrice: 0, category: selectedCategories[0] }}
+                filters={filters}
                 onFilterChange={handleFilterChange}
               />
             </Box>

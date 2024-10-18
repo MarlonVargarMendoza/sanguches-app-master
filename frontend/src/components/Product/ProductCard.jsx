@@ -4,9 +4,9 @@ import { Button, Card, CardContent, CardMedia, Typography } from '@mui/material'
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
-function ProductCard({ product }) {
+function ProductCard({ product, onClick  }) {
     const { id, name, basePrice, ingredients } = product;
-    const formattedPrice = basePrice != null && !isNaN(basePrice) ? basePrice.toFixed(2) : '0.00';
+    const formattedPrice = basePrice != null && !isNaN(basePrice) ? basePrice : '0.00';
     const navigate = useNavigate();
 
     const handlePersonalize = () => {
@@ -21,7 +21,7 @@ function ProductCard({ product }) {
     };
 
     return (
-        <Card className="product-card h-full flex flex-col shadow-lg hover:shadow-xl transition-shadow duration-300">
+        <Card className="product-card h-full flex flex-col shadow-lg hover:shadow-xl transition-shadow duration-300" onClick={onClick}>
             <CardMedia
                 component="img"
                 image={product.image}

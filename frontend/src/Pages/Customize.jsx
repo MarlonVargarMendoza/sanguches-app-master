@@ -33,7 +33,9 @@ function Customize() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const { addToCart, updateCartItem } = useCart();
-  const { selectedProduct, isEditing } = location.state || {};
+  const { selectedProduct: initialProduct, isEditing } = location.state || {};
+  const [selectedProduct, setSelectedProduct] = useState(initialProduct);
+
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -49,14 +51,16 @@ function Customize() {
   const [dialogOpen, setDialogOpen] = useState({ additions: false, sauces: false, drinks: false });
   const [expandedSection, setExpandedSection] = useState(null);
 
+
   useEffect(() => {
     const fetchData = async () => {
-      if (!selectedProduct) {
+      if (!initialProduct) {
         setError("No se ha seleccionado ningún producto.");
         setLoading(false);
         return;
       }
-
+      setSelectedProduct(initialProduct);
+      setLoading(true);
       try {
         const [additionsData, saucesData, drinksData, relatedProductsData] = await Promise.all([
           getAdditions(),
@@ -105,6 +109,31 @@ function Customize() {
     return totalPrice * quantity;
   }, [selectedProduct, additions, drinks, selectedAdditions, selectedDrinks, quantity]);
 
+  const handleNewProductSelection = useCallback((newProduct) => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    // Actualizar el producto seleccionado
+    setSelectedProduct(newProduct);
+
+    // Reiniciar las selecciones
+    setSelectedAdditions([]);
+    setSelectedSauces([]);
+    setSelectedDrinks([]);
+    setQuantity(1);
+
+    // Mostrar una notificación
+    setSnackbarOpen(true);
+  }, []);
+
+  const getSnackbarMessage = useCallback(() => {
+    if (isEditing) {
+      return "¡Producto actualizado en el carrito!";
+    }
+    if (selectedProduct !== initialProduct) {
+      return "Nuevo producto seleccionado. Personaliza tu pedido.";
+    }
+    return "¡Producto añadido al carrito!";
+  }, [isEditing, selectedProduct, initialProduct]);
+
   const handleAddToCart = useCallback(() => {
     if (!selectedProduct) return;
 
@@ -139,11 +168,11 @@ function Customize() {
   }, [selectedProduct, additions, sauces, drinks, selectedAdditions, selectedSauces, selectedDrinks, quantity, calculatePrice, isEditing, updateCartItem, addToCart, navigate]);
 
   const renderSelectionDialog = useCallback((type, items, selected, onClose) => (
-    <Dialog 
-      open={dialogOpen[type]} 
-      onClose={onClose} 
-      fullWidth 
-      maxWidth="sm" 
+    <Dialog
+      open={dialogOpen[type]}
+      onClose={onClose}
+      fullWidth
+      maxWidth="sm"
       key={`dialog-${type}`}
     >
       <DialogTitle>
@@ -157,10 +186,10 @@ function Customize() {
       <DialogContent>
         <List>
           {items.map((item) => (
-            <ListItem 
-              key={`${type}-${item.id}`} 
-              dense 
-              button 
+            <ListItem
+              key={`${type}-${item.id}`}
+              dense
+              button
               onClick={() => {
                 const newSelection = selected.includes(item.id)
                   ? selected.filter(id => id !== item.id)
@@ -176,7 +205,7 @@ function Customize() {
               />
               <ListItemText
                 primary={item.text || item.name}
-                /* secondary={type !== 'sauces' && (item.price ? `+$${item.price.toFixed(2)}` : (item.basePrice ? `+$${item.basePrice.toFixed(2)}` : null))} */
+              /* secondary={type !== 'sauces' && (item.price ? `+$${item.price.toFixed(2)}` : (item.basePrice ? `+$${item.basePrice.toFixed(2)}` : null))} */
               />
             </ListItem>
           ))}
@@ -186,9 +215,9 @@ function Customize() {
         <Button onClick={onClose} color="primary" variant="outlined">
           Cerrar
         </Button>
-        <Button 
-          onClick={onClose} 
-          color="primary" 
+        <Button
+          onClick={onClose}
+          color="primary"
           variant="contained"
           startIcon={<ShoppingCartIcon />}
         >
@@ -282,7 +311,7 @@ function Customize() {
                 <SideBySideMagnifier
                   imageSrc={selectedProduct.image}
                   imageAlt={selectedProduct.name}
-                  largeImageSrc={selectedProduct.image }
+                  largeImageSrc={selectedProduct.image}
                   alwaysInPlace={true}
                   overlayBoxOpacity={0.8}
                   shadowColor="#000"
@@ -366,7 +395,7 @@ function Customize() {
                     {quantity}
                   </Typography>
                   <Tooltip title="Aumentar cantidad">
-                  <IconButton
+                    <IconButton
                       onClick={() => handleQuantityChange(1)}
                       sx={{
                         backgroundColor: '#FFC603',
@@ -440,7 +469,10 @@ function Customize() {
                   scrollSnapAlign: 'start',
                 }}
               >
-                <ProductCard product={item} />
+                <ProductCard
+                  product={item}
+                  onClick={() => handleNewProductSelection(item)}
+                />
               </motion.div>
             ))}
           </Box>
@@ -458,13 +490,20 @@ function Customize() {
 
       <Snackbar
         anchorOrigin={{
-          vertical: 'bottom',
+          vertical: 'top',
           horizontal: 'center',
         }}
         open={snackbarOpen}
         autoHideDuration={3000}
         onClose={() => setSnackbarOpen(false)}
-        message={isEditing ? "¡Producto actualizado en el carrito!" : "¡Producto añadido al carrito!"}
+        message={getSnackbarMessage()}
+        ContentProps={{
+          sx: {
+            backgroundColor: '#FFC603',
+            color: 'black',
+            fontWeight: 'bold',
+          }
+        }}
         action={
           <IconButton
             size="small"
@@ -476,6 +515,8 @@ function Customize() {
           </IconButton>
         }
       />
+
+
     </div>
   );
 }
