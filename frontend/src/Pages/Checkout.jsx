@@ -170,7 +170,7 @@ const PaymentSection = ({ total }) => (
             Realiza el pago
         </Typography>
         <Typography variant="body1" className="mb-4 text-gray-700">
-            Escanea el siguiente código QR para realizar el pago de ${total.toFixed(2)}
+            Escanea el siguiente código QR para realizar el pago de ${total}
         </Typography>
         <Box className="flex justify-center mb-4">
             <img src={qrCodeImage} alt="Código QR para pago" className="w-48 h-48" />
@@ -212,7 +212,7 @@ const PaymentSummary = ({ total, isProcessing, activeStep, onConfirm, onNextStep
         <Divider className="mb-4" />
         <Box className="flex justify-between mb-5">
             <Typography className="font-semibold">Total a pagar:</Typography>
-            <Typography className="font-black text-gray-900">${total.toFixed(2)}</Typography>
+            <Typography className="font-black text-gray-900">${total}</Typography>
         </Box>
         <Divider className="mb-4" />
         <Button

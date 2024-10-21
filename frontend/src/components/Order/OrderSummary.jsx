@@ -22,7 +22,7 @@ const OrderSummary = ({ items, total }) => (
                             {item.name} x{item.quantity}
                         </Typography>
                         <Typography variant="body1" className="font-bold">
-                            ${(item.basePrice * item.quantity).toFixed(2)}
+                            ${(item.basePrice * item.quantity)}
                         </Typography>
                     </Box>
                     {item.customizations && (
@@ -59,7 +59,7 @@ const OrderSummary = ({ items, total }) => (
                 Total
             </Typography>
             <Typography variant="h6" className="font-bold text-[#C8151B]">
-                ${total.toFixed(2)}
+                ${total}
             </Typography>
         </Box>
     </Box>

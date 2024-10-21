@@ -2,6 +2,12 @@
 const API_URL = import.meta.env.VITE_APP_DOMAIN;
 import axios from 'axios';
 
+// Constants for product IDs
+const ACCOMPANIMENT_IDS = {
+    FRENCH_FRIES: '13', // Papas a la francesa
+    YUCA_STICKS: '14'   // Palos de yuca
+};
+
 export const getProducts = async () => {
     try {
         const response = await axios.get(`${API_URL}/api/products`);
@@ -56,6 +62,37 @@ export const getAllProducts = async (categoryId = 'all') => {
         handleAxiosError(error);
     }
 };
+export const getAllCustomizations = async () => {
+    try {
+        const [additions, sauces, drinks, accompaniments] = await Promise.all([
+            getAdditions(),
+            getSaucesSelect(),
+            getDrinksSelect(),
+            getAccompaniments()
+        ]);
+
+        return {
+            additions,
+            sauces,
+            drinks,
+            accompaniments: accompaniments.map(accompaniment => ({
+                id: accompaniment.value,
+                name: accompaniment.text,
+                basePrice: accompaniment.basePrice,
+                type: 'accompaniment'
+            }))
+        };
+    } catch (error) {
+        console.error('Error fetching customizations:', error);
+        handleAxiosError(error);
+        return {
+            additions: [],
+            sauces: [],
+            drinks: [],
+            accompaniments: []
+        };
+    }
+};
 export const getDrinks = async () => {
     try {
         const response = await axios.get(`${API_URL}/api/drinks`);
@@ -91,6 +128,30 @@ export const getAdditions = async () => {
     }
 };
 
+export const getAccompaniments = async () => {
+    try {
+        // Fetch both accompaniments in parallel
+        const [frenchFriesResponse, yucaResponse] = await Promise.all([
+            axios.get(`${API_URL}/api/products/${ACCOMPANIMENT_IDS.FRENCH_FRIES}`),
+            axios.get(`${API_URL}/api/products/${ACCOMPANIMENT_IDS.YUCA_STICKS}`)
+        ]);
+
+        // Extract and combine the data
+        const accompaniments = [
+            ...(frenchFriesResponse.data.data || []),
+            ...(yucaResponse.data.data || [])
+        ].map(item => ({
+            ...item,
+            type: 'accompaniment'
+        }));
+
+        return accompaniments;
+    } catch (error) {
+        console.error('Error fetching accompaniments:', error);
+        handleAxiosError(error);
+        return [];
+    }
+};
 
 export const getProductById = async (id) => {
     try {

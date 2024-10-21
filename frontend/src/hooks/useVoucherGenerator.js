@@ -13,19 +13,19 @@ export const useVoucherGenerator = () => {
             const itemPrice = calculateItemPrice(item);
             totalPrice += itemPrice;
 
-            voucherText += `${index + 1}. ${item.name} x${item.quantity} - $${itemPrice.toFixed(2)}\n`;
+            voucherText += `${index + 1}. ${item.name} x${item.quantity} - $${itemPrice}\n`;
 
             if (item.customizations) {
                 if (item.customizations.additions?.length > 0) {
                     voucherText += "   Adiciones:\n";
                     item.customizations.additions.forEach(addition => {
-                        voucherText += `     - ${addition.text || addition.name}: $${addition.price.toFixed(2)}\n`;
+                        voucherText += `     - ${addition.text || addition.name}: $${addition.price}\n`;
                     });
                 }
                 if (item.customizations.drinks?.length > 0) {
                     voucherText += "   Bebidas:\n";
                     item.customizations.drinks.forEach(drink => {
-                        voucherText += `     - ${drink.text || drink.name}: $${drink.price.toFixed(2)}\n`;
+                        voucherText += `     - ${drink.text || drink.name}: $${drink.price}\n`;
                     });
                 }
                 if (item.customizations.sauces?.length > 0) {
@@ -35,7 +35,7 @@ export const useVoucherGenerator = () => {
             voucherText += '\n';
         });
 
-        voucherText += `\nTotal: $${totalPrice.toFixed(2)}`;
+        voucherText += `\nTotal: $${totalPrice}`;
         return voucherText;
     }, [cart, calculateItemPrice]);
 

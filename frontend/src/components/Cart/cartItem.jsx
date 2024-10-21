@@ -1,4 +1,4 @@
-import { Add as AddIcon, Delete as DeleteIcon, Edit as EditIcon, ExpandLess as ExpandLessIcon, ExpandMore as ExpandMoreIcon, Remove as RemoveIcon } from '@mui/icons-material';
+import { Add as AddIcon, Delete as DeleteIcon, ExpandLess as ExpandLessIcon, ExpandMore as ExpandMoreIcon, Remove as RemoveIcon } from '@mui/icons-material';
 import { Box, Button, Collapse, Dialog, DialogActions, DialogContent, DialogTitle, Divider, Fade, IconButton, List, ListItem, ListItemText, Tooltip, Typography } from '@mui/material';
 import { motion } from 'framer-motion';
 import React, { useCallback, useState } from 'react';
@@ -30,9 +30,6 @@ const CartItem = React.memo(({ item, onSnackbarMessage }) => {
 
   const toggleExpanded = useCallback(() => setExpanded(prev => !prev), []);
 
-  const handleEdit = useCallback(() => {
-    navigate('/editaloTuMismo', { state: { selectedProduct: item } });
-  }, [item, navigate]);
 
   const hasCustomizations = item.customizations && (
     (item.customizations.additions?.length > 0) || 
@@ -49,7 +46,7 @@ const CartItem = React.memo(({ item, onSnackbarMessage }) => {
           <ListItemText
             primary="Adiciones"
             secondary={item.customizations.additions.map(addition => 
-              `${addition.text || addition.name} (+$${addition.price.toFixed(2)})`
+              `${addition.text || addition.name} (+$${addition.price})`
             ).join(', ')}
           />
         </ListItem>
@@ -69,7 +66,7 @@ const CartItem = React.memo(({ item, onSnackbarMessage }) => {
           <ListItemText
             primary="Bebidas"
             secondary={item.customizations.drinks.map(drink => 
-              `${drink.text || drink.name} (+$${drink.price.toFixed(2)})`
+              `${drink.text || drink.name} (+$${drink.price})`
             ).join(', ')}
           />
         </ListItem>
@@ -99,7 +96,7 @@ const CartItem = React.memo(({ item, onSnackbarMessage }) => {
               {item.name}
             </Typography>
             <Typography variant="body2" className="text-gray-600">
-              Precio base: ${(item.basePrice || 0).toFixed(2)}
+              Precio base: ${(item.basePrice || 0)}
             </Typography>
           </Box>
           <Box className="flex flex-col items-end">
@@ -128,11 +125,7 @@ const CartItem = React.memo(({ item, onSnackbarMessage }) => {
               </Tooltip>
             </Box>
             <Box className="mt-2">
-              <Tooltip title="Editar producto" arrow>
-                <IconButton onClick={handleEdit} size="small" className="text-[#FFC603] mr-1">
-                  <EditIcon />
-                </IconButton>
-              </Tooltip>
+              
               <Tooltip title="Eliminar producto" arrow>
                 <IconButton onClick={() => setConfirmDelete(true)} size="small" className="text-[#C8151B]">
                   <DeleteIcon />

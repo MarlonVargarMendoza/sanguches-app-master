@@ -18,14 +18,15 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 import ProductCard from '../components/Product/ProductCard';
 import { useCart } from '../hooks/useCart';
-import { getAdditions, getAllProducts, getDrinksSelect, getSaucesSelect } from '../services/productService';
+import { getAllCustomizations, getAllProducts } from '../services/productService';
 
 const DOMAIN = import.meta.env.VITE_APP_DOMAIN;
 
 const sectionLabels = {
   additions: "Agregar Adición",
   sauces: "Agregar Salsas",
-  drinks: "Añadir Bebidas"
+  drinks: "Añadir Bebidas",
+  accompaniments: "Agregar Acompañamientos"
 };
 
 function Customize() {
@@ -51,8 +52,9 @@ function Customize() {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [dialogOpen, setDialogOpen] = useState({ additions: false, sauces: false, drinks: false });
   const [expandedSection, setExpandedSection] = useState(null);
-
-
+  const [accompaniments, setAccompaniments] = useState([]);
+  const [selectedAccompaniments, setSelectedAccompaniments] = useState([]);
+  
   useEffect(() => {
     const fetchData = async () => {
       if (!initialProduct) {
@@ -63,16 +65,13 @@ function Customize() {
       setSelectedProduct(initialProduct);
       setLoading(true);
       try {
-        const [additionsData, saucesData, drinksData, relatedProductsData] = await Promise.all([
-          getAdditions(),
-          getSaucesSelect(),
-          getDrinksSelect(),
-          getAllProducts()
-        ]);
-        setAdditions(additionsData);
-        setSauces(saucesData);
-        setDrinks(drinksData);
-        setProducts(relatedProductsData);
+        const customizations = await getAllCustomizations();
+        setAdditions(customizations.additions);
+        setSauces(customizations.sauces);
+        setDrinks(customizations.drinks);
+        setAccompaniments(customizations.accompaniments);
+        const productsData = await getAllProducts();
+        setProducts(productsData);
       } catch (error) {
         console.error('Error fetching data:', error);
         setError("Error al cargar las opciones de personalización.");
@@ -83,11 +82,14 @@ function Customize() {
     fetchData();
   }, [selectedProduct]);
 
+
+
   const handleSelectionChange = useCallback((type, value) => {
     const setters = {
       additions: setSelectedAdditions,
       sauces: setSelectedSauces,
-      drinks: setSelectedDrinks
+      drinks: setSelectedDrinks,
+      accompaniments: setSelectedAccompaniments
     };
     setters[type](value);
   }, []);
@@ -99,16 +101,24 @@ function Customize() {
   const calculatePrice = useCallback(() => {
     if (!selectedProduct) return 0;
     let totalPrice = selectedProduct.basePrice;
+    
     selectedAdditions.forEach(additionId => {
       const addition = additions.find(a => a.id === additionId);
       if (addition) totalPrice += addition.price;
     });
+    
     selectedDrinks.forEach(drinkId => {
       const drink = drinks.find(d => d.id === drinkId);
       if (drink) totalPrice += drink.basePrice;
     });
+    
+    selectedAccompaniments.forEach(accompId => {
+      const accomp = accompaniments.find(a => a.id === accompId);
+      if (accomp) totalPrice += accomp.basePrice;
+    });
+    
     return totalPrice * quantity;
-  }, [selectedProduct, additions, drinks, selectedAdditions, selectedDrinks, quantity]);
+  }, [selectedProduct, additions, drinks, accompaniments, selectedAdditions, selectedDrinks, selectedAccompaniments, quantity]);
 
   const handleNewProductSelection = useCallback((newProduct) => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -153,6 +163,10 @@ function Customize() {
           const item = drinks.find(d => d.id === id);
           return { id: item.id, text: item.text || item.name, price: item.basePrice };
         }),
+        accompaniments: selectedAccompaniments.map(id => {
+          const item = accompaniments.find(a => a.id === id);
+          return { id: item.id, text: item.text || item.name, price: item.basePrice };
+        })
       },
       quantity,
       calculatedPrice: calculatePrice(),
@@ -165,8 +179,8 @@ function Customize() {
     }
 
     setSnackbarOpen(true);
-    navigate(-1); // Volver a la página anterior
-  }, [selectedProduct, additions, sauces, drinks, selectedAdditions, selectedSauces, selectedDrinks, quantity, calculatePrice, isEditing, updateCartItem, addToCart, navigate]);
+    navigate(-1);
+  }, [selectedProduct, additions, sauces, drinks, accompaniments, selectedAdditions, selectedSauces, selectedDrinks, selectedAccompaniments, quantity, calculatePrice, isEditing, updateCartItem, addToCart, navigate]);
 
   const renderSelectionDialog = useCallback((type, items, selected, onClose) => (
     <Dialog
@@ -338,7 +352,7 @@ function Customize() {
                 {selectedProduct.name}
               </Typography>
               <Typography variant="h5" className="font-black text-[#FFC603] mb-4">
-                ${calculatePrice().toFixed(2)}
+                ${calculatePrice()}
               </Typography>
 
               {Object.entries(sectionLabels).map(([type, label]) => (

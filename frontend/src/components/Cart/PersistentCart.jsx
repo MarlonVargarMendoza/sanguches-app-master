@@ -42,7 +42,7 @@ const CartFooter = ({ totalPrice, onCheckout }) => (
         <Box className="flex justify-between mb-2">
             <Typography variant="subtitle1">Total</Typography>
             <Typography variant="subtitle1" className="font-bold text-[#C8151B]">
-                ${totalPrice.toFixed(2)}
+                ${totalPrice}
             </Typography>
         </Box>
         <Typography variant="caption" className="mb-4 block text-gray-600">

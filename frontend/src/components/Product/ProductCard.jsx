@@ -35,7 +35,7 @@ function ProductCard({ product, onClick  }) {
             />
             <CardContent className="flex-grow flex flex-col justify-between p-4">
                 <div>
-                    <Typography variant="h6" component="h3" className="font-semibold mb-2 text-[#C8151B]">
+                    <Typography variant="h6" component="h3" className="font-semibold mb-2 text-gray-700">
                         {name}
                     </Typography>
                     <Typography variant="body2" color="text.secondary" className="mb-4 line-clamp-2 h-[3em]">
