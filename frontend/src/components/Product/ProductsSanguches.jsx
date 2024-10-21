@@ -22,11 +22,13 @@ const ProductCard = React.memo(({ product, onAddToCart, onRemoveFromCart, onProd
     onProductClick(product, product.image);
   };
 
+  const image = DOMAIN+product.image;
+
   return (
     <li className="product-card bg-white rounded-lg shadow-lg overflow-hidden transition-transform duration-300 hover:shadow-xl hover:-translate-y-1">
       <div className="relative product-image">
         <img
-          src={product.image}
+          src={image}
           alt={product.name}
           className="w-full h-48 object-cover cursor-pointer"
           onClick={handleClick}

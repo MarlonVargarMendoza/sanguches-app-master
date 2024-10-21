@@ -5,6 +5,7 @@ import React, { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../../hooks/useCart';
 
+const DOMAIN = import.meta.env.VITE_APP_DOMAIN;
 
 const CartItem = React.memo(({ item, onSnackbarMessage }) => {
   const { updateCartItem, removeFromCart, calculateItemPrice } = useCart();
@@ -89,7 +90,7 @@ const CartItem = React.memo(({ item, onSnackbarMessage }) => {
       <Box className="cart-item bg-white rounded-lg shadow-md mb-4 overflow-hidden border border-gray-200 hover:shadow-lg transition-shadow duration-300">
         <Box className="flex items-center p-4">
           <img 
-            src={item.image} 
+            src={DOMAIN+item.image} 
             alt={item.name} 
             className="w-20 h-20 object-cover rounded-lg mr-4 shadow-sm" 
             />
