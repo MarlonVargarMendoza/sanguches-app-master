@@ -23,6 +23,7 @@
     "@react-spring/web": "^9.7.4",
     "@stripe/react-stripe-js": "^2.7.3",
     "@stripe/stripe-js": "^4.1.0",
+    "axios": "^1.7.7",
     "canvas-confetti": "^1.9.3",
     "clsx": "^2.1.1",
     "framer-motion": "^11.5.4",
