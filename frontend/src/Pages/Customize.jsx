@@ -21,9 +21,10 @@ import { useCart } from '../hooks/useCart';
 import { getAdditions, getAllProducts, getDrinksSelect, getSaucesSelect } from '../services/productService';
 
 const DOMAIN = import.meta.env.VITE_APP_DOMAIN;
+
 const sectionLabels = {
-  additions: "Añadir Acompañamientos",
-  sauces: "Añadir Salsas",
+  additions: "Agregar Adición",
+  sauces: "Agregar Salsas",
   drinks: "Añadir Bebidas"
 };
 
@@ -294,13 +295,13 @@ function Customize() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <Breadcrumbs aria-label="breadcrumb" className="mb-6 ">
+        <Breadcrumbs aria-label="breadcrumb" className="py-6">
           <Link to="/" className="hover:text-[#C3151A]">Inicio</Link>
           <Link to="/menuSanguches" className="hover:text-[#C3151A]">Menú</Link>
           <Typography color="text.primary">Personaliza tu sándwich</Typography>
         </Breadcrumbs>
 
-        <Grid container spacing={6} className="bg-white rounded-lg shadow-lg p-2">
+        <Grid container spacing={6} className="bg-white rounded-lg shadow-lg">
           <Grid item xs={12} md={5}>
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
@@ -309,9 +310,9 @@ function Customize() {
             >
               <Box sx={{ borderRadius: '12px', overflow: 'hidden', boxShadow: '0 4px 8px rgba(0,0,0,0.1)' }}>
                 <SideBySideMagnifier
-                  imageSrc={selectedProduct.image}
-                  imageAlt={selectedProduct.name}
-                  largeImageSrc={selectedProduct.image}
+                  imageSrc={DOMAIN+selectedProduct.image}
+                  imageAlt={DOMAIN+selectedProduct.name}
+                  largeImageSrc={DOMAIN+selectedProduct.image}
                   alwaysInPlace={true}
                   overlayBoxOpacity={0.8}
                   shadowColor="#000"
@@ -322,7 +323,7 @@ function Customize() {
                 />
               </Box>
             </motion.div>
-            <Typography variant="body1" className="mt-4 text-[#525D5A]">
+            <Typography variant="body1" className="py-5 text-[#525D5A]">
               <strong>Ingredientes:</strong> {selectedProduct.ingredients ? selectedProduct.ingredients.map(ing => ing.name).join(', ') : 'Información no disponible'}
             </Typography>
           </Grid>

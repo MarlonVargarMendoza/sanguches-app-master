@@ -32,7 +32,7 @@ const Checkout = () => {
             const message = `
 ${voucherText}
 
-Por favor, adjunta el comprobante de pago a este mensaje antes de enviarlo.
+Por favor, adjunta el comprobante de pago en el chat.
 
 Gracias por tu compra en Sanguches!
             `;

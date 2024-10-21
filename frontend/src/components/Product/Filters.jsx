@@ -13,13 +13,13 @@ export function Filters({ filters = { minPrice: 0, category: 'all' }, onFilterCh
     };
 
     const categorias = [
-        { id: 'all', nombre: 'Todas' },
-        { id: 7, nombre: 'Sanguche Tradicional' },
-        { id: 8, nombre: 'Sanguchito' },
-        { id: 9, nombre: 'Desayuno' },
-        { id: 10, nombre: 'Dona' },
-        { id: 11, nombre: 'Pastel' },
-        { id: 12, nombre: 'Otro' },
+        { id: 'all', nombre: 'Todos los sanguches' },
+        { id: 7, nombre: 'Sanguches tradicionales' },
+        { id: 8, nombre: 'Sanguchitos' },
+        { id: 9, nombre: 'Desayunos' },
+        { id: 10, nombre: 'Donas' },
+        { id: 11, nombre: 'Pasteles' },
+        { id: 12, nombre: 'Otros' },
     ];
 
     return (

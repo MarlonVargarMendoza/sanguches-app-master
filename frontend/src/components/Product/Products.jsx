@@ -41,7 +41,7 @@ export function Productsjson({ productService = getProducts }) {
 
   return (
     <main className='products relative w-full p-8 flex flex-col md:flex-row'>
-      <div className='products-list mt-16 py-8'>
+      <div className='products-list py-8'>
         {isLoading ? ( // Display loading indicator while fetching data
           <ul className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 list-none p-0 m-0 rounded-lg'>
             {/* Render placeholders mientras carga */}

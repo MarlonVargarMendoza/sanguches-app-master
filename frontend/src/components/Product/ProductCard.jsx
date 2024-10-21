@@ -4,17 +4,21 @@ import { Button, Card, CardContent, CardMedia, Typography } from '@mui/material'
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
+const DOMAIN = import.meta.env.VITE_APP_DOMAIN;
+
 function ProductCard({ product, onClick  }) {
     const { id, name, basePrice, ingredients } = product;
     const formattedPrice = basePrice != null && !isNaN(basePrice) ? basePrice : '0.00';
     const navigate = useNavigate();
+
+    const image = DOMAIN+product.image;
 
     const handlePersonalize = () => {
         navigate('/editaloTuMismo', { 
             state: { 
                 selectedProduct: {
                     ...product,
-                    ...product.image
+                    ...image
                 }
             } 
         });
@@ -24,7 +28,7 @@ function ProductCard({ product, onClick  }) {
         <Card className="product-card h-full flex flex-col shadow-lg hover:shadow-xl transition-shadow duration-300" onClick={onClick}>
             <CardMedia
                 component="img"
-                image={product.image}
+                image={image}
                 alt={name}
                 className="w-full h-48 sm:h-56 object-cover cursor-pointer"
                 onClick={handlePersonalize}
