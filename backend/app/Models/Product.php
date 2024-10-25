@@ -15,7 +15,8 @@ class Product extends Model
         'image',
         'type_sandwiches_id',
         'type_products_id',
-        'description'
+        'description',
+        'status'
     ];
 
     public function typeSandwiche ()

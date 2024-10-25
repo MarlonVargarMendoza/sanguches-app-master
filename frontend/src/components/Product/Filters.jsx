@@ -13,8 +13,8 @@ export function Filters({ filters = { minPrice: 0, category: 'all' }, onFilterCh
     };
 
     const categorias = [
-        { id: 'all', nombre: 'Todos los sanguches' },
-        { id: 7, nombre: 'Sanguches tradicionales' },
+        { id: 'all', nombre: 'Sanguches y sanguchitos' },
+        { id: 7, nombre: 'Sanguches' },
         { id: 8, nombre: 'Sanguchitos' },
         { id: 9, nombre: 'Desayunos' },
         { id: 10, nombre: 'Donas' },
