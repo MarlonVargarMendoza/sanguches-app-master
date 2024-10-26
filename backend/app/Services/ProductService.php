@@ -11,38 +11,32 @@ class ProductService
     public function getSandwichsHome ()
     {
         try {
-            $sandwichs = Product::with('ingredients')
-                /*->with('sauces')*/
-                ->whereIn('type_products_id', [7, 8])
-                ->where('status', true)
-                ->whereHas('ingredients', function ($query) {
-                    $query->where('status', true);
-                })
-                ->select('id', 'image', 'name', 'description', 'basePrice')
-                ->orderBy('name', 'ASC')
-                ->get();
+            $sandwichs = Product::with(['ingredients' => function ($query) {
+                $query->where('status', true)
+                ->select('ingredients.id', 'name');
+            }])
+            ->whereIn('type_products_id', [7, 8])
+            ->where('status', true)
+            ->select('id', 'image', 'name', 'description', 'basePrice')
+            ->orderBy('name', 'ASC')
+            ->get();
 
             foreach ($sandwichs as $product) {
                 $ingredientsGrouped = $product->ingredients->groupBy('name')->map(function ($group) {
-                    $ingredient = $group->first()->replicate();
+                    $ingredient = $group->first();
                     $ingredient->amount = $group->count();
 
                     if ($ingredient->amount > 1) {
                         $ingredient->name = "{$ingredient->name} x{$ingredient->amount}";
                     }
 
-                    $ingredient->makeHidden(['price', 'type_ingredients_id', 'addition', 'pivot', 'status', 'amount']);
+                    $ingredient->makeHidden(['pivot', 'amount']);
                     return $ingredient;
                 })->values();
 
                 $product->ingredients = $ingredientsGrouped;
                 $product->setRelation('ingredients', $ingredientsGrouped);
             }
-
-            /*foreach ($sandwichs as $sandwich) {
-                //$sandwich->sauces->makeHidden(['pivot', 'addition', 'price']);
-                $sandwich->ingredients->makeHidden(['price', 'type_ingredients_id', 'addition', 'pivot']);
-            }*/
 
             if ($sandwichs->toArray()) {
                 return ['status' => 200, 'data' => $sandwichs];
@@ -52,7 +46,7 @@ class ProductService
             }
 
         } catch (\Throwable $th) {
-            return ['status' => 500, 'message' => 'Internal error, contact administrator'];
+            return ['status' => 500, 'message' => $th];
         }
     }
 
@@ -73,27 +67,26 @@ class ProductService
                     ->get();
 
             } elseif ($id == 7 || $id == 8 || $id == 9 || $id == 10 || $id == 11 || $id == 12) {
-                $products = Product::with('ingredients')
-                    /*->with('sauces')*/
-                    ->where('type_products_id', $id)
-                    ->where('status', true)
-                    ->whereHas('ingredients', function ($query) {
-                        $query->where('status', true);
-                    })
-                    ->select('id', 'image', 'name', 'description', 'basePrice')
-                    ->orderBy('name', 'ASC')
-                    ->get();
+                $products = Product::with(['ingredients' => function ($query) {
+                    $query->where('status', true)
+                    ->select('ingredients.id', 'name');
+                }])
+                ->where('type_products_id', $id)
+                ->where('status', true)
+                ->select('id', 'image', 'name', 'description', 'basePrice')
+                ->orderBy('name', 'ASC')
+                ->get();
             
             foreach ($products as $product) {
                 $ingredientsGrouped = $product->ingredients->groupBy('name')->map(function ($group) {
-                    $ingredient = $group->first()->replicate();
+                    $ingredient = $group->first();
                     $ingredient->count = $group->count();
 
                     if ($ingredient->count > 1) {
                         $ingredient->name = "{$ingredient->name} x{$ingredient->count}";
                     }
 
-                    $ingredient->makeHidden(['price', 'type_ingredients_id', 'addition', 'pivot', 'status', 'count']);
+                    $ingredient->makeHidden(['pivot', 'count']);
                     return $ingredient;
                 })->values();
 
