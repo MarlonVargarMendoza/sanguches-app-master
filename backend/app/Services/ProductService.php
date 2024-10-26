@@ -15,10 +15,9 @@ class ProductService
                 $query->where('status', true)
                 ->select('ingredients.id', 'name');
             }])
-            ->whereIn('type_products_id', [7, 8])
+            ->where('type_products_id', 7)
             ->where('status', true)
             ->select('id', 'image', 'name', 'description', 'basePrice')
-            ->orderBy('name', 'ASC')
             ->get();
 
             foreach ($sandwichs as $product) {
