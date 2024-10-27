@@ -23,7 +23,7 @@ const ProductCard = React.memo(({ product, onAddToCart, onRemoveFromCart, onProd
     onProductClick(product, product.image);
   };
 
-  const image = DOMAIN+product.image;
+  const image = DOMAIN + product.image;
 
   return (
     <li className="product-card bg-white rounded-lg shadow-lg overflow-hidden transition-transform duration-300 hover:shadow-xl hover:-translate-y-1">
@@ -33,6 +33,12 @@ const ProductCard = React.memo(({ product, onAddToCart, onRemoveFromCart, onProd
           alt={product.name}
           className="w-full h-48 object-cover cursor-pointer"
           onClick={handleClick}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              handleClick(e);
+            }
+          }}
+          tabIndex={0} // Make the img element focusable
           loading="lazy"
         />
         <div className="absolute top-2 right-2 flex items-center space-x-2">
@@ -67,7 +73,7 @@ const ProductCard = React.memo(({ product, onAddToCart, onRemoveFromCart, onProd
           <div className="flex flex-col">
 
             <span className="text-[#A4A4A4] font-bold">
-              ${priceUtils(product.basePrice)}
+              {priceUtils(product.basePrice)}
             </span>
           </div>
           <Button
@@ -141,7 +147,6 @@ export function ProductsSanguches() {
     try {
       const data = await getProductsByCategories(selectedCategories);
       // Filtrar los productos por precio mínimo
-      const filteredData = data.filter(product => product.basePrice >= filters.minPrice);
       setProducts(data);
     } catch (error) {
       console.error('Error fetching products:', error);

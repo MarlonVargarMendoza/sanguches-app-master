@@ -1,6 +1,7 @@
 import {
   Box, Breadcrumbs, Button, CircularProgress, Grid, IconButton,
   Snackbar,
+  Tooltip,
   Typography, useMediaQuery, useTheme
 } from '@mui/material';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -320,7 +321,7 @@ function Customize() {
 
   if (loading) {
     return (
-      <div className="flex h-screen items-center justify-center">
+      <div className="flex h-screen items-center justify-center bg-[#F5F5F5]">
         <CircularProgress />
       </div>
     );
@@ -328,18 +329,26 @@ function Customize() {
 
   if (error || !selectedProduct) {
     return (
-      <div className="min-h-screen p-8">
-        <Typography variant="h6" color="error">{error || "No se ha seleccionado ningún producto."}</Typography>
-        <Button
-          variant="contained"
-          onClick={() => navigate('/menuSanguches')}
-          className="mt-4 bg-[#FFC603] hover:bg-[#C8151B] text-white"
-        >
-          Volver al menú
-        </Button>
+      <div className='bg-[#F5F5F5] min-h-screen'>
+        <div className="container mx-auto px-4 py-12" style={{ paddingTop: '220px' }}>
+          <Typography variant="h6" color="error">{error || "No se ha seleccionado ningún producto."}</Typography>
+          <Button
+            variant="contained"
+            onClick={() => navigate('/menuSanguches')}
+            sx={{
+              backgroundColor: '#FFC603',
+              color: 'white',
+              '&:hover': { backgroundColor: '#C8151B' },
+              mt: 2
+            }}
+          >
+            Volver al menú
+          </Button>
+        </div>
       </div>
     );
   }
+
 
   return (
     <div className="bg-[#F5F5F5] min-h-screen">
@@ -417,23 +426,33 @@ function Customize() {
                 transition={{ duration: 0.5, delay: 0.4 }}
               >
                 <div className="flex items-center bg-gray-100 rounded-full p-2">
+                <Tooltip title="Disminuir cantidad">
+                <span>
                   <IconButton
                     onClick={() => handleQuantityChange(-1)}
                     disabled={quantity === 1}
                     className="text-gray-600 hover:text-[#C8151B]"
+                    
                   >
                     <Minus className="w-4 h-4" />
                   </IconButton>
+                </span>
+              </Tooltip>
                   <Typography className="mx-4 font-bold">
                     {quantity}
                   </Typography>
+                  <Tooltip title="Aumentar cantidad">
+                <span>
                   <IconButton
                     onClick={() => handleQuantityChange(1)}
-                    className="text-gray-600 hover:text-[#C8151B]"
+                    className="text-gray-600 hover:text-[#e6b200]"
                   >
                     <Plus className="w-4 h-4" />
                   </IconButton>
+                  </span>
+                </Tooltip>
                 </div>
+
                 
                 <Button
                   onClick={handleAddToCart}

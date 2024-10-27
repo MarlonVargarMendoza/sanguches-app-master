@@ -36,24 +36,24 @@ export function Filters({ filters = { category: 'all' }, onFilterChange }) {
 
     return (
         <motion.div
-            className="w-full max-w-md"
+            className="w-full max-w-md "
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
         >
             <Typography
                 variant="h6"
-                className="text-gray-800 font-bold mb-4"
+                className="text-gray-800 font-bold mb-4 "
             >
                 Explora Nuestras Categorías
             </Typography>
 
-            <FormControl fullWidth>
+            <FormControl fullWidth >
                 <Select
                     value={filters.category}
                     onChange={handleChangeCategory}
                     IconComponent={SelectIcon}
-                    className="bg-white rounded-lg"
+                    className=" bg-white rounded-lg font-medium text-sm"
                     sx={{
                         '& .MuiOutlinedInput-notchedOutline': {
                             borderColor: '#E5E7EB',
