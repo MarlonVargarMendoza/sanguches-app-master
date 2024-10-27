@@ -6,6 +6,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { CreditCard, Lock, Send, ShieldCheck, ShoppingBag } from 'lucide-react';
 import React, { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import priceUtils from '../../utils/priceUtils';
 import OrderSummary from '../components/Order/OrderSummary';
 import { useCart } from '../hooks/useCart';
 import { useVoucherGenerator } from '../hooks/useVoucherGenerator';
@@ -212,7 +213,7 @@ const PaymentSummary = ({ total, isProcessing, activeStep, onConfirm, onNextStep
         <Divider className="mb-4" />
         <Box className="flex justify-between mb-5">
             <Typography className="font-semibold">Total a pagar:</Typography>
-            <Typography className="font-black text-gray-900">${total}</Typography>
+            <Typography className="font-black text-gray-900">{priceUtils(total)}</Typography>
         </Box>
         <Divider className="mb-4" />
         <Button

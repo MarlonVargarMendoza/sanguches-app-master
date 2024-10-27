@@ -1,32 +1,202 @@
 import {
-  Add as AddIcon,
-  Close as CloseIcon,
-  ExpandLess as ExpandLessIcon,
-  ExpandMore as ExpandMoreIcon,
-  Remove as RemoveIcon,
-  ShoppingCart as ShoppingCartIcon
-} from '@mui/icons-material';
-import {
-  Box, Breadcrumbs, Button, Checkbox, Chip, CircularProgress, Collapse,
-  Dialog, DialogActions, DialogContent, DialogTitle, Grid, IconButton,
-  List, ListItem, ListItemText, Snackbar, Tooltip, Typography, useMediaQuery, useTheme
+  Box, Breadcrumbs, Button, CircularProgress, Grid, IconButton,
+  Snackbar,
+  Typography, useMediaQuery, useTheme
 } from '@mui/material';
-import { motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
+import {
+  Coffee, Droplet, Gift,
+  Minus,
+  Pizza,
+  Plus,
+  ShoppingCart,
+  X
+} from 'lucide-react';
 import React, { useCallback, useEffect, useState } from 'react';
 import { SideBySideMagnifier } from "react-image-magnifiers";
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-
+import priceUtils from '../../utils/priceUtils';
 import ProductCard from '../components/Product/ProductCard';
 import { useCart } from '../hooks/useCart';
 import { getAllCustomizations, getAllProducts } from '../services/productService';
-
 const DOMAIN = import.meta.env.VITE_APP_DOMAIN;
+
+const typeIcons = {
+  additions: <Pizza className="w-5 h-5" />,
+  sauces: <Droplet className="w-5 h-5" />,
+  drinks: <Coffee className="w-5 h-5" />,
+  accompaniments: <Gift className="w-5 h-5" />
+};
 
 const sectionLabels = {
   additions: "Agregar Adición",
   sauces: "Agregar Salsas",
   drinks: "Añadir Bebidas",
   accompaniments: "Agregar Acompañamientos"
+};
+
+const CustomSelect = ({ label, items = [], selectedItems = [], onChange, icon, priceDisplay = true }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const filteredItems = items.filter(item =>
+    (item.name || item.text || '').toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const toggleItem = useCallback((itemId) => {
+    const newSelection = selectedItems.includes(itemId)
+      ? selectedItems.filter(id => id !== itemId)
+      : [...selectedItems, itemId];
+    onChange(newSelection);
+  }, [selectedItems, onChange]);
+
+  return (
+    <div className="w-full mb-4 relative">
+      <motion.button
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full flex items-center justify-between p-4 bg-white rounded-lg border-2 border-gray-100 hover:border-[#FFC603] transition-all duration-300"
+        whileHover={{ scale: 1.01 }}
+        whileTap={{ scale: 0.99 }}
+      >
+        <div className="flex items-center gap-3">
+          {icon}
+          <span className="font-medium text-gray-700">{label}</span>
+          {selectedItems.length > 0 && (
+            <span className="bg-[#FFC603] text-xs font-bold px-2 py-1 rounded-full">
+              {selectedItems.length}
+            </span>
+          )}
+        </div>
+        <motion.div
+          animate={{ rotate: isOpen ? 180 : 0 }}
+          transition={{ duration: 0.3 }}
+        >
+          <svg className="w-5 h-5 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </motion.div>
+      </motion.button>
+
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="absolute z-50 mt-2 w-full bg-white rounded-lg shadow-lg border border-gray-100 overflow-hidden"
+          >
+            <div className="p-3 border-b">
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="Buscar..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full p-2 pl-8 bg-gray-50 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#FFC603]"
+                />
+                <svg
+                  className="absolute left-2 top-2.5 w-4 h-4 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
+                </svg>
+              </div>
+            </div>
+
+            <div className="max-h-20 overflow-y-auto">
+              {filteredItems.length > 0 ? (
+                filteredItems.map((item) => (
+                  <motion.div
+                    key={item.id}
+                    whileHover={{ backgroundColor: 'rgba(255, 198, 3, 0.1)' }}
+                    className="flex items-center justify-between p-3 cursor-pointer border-b border-gray-50"
+                    onClick={() => toggleItem(item.id)}
+                  >
+                    <div className="flex items-center gap-3">
+                      {selectedItems.includes(item.id) ? (
+                        <svg className="w-5 h-5 text-[#FFC603]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                      ) : (
+                        <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                        </svg>
+                      )}
+                      <span className="text-sm font-medium text-gray-700">
+                        {item.name || item.text}
+                      </span>
+                    </div>
+                  
+                  </motion.div>
+                ))
+              ) : (
+                <div className="p-4 text-center text-gray-500">
+                  No se encontraron resultados
+                </div>
+              )}
+            </div>
+
+            <div className="p-3 bg-gray-50 flex justify-between items-center">
+              <button
+                onClick={() => setIsOpen(false)}
+                className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-800"
+              >
+                Cerrar
+              </button>
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-500">
+                  {selectedItems.length} seleccionados
+                </span>
+                {selectedItems.length > 0 && (
+                  <button
+                    onClick={() => onChange([])}
+                    className="flex items-center gap-1 px-3 py-1 text-sm text-red-600 hover:bg-red-50 rounded-md"
+                  >
+                    <X className="w-4 h-4" />
+                    Limpiar
+                  </button>
+                )}
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {selectedItems.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="flex flex-wrap gap-2 mt-2"
+        >
+          {selectedItems.map((id) => {
+            const item = items.find(i => i.id === id);
+            return (
+              <motion.span
+                key={id}
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                exit={{ scale: 0 }}
+                className="inline-flex items-center gap-1 px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm"
+              >
+                {item?.name || item?.text}
+                <X
+                  className="w-4 h-4 cursor-pointer hover:text-red-500"
+                  onClick={() => toggleItem(id)}
+                />
+              </motion.span>
+            );
+          })}
+        </motion.div>
+      )}
+    </div>
+  );
 };
 
 function Customize() {
@@ -36,25 +206,22 @@ function Customize() {
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const { addToCart, updateCartItem } = useCart();
   const { selectedProduct: initialProduct, isEditing } = location.state || {};
+
   const [selectedProduct, setSelectedProduct] = useState(initialProduct);
-
-
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [products, setProducts] = useState([]);
   const [additions, setAdditions] = useState([]);
   const [sauces, setSauces] = useState([]);
   const [drinks, setDrinks] = useState([]);
+  const [accompaniments, setAccompaniments] = useState([]);
   const [selectedAdditions, setSelectedAdditions] = useState([]);
   const [selectedSauces, setSelectedSauces] = useState([]);
   const [selectedDrinks, setSelectedDrinks] = useState([]);
+  const [selectedAccompaniments, setSelectedAccompaniments] = useState([]);
   const [quantity, setQuantity] = useState(1);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [dialogOpen, setDialogOpen] = useState({ additions: false, sauces: false, drinks: false });
-  const [expandedSection, setExpandedSection] = useState(null);
-  const [accompaniments, setAccompaniments] = useState([]);
-  const [selectedAccompaniments, setSelectedAccompaniments] = useState([]);
-  
+
   useEffect(() => {
     const fetchData = async () => {
       if (!initialProduct) {
@@ -66,11 +233,12 @@ function Customize() {
       setLoading(true);
       try {
         const customizations = await getAllCustomizations();
+        const productsData = await getAllProducts();
+        
         setAdditions(customizations.additions);
         setSauces(customizations.sauces);
         setDrinks(customizations.drinks);
         setAccompaniments(customizations.accompaniments);
-        const productsData = await getAllProducts();
         setProducts(productsData);
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -80,9 +248,7 @@ function Customize() {
       }
     };
     fetchData();
-  }, [selectedProduct]);
-
-
+  }, [initialProduct]);
 
   const handleSelectionChange = useCallback((type, value) => {
     const setters = {
@@ -102,48 +268,18 @@ function Customize() {
     if (!selectedProduct) return 0;
     let totalPrice = selectedProduct.basePrice;
     
-    selectedAdditions.forEach(additionId => {
-      const addition = additions.find(a => a.id === additionId);
-      if (addition) totalPrice += addition.price;
-    });
-    
-    selectedDrinks.forEach(drinkId => {
-      const drink = drinks.find(d => d.id === drinkId);
-      if (drink) totalPrice += drink.basePrice;
-    });
-    
-    selectedAccompaniments.forEach(accompId => {
-      const accomp = accompaniments.find(a => a.id === accompId);
-      if (accomp) totalPrice += accomp.basePrice;
-    });
+    const calculateAdditionalCost = (items, selectedIds, priceKey = 'price') => 
+      selectedIds.reduce((sum, id) => {
+        const item = items.find(i => i.id === id);
+        return sum + (item ? (item[priceKey] || item.basePrice || 0) : 0);
+      }, 0);
+
+    totalPrice += calculateAdditionalCost(additions, selectedAdditions);
+    totalPrice += calculateAdditionalCost(drinks, selectedDrinks, 'basePrice');
+    totalPrice += calculateAdditionalCost(accompaniments, selectedAccompaniments, 'basePrice');
     
     return totalPrice * quantity;
   }, [selectedProduct, additions, drinks, accompaniments, selectedAdditions, selectedDrinks, selectedAccompaniments, quantity]);
-
-  const handleNewProductSelection = useCallback((newProduct) => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    // Actualizar el producto seleccionado
-    setSelectedProduct(newProduct);
-
-    // Reiniciar las selecciones
-    setSelectedAdditions([]);
-    setSelectedSauces([]);
-    setSelectedDrinks([]);
-    setQuantity(1);
-
-    // Mostrar una notificación
-    setSnackbarOpen(true);
-  }, []);
-
-  const getSnackbarMessage = useCallback(() => {
-    if (isEditing) {
-      return "¡Producto actualizado en el carrito!";
-    }
-    if (selectedProduct !== initialProduct) {
-      return "Nuevo producto seleccionado. Personaliza tu pedido.";
-    }
-    return "¡Producto añadido al carrito!";
-  }, [isEditing, selectedProduct, initialProduct]);
 
   const handleAddToCart = useCallback(() => {
     if (!selectedProduct) return;
@@ -182,97 +318,9 @@ function Customize() {
     navigate(-1);
   }, [selectedProduct, additions, sauces, drinks, accompaniments, selectedAdditions, selectedSauces, selectedDrinks, selectedAccompaniments, quantity, calculatePrice, isEditing, updateCartItem, addToCart, navigate]);
 
-  const renderSelectionDialog = useCallback((type, items, selected, onClose) => (
-    <Dialog
-      open={dialogOpen[type]}
-      onClose={onClose}
-      fullWidth
-      maxWidth="sm"
-      key={`dialog-${type}`}
-    >
-      <DialogTitle>
-        <Box display="flex" alignItems="center" justifyContent="space-between">
-          <Typography variant="h6">{`Seleccionar ${sectionLabels[type]}`}</Typography>
-          <IconButton onClick={onClose} size="small">
-            <CloseIcon />
-          </IconButton>
-        </Box>
-      </DialogTitle>
-      <DialogContent>
-        <List>
-          {items.map((item) => (
-            <ListItem
-              key={`${type}-${item.id}`}
-              dense
-              button
-              onClick={() => {
-                const newSelection = selected.includes(item.id)
-                  ? selected.filter(id => id !== item.id)
-                  : [...selected, item.id];
-                handleSelectionChange(type, newSelection);
-              }}
-            >
-              <Checkbox
-                edge="start"
-                checked={selected.includes(item.id)}
-                tabIndex={-1}
-                disableRipple
-              />
-              <ListItemText
-                primary={item.text || item.name}
-              /* secondary={type !== 'sauces' && (item.price ? `+$${item.price.toFixed(2)}` : (item.basePrice ? `+$${item.basePrice.toFixed(2)}` : null))} */
-              />
-            </ListItem>
-          ))}
-        </List>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose} color="primary" variant="outlined">
-          Cerrar
-        </Button>
-        <Button
-          onClick={onClose}
-          color="primary"
-          variant="contained"
-          startIcon={<ShoppingCartIcon />}
-        >
-          Confirmar selección
-        </Button>
-      </DialogActions>
-    </Dialog>
-  ), [dialogOpen, handleSelectionChange, sectionLabels]);
-
-  const renderSelectedItems = useCallback((type, items) => (
-    <Box className="flex flex-wrap gap-2 mt-2">
-      {items.map((id) => {
-        const item = eval(type).find(i => i.id === id);
-        return (
-          <Chip
-            key={id}
-            label={item.text || item.name}
-            onDelete={() => handleSelectionChange(type, items.filter(i => i !== id))}
-            color="primary"
-            size="small"
-          />
-        );
-      })}
-      <Chip
-        icon={<AddIcon />}
-        label={`Añadir más`}
-        onClick={() => setDialogOpen({ ...dialogOpen, [type]: true })}
-        color="default"
-        size="small"
-      />
-    </Box>
-  ), [dialogOpen, handleSelectionChange]);
-
-  const toggleSection = useCallback((section) => {
-    setExpandedSection(prev => prev === section ? null : section);
-  }, []);
-
   if (loading) {
     return (
-      <div className='bg-[#F5F5F5] min-h-screen flex justify-center items-center'>
+      <div className="flex h-screen items-center justify-center">
         <CircularProgress />
       </div>
     );
@@ -280,159 +328,118 @@ function Customize() {
 
   if (error || !selectedProduct) {
     return (
-      <div className='bg-[#F5F5F5] min-h-screen'>
-        <div className="container mx-auto px-4 py-12" style={{ paddingTop: '220px' }}>
-          <Typography variant="h6" color="error">{error || "No se ha seleccionado ningún producto."}</Typography>
-          <Button
-            variant="contained"
-            onClick={() => navigate('/menuSanguches')}
-            sx={{
-              backgroundColor: '#FFC603',
-              color: 'white',
-              '&:hover': { backgroundColor: '#C8151B' },
-              mt: 2
-            }}
-          >
-            Volver al menú
-          </Button>
-        </div>
+      <div className="min-h-screen p-8">
+        <Typography variant="h6" color="error">{error || "No se ha seleccionado ningún producto."}</Typography>
+        <Button
+          variant="contained"
+          onClick={() => navigate('/menuSanguches')}
+          className="mt-4 bg-[#FFC603] hover:bg-[#C8151B] text-white"
+        >
+          Volver al menú
+        </Button>
       </div>
     );
   }
 
   return (
-    <div className='bg-[#F5F5F5] min-h-screen'>
-      <motion.main
-        className='main-container p-6'
-        style={{ paddingTop: isMobile ? '180px' : '220px' }}
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        <Breadcrumbs aria-label="breadcrumb" className="py-6">
+    <div className="bg-[#F5F5F5] min-h-screen">
+      <main className="container mx-auto p-4 md:p-6" style={{ paddingTop: isMobile ? '180px' : '220px' }}>
+      <Breadcrumbs className="mb-6">
           <Link to="/" className="hover:text-[#C3151A]">Inicio</Link>
           <Link to="/menuSanguches" className="hover:text-[#C3151A]">Menú</Link>
           <Typography color="text.primary">Personaliza tu sándwich</Typography>
         </Breadcrumbs>
 
-        <Grid container spacing={6} className="bg-white rounded-lg shadow-lg">
+        <Grid container spacing={4} className="bg-white rounded-lg shadow-lg p-6">
+          {/* Columna de imagen */}
           <Grid item xs={12} md={5}>
             <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
+              initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.5 }}
             >
-              <Box sx={{ borderRadius: '12px', overflow: 'hidden', boxShadow: '0 4px 8px rgba(0,0,0,0.1)' }}>
+              <Box className="rounded-xl overflow-hidden shadow-lg">
                 <SideBySideMagnifier
-                  imageSrc={DOMAIN+selectedProduct.image}
-                  imageAlt={DOMAIN+selectedProduct.name}
-                  largeImageSrc={DOMAIN+selectedProduct.image}
+                  imageSrc={`${DOMAIN}${selectedProduct.image}`}
+                  imageAlt={selectedProduct.name}
+                  largeImageSrc={`${DOMAIN}${selectedProduct.image}`}
                   alwaysInPlace={true}
                   overlayBoxOpacity={0.8}
-                  shadowColor="#000"
                   cursorStyle="crosshair"
-                  transitionSpeed={0.1}
-                  mouseActivation="hover"
-                  touchActivation="tap"
+                  className="w-full"
                 />
               </Box>
+              <Typography variant="body1" className="mt-4 text-gray-700">
+                <span className="font-semibold">Ingredientes:</span> {
+                  selectedProduct.ingredients 
+                    ? selectedProduct.ingredients.map(ing => ing.name).join(', ') 
+                    : 'Información no disponible'
+                }
+              </Typography>
             </motion.div>
-            <Typography variant="body1" className="py-5 text-[#525D5A]">
-              <strong>Ingredientes:</strong> {selectedProduct.ingredients ? selectedProduct.ingredients.map(ing => ing.name).join(', ') : 'Información no disponible'}
-            </Typography>
           </Grid>
 
-          <Grid item xs={12} md={6}>
+          {/* Columna de personalización */}
+          <Grid item xs={12} md={7}>
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
+              className="space-y-6"
             >
-              <Typography variant="h4" className="font-bold mb-4 text-[#525D5A]">
-                {selectedProduct.name}
-              </Typography>
-              <Typography variant="h5" className="font-black text-[#FFC603] mb-4">
-                ${calculatePrice()}
-              </Typography>
+              <div>
+                <Typography variant="h4" className="font-bold text-[#525D5A]">
+                  {selectedProduct.name}
+                </Typography>
+                <Typography variant="h5" className="font-black text-[#FFC603] mt-2">
+                  {priceUtils(calculatePrice())}
+                </Typography>
+              </div>
 
+              {/* Selectores de personalización */}
               {Object.entries(sectionLabels).map(([type, label]) => (
-                <motion.div
+                <CustomSelect
                   key={type}
-                  className="mb-4"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.3 }}
-                >
-                  <Button
-                    onClick={() => toggleSection(type)}
-                    endIcon={expandedSection === type ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-                    fullWidth
-                    sx={{
-                      justifyContent: 'space-between',
-                      backgroundColor: '#f5f5f5',
-                      '&:hover': { backgroundColor: '#e0e0e0' },
-                    }}
-                  >
-                    <Typography variant="h6" className="font-bold text-[#525D5A]">
-                      {label}
-                    </Typography>
-                  </Button>
-                  <Collapse in={expandedSection === type}>
-                    {renderSelectedItems(type, eval(`selected${type.charAt(0).toUpperCase() + type.slice(1)}`))}
-                  </Collapse>
-                </motion.div>
+                  label={label}
+                  items={eval(type)}
+                  selectedItems={eval(`selected${type.charAt(0).toUpperCase() + type.slice(1)}`)}
+                  onChange={(newSelection) => handleSelectionChange(type, newSelection)}
+                  icon={typeIcons[type]}
+                  priceDisplay={type !== 'sauces'}
+                />
               ))}
 
+              {/* Control de cantidad y botón de agregar al carrito */}
               <motion.div
-                className="flex justify-between items-center mt-6"
+                className="flex items-center justify-between mt-8"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.4 }}
               >
-                <div className="flex items-center border">
-                  <Tooltip title="Disminuir cantidad">
-                    <span>
-                      <IconButton
-                        onClick={() => handleQuantityChange(-1)}
-                        disabled={quantity === 1}
-                        sx={{
-                          backgroundColor: '#FFC603',
-                          color: 'black',
-                          borderRadius: '50%',
-                          '&:hover': { backgroundColor: '#e6b200' },
-                        }}
-                      >
-                        <RemoveIcon />
-                      </IconButton>
-                    </span>
-                  </Tooltip>
-                  <Typography variant="h6" className="mx-4 font-bold text-black">
+                <div className="flex items-center bg-gray-100 rounded-full p-2">
+                  <IconButton
+                    onClick={() => handleQuantityChange(-1)}
+                    disabled={quantity === 1}
+                    className="text-gray-600 hover:text-[#C8151B]"
+                  >
+                    <Minus className="w-4 h-4" />
+                  </IconButton>
+                  <Typography className="mx-4 font-bold">
                     {quantity}
                   </Typography>
-                  <Tooltip title="Aumentar cantidad">
-                    <IconButton
-                      onClick={() => handleQuantityChange(1)}
-                      sx={{
-                        backgroundColor: '#FFC603',
-                        color: 'black',
-                        borderRadius: '50%',
-                        '&:hover': { backgroundColor: '#e6b200' },
-                      }}
-                    >
-                      <AddIcon />
-                    </IconButton>
-                  </Tooltip>
+                  <IconButton
+                    onClick={() => handleQuantityChange(1)}
+                    className="text-gray-600 hover:text-[#C8151B]"
+                  >
+                    <Plus className="w-4 h-4" />
+                  </IconButton>
                 </div>
+                
                 <Button
                   onClick={handleAddToCart}
                   variant="contained"
-                  startIcon={<ShoppingCartIcon />}
-                  sx={{
-                    backgroundColor: '#FFC603',
-                    color: 'white',
-                    '&:hover': { backgroundColor: '#C8151B' },
-                    width: '80%',
-                  }}
+                  className="flex-grow ml-4 bg-[#FFC603] hover:bg-[#C8151B] text-white py-3"
+                  startIcon={<ShoppingCart className="w-5 h-5" />}
                 >
                   {isEditing ? 'Actualizar carrito' : 'Añadir al carrito'}
                 </Button>
@@ -441,97 +448,56 @@ function Customize() {
           </Grid>
         </Grid>
 
+        {/* Productos relacionados */}
         <motion.div
-          className='mt-12'
+          className="mt-12"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.5 }}
         >
           <Typography variant="h5" className="font-bold mb-6 text-[#525D5A]">
-            Otros productos que te pueden gustar
+            También te puede gustar
           </Typography>
-          <Box
-            sx={{
-              display: 'flex',
-              overflowX: 'auto',
-              gap: '16px',
-              pb: 2,
-              '::-webkit-scrollbar': {
-                height: '8px',
-              },
-              '::-webkit-scrollbar-track': {
-                backgroundColor: '#f1f1f1',
-              },
-              '::-webkit-scrollbar-thumb': {
-                backgroundColor: '#FFC603',
-                borderRadius: '4px',
-              },
-              '::-webkit-scrollbar-thumb:hover': {
-                backgroundColor: '#C8151B',
-              },
-              scrollSnapType: 'x mandatory',
-            }}
-          >
-            {products.slice(0, 6).map((item, index) => (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {products.slice(0, 3).map((product, index) => (
               <motion.div
-                key={item.id}
-                initial={{ opacity: 0, x: 50 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.5, delay: 0.1 * index }}
-                sx={{
-                  flexShrink: 0,
-                  width: { xs: '85%', sm: '45%', md: '30%' },
-                  scrollSnapAlign: 'start',
-                }}
+                key={product.id}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
               >
-                <ProductCard
-                  product={item}
-                  onClick={() => handleNewProductSelection(item)}
-                />
+                <ProductCard product={product} />
               </motion.div>
             ))}
-          </Box>
+          </div>
         </motion.div>
-      </motion.main>
+      </main>
 
-      {Object.entries(sectionLabels).map(([type, label]) => (
-        renderSelectionDialog(
-          type,
-          eval(type),
-          eval(`selected${type.charAt(0).toUpperCase() + type.slice(1)}`),
-          () => setDialogOpen({ ...dialogOpen, [type]: false })
-        )
-      ))}
-
+      {/* Snackbar para notificaciones */}
       <Snackbar
-        anchorOrigin={{
-          vertical: 'top',
-          horizontal: 'center',
-        }}
         open={snackbarOpen}
         autoHideDuration={3000}
         onClose={() => setSnackbarOpen(false)}
-        message={getSnackbarMessage()}
-        ContentProps={{
-          sx: {
-            backgroundColor: '#FFC603',
-            color: 'black',
-            fontWeight: 'bold',
-          }
-        }}
-        action={
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        className="mt-16"
+      >
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-[#FFC603] text-black px-6 py-3 rounded-lg shadow-lg flex items-center justify-between"
+        >
+          <span className="font-medium">
+            {isEditing ? '¡Producto actualizado!' : '¡Producto añadido al carrito!'}
+          </span>
           <IconButton
             size="small"
-            aria-label="close"
-            color="inherit"
             onClick={() => setSnackbarOpen(false)}
+            className="text-black hover:text-gray-800 ml-2"
           >
-            <CloseIcon fontSize="small" />
+            <X className="w-4 h-4" />
           </IconButton>
-        }
-      />
-
-
+        </motion.div>
+      </Snackbar>
     </div>
   );
 }

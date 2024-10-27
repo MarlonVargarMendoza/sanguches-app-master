@@ -7,6 +7,7 @@ import {
 import React, { useCallback, useEffect, useState } from 'react';
 import ContentLoader from "react-content-loader";
 import { useLocation, useNavigate } from 'react-router-dom';
+import priceUtils from '../../../utils/priceUtils';
 import { useCart } from '../../hooks/useCart';
 import { getProductsByCategories } from '../../services/productService';
 import { Filters } from './Filters';
@@ -66,7 +67,7 @@ const ProductCard = React.memo(({ product, onAddToCart, onRemoveFromCart, onProd
           <div className="flex flex-col">
 
             <span className="text-[#A4A4A4] font-bold">
-              ${product.basePrice}
+              ${priceUtils(product.basePrice)}
             </span>
           </div>
           <Button

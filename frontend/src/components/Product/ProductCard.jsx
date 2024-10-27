@@ -6,21 +6,21 @@ import { useNavigate } from 'react-router-dom';
 
 const DOMAIN = import.meta.env.VITE_APP_DOMAIN;
 
-function ProductCard({ product, onClick  }) {
+function ProductCard({ product, onClick }) {
     const { id, name, basePrice, ingredients } = product;
     const formattedPrice = basePrice != null && !isNaN(basePrice) ? basePrice : '0.00';
     const navigate = useNavigate();
 
-    const image = DOMAIN+product.image;
+    const image = DOMAIN + product.image;
 
     const handlePersonalize = () => {
-        navigate('/editaloTuMismo', { 
-            state: { 
+        navigate('/editaloTuMismo', {
+            state: {
                 selectedProduct: {
                     ...product,
                     ...image
                 }
-            } 
+            }
         });
     };
 
@@ -32,6 +32,16 @@ function ProductCard({ product, onClick  }) {
                 alt={name}
                 className="w-full h-48 sm:h-56 object-cover cursor-pointer"
                 onClick={handlePersonalize}
+                sx={{
+                    height: '100%',
+                    width: '100%',
+                    objectFit: 'cover',
+                    objectPosition: 'center',
+                    transition: 'transform 0.3s ease-in-out',
+                    '&:hover': {
+                        transform: 'scale(1.05)',
+                    },
+                }}
             />
             <CardContent className="flex-grow flex flex-col justify-between p-4">
                 <div>

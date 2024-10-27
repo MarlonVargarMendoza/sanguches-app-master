@@ -3,9 +3,9 @@ import { Alert, Badge, Box, Button, Drawer, IconButton, Snackbar, Typography, us
 import { AnimatePresence, motion } from 'framer-motion';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import priceUtils from '../../../utils/priceUtils';
 import { useCart } from '../../hooks/useCart';
-import CartItem from './CartItem';
-
+import CartItem from './cartItem';
 const ANIMATION_DURATION = 300;
 
 const CartHeader = ({ onClose }) => (
@@ -42,7 +42,7 @@ const CartFooter = ({ totalPrice, onCheckout }) => (
         <Box className="flex justify-between mb-2">
             <Typography variant="subtitle1">Total</Typography>
             <Typography variant="subtitle1" className="font-bold text-[#C8151B]">
-                ${totalPrice}
+                {priceUtils(totalPrice)}
             </Typography>
         </Box>
         <Typography variant="caption" className="mb-4 block text-gray-600">

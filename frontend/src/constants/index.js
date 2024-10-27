@@ -1,4 +1,17 @@
 
+// filters 
+export const FILTER_TYPES = {
+    PRICE: 'price',
+    CATEGORY: 'category',
+    INGREDIENTS: 'ingredients'
+};
+
+export const INITIAL_FILTER_STATE = {
+    price: { min: 0, max: 100000 },
+    category: 'all',
+    ingredients: []
+};
+
 
 export const ROUTES = {
     HOME: '/',

@@ -2,7 +2,7 @@
 import { Box, Divider, List, ListItem, ListItemText, Typography } from '@mui/material';
 import { motion } from 'framer-motion';
 import React from 'react';
-
+import priceUtils from '../../../utils/priceUtils';
 const OrderSummary = ({ items, total }) => (
     <Box className="bg-white p-6 rounded-lg shadow-md">
         <Typography variant="h5" className="mb-4 font-semibold text-black">
@@ -48,6 +48,13 @@ const OrderSummary = ({ items, total }) => (
                                     />
                                 </ListItem>
                             )}
+                            {item.customizations.accompaniments?.length > 0 && (
+                                <ListItem>
+                                    <ListItemText
+                                        secondary={`Acompañamientos: ${item.customizations.accompaniments.map(a => a.text || a.name).join(', ')}`}
+                                    />
+                                </ListItem>
+                            )}
                         </List>
                     )}
                 </Box>
@@ -59,7 +66,8 @@ const OrderSummary = ({ items, total }) => (
                 Total
             </Typography>
             <Typography variant="h6" className="font-bold text-[#C8151B]">
-                ${total}
+                
+                {priceUtils(total)}
             </Typography>
         </Box>
     </Box>
