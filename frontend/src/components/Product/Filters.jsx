@@ -1,7 +1,8 @@
 import { Box, Chip, FormControl, MenuItem, Select, Typography } from '@mui/material';
 import { motion } from 'framer-motion';
 import { ChevronDown, Search } from 'lucide-react';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useCategoryStore } from '../../stores/categoryStore';
 
 const CATEGORIES = [
     { id: 'all', name: 'Sanguches y sanguchitos', icon: '🥪', color: '#FFC603' },
@@ -13,21 +14,51 @@ const CATEGORIES = [
     { id: 12, name: 'Otros', icon: '✨', color: '#C7CEEA' }
 ];
 
-const SelectIcon = () => (
-    <motion.div
-        initial={{ rotate: 0 }}
-        animate={{ rotate: [0, 180] }}
-        transition={{ duration: 0.3 }}
-    >
-        <ChevronDown className="text-gray-500" />
-    </motion.div>
-);
+const SelectIcon = React.memo(({ ownerState = {} }) => {
+    const isOpen = Boolean(ownerState?.open);
+
+    return (
+        <motion.div
+            initial={false}
+            animate={{
+                rotate: isOpen ? 180 : 0,
+                originY: 0.55  // Ajusta el punto de rotación
+            }}
+            transition={{
+                duration: 0.2,
+                ease: [0.4, 0.0, 0.2, 1] // Transición suave tipo Material Design
+            }}
+        >
+            <ChevronDown
+                size={24}
+                className={`text-gray-500 transform ${isOpen ? 'text-[#FFC603]' : ''}`}
+                style={{
+                    strokeWidth: 2.5,
+                    transformOrigin: 'center'
+                }}
+            />
+        </motion.div>
+    );
+});
+
+SelectIcon.displayName = 'SelectIcon';
+
 
 export function Filters({ filters = { category: 'all' }, onFilterChange }) {
     const [searchTerm, setSearchTerm] = useState('');
+    const { selectedCategory, setSelectedCategory } = useCategoryStore();
+
+    useEffect(() => {
+        // Sincronizar el estado cuando cambia desde el submenu
+        if (selectedCategory !== filters.category) {
+            onFilterChange({ ...filters, category: selectedCategory });
+        }
+    }, [selectedCategory]);
 
     const handleChangeCategory = (event) => {
-        onFilterChange({ ...filters, category: event.target.value });
+        const newCategory = event.target.value;
+        setSelectedCategory(newCategory);
+        onFilterChange({ ...filters, category: newCategory });
     };
 
     const filteredCategories = CATEGORIES.filter(cat =>
@@ -53,7 +84,7 @@ export function Filters({ filters = { category: 'all' }, onFilterChange }) {
                     value={filters.category}
                     onChange={handleChangeCategory}
                     IconComponent={SelectIcon}
-                    className=" bg-white rounded-lg font-medium text-sm"
+                    className="bg-white rounded-lg font-medium text-sm"
                     sx={{
                         '& .MuiOutlinedInput-notchedOutline': {
                             borderColor: '#E5E7EB',
@@ -139,7 +170,10 @@ export function Filters({ filters = { category: 'all' }, onFilterChange }) {
                         <Chip
                             label={cat.name}
                             icon={<span className="ml-2">{cat.icon}</span>}
-                            onClick={() => onFilterChange({ ...filters, category: cat.id })}
+                            onClick={() => {
+                                setSelectedCategory(cat.id);
+                                onFilterChange({ ...filters, category: cat.id });
+                            }}
                             sx={{
                                 backgroundColor: filters.category === cat.id ? '#FFC603' : '#F3F4F6',
                                 '&:hover': { backgroundColor: '#FFE082' },

@@ -37,7 +37,7 @@ const ProductCard = React.memo(({ product, onAddToCart, onRemoveFromCart, onProd
             if (e.key === 'Enter' || e.key === ' ') {
               handleClick(e);
             }
-          }}
+          }}      
           tabIndex={0} // Make the img element focusable
           loading="lazy"
         />

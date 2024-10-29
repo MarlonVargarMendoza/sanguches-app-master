@@ -41,7 +41,8 @@
     "react-use-measure": "^2.1.1",
     "slick-carousel": "^1.8.1",
     "swiper": "^11.1.9",
-    "tailwind-merge": "^2.5.2"
+    "tailwind-merge": "^2.5.2",
+    "zustand": "^5.0.0"
   },
   "devDependencies": {
     "@types/react": "^18.3.3",

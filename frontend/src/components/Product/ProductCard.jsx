@@ -3,6 +3,7 @@
 import { Button, Card, CardContent, CardMedia, Typography } from '@mui/material';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import priceUtils from '../../../utils/priceUtils';
 
 const DOMAIN = import.meta.env.VITE_APP_DOMAIN;
 
@@ -56,7 +57,7 @@ function ProductCard({ product, onClick }) {
                 </div>
                 <div className="mt-auto">
                     <Typography variant="h6" className="font-bold text-gray mb-2">
-                        ${formattedPrice}
+                        {priceUtils(formattedPrice)}
                     </Typography>
                     <Button
                         variant="contained"

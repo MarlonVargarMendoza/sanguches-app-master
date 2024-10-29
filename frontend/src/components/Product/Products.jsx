@@ -183,11 +183,11 @@ export function Productsjson({ productService = getProducts }) {
   };
 
   return (
-    <main className="products relative w-full p-8 flex flex-col md:flex-row">
-      <div className="products-list py-8">
+    <main className="w-full min-h-screen bg-[#f5f5f5] p-8  md:flex-row">
+      <div className="py-8">
         {renderContent()}
       </div>
-      <div className="filters-container absolute top-0 left-0 w-full p-4 z-20 mt-15">
+      <div className="filters-container flex flex-row justify-center top-0 left-0 w-full p-4 z-20 mt-15">
         <Button buttonText="Ver menu completo" />
       </div>
     </main>

@@ -11,7 +11,46 @@ export const INITIAL_FILTER_STATE = {
     category: 'all',
     ingredients: []
 };
+// Categorías detalladas del selector de Filters (fuente de verdad)
+export const FILTER_CATEGORIES = [
+    { id: 'all', name: 'Sanguches y sanguchitos', icon: '🥪', color: '#FFC603' },
+    { id: '7', name: 'Sanguches', icon: '🍔', color: '#FF9B9B' },
+    { id: '8', name: 'Sanguchitos', icon: '🥖', color: '#FFB084' },
+    { id: '9', name: 'Desayunos', icon: '☕', color: '#AED9E0' },
+    { id: '10', name: 'Donas', icon: '🍩', color: '#FFA8E2' },
+    { id: '11', name: 'Pasteles', icon: '🍰', color: '#B5EAD7' },
+    { id: '12', name: 'Otros', icon: '✨', color: '#C7CEEA' },
+    { id: '13', name: 'Papas Fritas', icon: '🍟', color: '#FFD700' },
+    { id: '14', name: 'Palos de Yuca', icon: '🥖', color: '#DEB887' }
+];
 
+// Categorías agrupadas para el Submenu
+export const NAV_CATEGORIES = [
+    { 
+        name: 'DESAYUNOS', 
+        category: '9',
+        icon: '☕',
+        filterIds: ['9']
+    },
+    { 
+        name: 'SANGUCHES', 
+        category: 'all',
+        icon: '🥪',
+        filterIds: ['all']
+    },
+    { 
+        name: 'ANTOJOS', 
+        category: ['10', '11', '12', '13', '14'],
+        icon: '✨',
+        filterIds: ['10', '11', '12', '13', '14']
+    }
+];
+
+// Función para mapear categorías del Submenu a Filters
+export const mapNavToFilterCategory = (navCategory) => {
+    const category = NAV_CATEGORIES.find(cat => cat.name === navCategory);
+    return category ? category.filterIds : ['all'];
+};
 
 export const ROUTES = {
     HOME: '/',
