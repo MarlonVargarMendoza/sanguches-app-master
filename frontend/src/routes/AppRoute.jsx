@@ -14,6 +14,7 @@ const Menu = lazy(() => import('../components/Product/ProductsSanguches.jsx'));
 const Local = lazy(() => import('../Pages/Local.jsx'));
 const Success = lazy(() => import('../Pages/Success.jsx'));
 const Checkout = lazy(() => import('../Pages/Checkout.jsx'));
+const CombosContainer = lazy(() => import('../components/Product/CombosContainer.jsx'));
 
 // Enhanced loader component
 const Loader = () => (
@@ -65,7 +66,8 @@ export const AppRoute = () => {
                   { path: "/menuSanguches", element: <Menu /> },
                   { path: "/local", element: <Local /> },
                   { path: "/success", element: <Success /> },
-                  { path: "/checkout", element: <Checkout /> }
+                  { path: "/checkout", element: <Checkout /> },
+                  { path: "/combos", element: <CombosContainer /> }
                 ].map(({ path, element }) => (
                   <Route
                     key={path}

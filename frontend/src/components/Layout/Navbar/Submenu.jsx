@@ -10,7 +10,8 @@ import { useCategoryStore } from '../../../stores/categoryStore'; // Actualizada
 const CATEGORIES = [
   { name: 'DESAYUNOS', category: '9' },
   { name: 'SANGUCHES', category: 'all' },
-  { name: 'ANTOJOS', category: ['10', '11', '12', '13', '14'] }
+  { name: 'ANTOJOS', category: ['10', '11', '12', '13', '14'] },
+  { name: 'COMBOS', category: 'combo' }
 ];
 
 const Submenu = () => {
@@ -21,6 +22,11 @@ const Submenu = () => {
   const { selectedCategory, setSelectedCategory } = useCategoryStore();
 
   const handleCategoryClick = useCallback((category) => {
+    if (category === 'combo') {
+      setSelectedCategory('combo');
+      navigate('/combos');  // Nueva ruta para combos
+      return;
+    }
     if (Array.isArray(category)) {
       // Para ANTOJOS, seleccionamos la primera categoría como activa
       setSelectedCategory(category[0]);
@@ -105,9 +111,8 @@ const CategoryButton = React.memo(({ item, onClick, isSelected }) => (
   >
     <button
       onClick={() => onClick(item.category)}
-      className={`text-base sm:text-lg font-bold transition-colors duration-300 ${
-        isSelected ? 'text-[#C8151B]' : 'text-gray-800 hover:text-[#C8151B]'
-      }`}
+      className={`text-base sm:text-lg font-bold transition-colors duration-300 ${isSelected ? 'text-[#C8151B]' : 'text-gray-800 hover:text-[#C8151B]'
+        }`}
     >
       {item.name}
     </button>

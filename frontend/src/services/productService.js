@@ -2,12 +2,6 @@
 const API_URL = import.meta.env.VITE_APP_DOMAIN;
 import axios from 'axios';
 
-// Constants for product IDs
-const ACCOMPANIMENT_IDS = {
-    FRENCH_FRIES: '13', // Papas a la francesa
-    YUCA_STICKS: '14'   // Palos de yuca
-};
-
 export const getProducts = async () => {
     try {
         const response = await axios.get(`${API_URL}/api/products`);
@@ -131,25 +125,11 @@ export const getAdditions = async () => {
 export const getAccompaniments = async () => {
     try {
         // Fetch both accompaniments in parallel
-        const [frenchFriesResponse, yucaResponse] = await Promise.all([
-            axios.get(`${API_URL}/api/products/${ACCOMPANIMENT_IDS.FRENCH_FRIES}`),
-            axios.get(`${API_URL}/api/products/${ACCOMPANIMENT_IDS.YUCA_STICKS}`)
-        ]);
-
-        // Extract and combine the data
-        const accompaniments = [
-            ...(frenchFriesResponse.data.data || []),
-            ...(yucaResponse.data.data || [])
-        ].map(item => ({
-            ...item,
-            type: 'accompaniment'
-        }));
-
-        return accompaniments;
+        const response = await axios.get(`${API_URL}/api/companions`);
+        return response.data.data;
     } catch (error) {
         console.error('Error fetching accompaniments:', error);
         handleAxiosError(error);
-        return [];
     }
 };
 
@@ -170,6 +150,73 @@ export const getIngredients = async () => {
         return response.data.data;
     } catch (error) {
         return handleAxiosError(error);
+    }
+};
+
+export const getCombo = async () => {
+    try {
+        const [combosResponse, drinksResponse, companionsResponse] = await Promise.all([
+            axios.get(`${API_URL}/api/combo`),
+            axios.get(`${API_URL}/api/drinks/combo`),
+            axios.get(`${API_URL}/api/companions/combo`)
+        ]);
+
+        // Corrección de la extracción de datos
+        const combos = Array.isArray(combosResponse.data) ? combosResponse.data : [];
+        const drinks = drinksResponse.data?.data || [];
+        const companions = companionsResponse.data?.data || [];
+
+        if (combos.length === 0) {
+            return [];
+        }
+
+        return combos.map(combo => {
+            const selectedDrink = drinks.find(drink => drink.id === combo.drinks_id);
+            const selectedCompanion = companions.find(comp => comp.value === combo.companions_id);
+
+            return {
+                id: combo.id,
+                name: combo.name,
+                basePrice: parseFloat(combo.price),
+                image: combo.image,
+                ingredients: [
+                    { name: `🎁 ${combo.name}` },
+                    ...(selectedDrink ? [{ name: `🥤 ${selectedDrink.text}` }] : []),
+                    ...(selectedCompanion ? [{ name: `🍟 ${selectedCompanion.text}` }] : [])
+                ],
+                customizations: {
+                    drinks: selectedDrink ? [{
+                        id: selectedDrink.id,
+                        name: selectedDrink.text,
+                        price: parseFloat(selectedDrink.basePrice || 0)
+                    }] : [],
+                    companions: selectedCompanion ? [{
+                        id: selectedCompanion.value,
+                        name: selectedCompanion.text,
+                        price: parseFloat(selectedCompanion.combo_price || 0)
+                    }] : []
+                }
+            };
+        });
+    } catch (error) {
+        console.error('Error fetching combo data:', error);
+        throw new Error('Error al cargar los combos');
+    }
+};
+export const getCompanionsCombo = async () => {
+    try {
+        const response = await axios.get(`${API_URL}/api/companions/combo`);
+        return response.data.data;
+    } catch (error) {
+        handleAxiosError(error);
+    }
+};
+export const getDrinksCombo = async () => {
+    try {
+        const response = await axios.get(`${API_URL}/api/drinks/combo`);
+        return response.data.data;
+    } catch (error) {
+        handleAxiosError(error);
     }
 };
 // Centralized Axios error handling

@@ -44,14 +44,14 @@ export const Navbar = () => {
   );
 };
 const NavbarStyles = () => (
-  <style jsx>{`
+  <style> {`
     .nav-link {
       position: relative;
       transition: color 0.3s ease-in-out;
     }
     .nav-link::after {
       content: '';
-      position: absolute;
+      position: absolute;>
       width: 0;
       height: 2px;
       bottom: -5px;

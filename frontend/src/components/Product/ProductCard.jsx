@@ -7,14 +7,14 @@ import priceUtils from '../../../utils/priceUtils';
 
 const DOMAIN = import.meta.env.VITE_APP_DOMAIN;
 
-function ProductCard({ product, onClick }) {
-    const { id, name, basePrice, ingredients } = product;
-    const formattedPrice = basePrice != null && !isNaN(basePrice) ? basePrice : '0.00';
+function ProductCard({ product, onClick , buttonText='Personalizar'},disableNavigation = false) {
+    const { name, basePrice, ingredients } = product;
+    const formattedPrice = basePrice != null && !isNaN(basePrice) ? basePrice : '0';
     const navigate = useNavigate();
 
     const image = DOMAIN + product.image;
 
-    const handlePersonalize = () => {
+    const handleClick = (e) => {
         navigate('/editaloTuMismo', {
             state: {
                 selectedProduct: {
@@ -25,6 +25,7 @@ function ProductCard({ product, onClick }) {
         });
     };
 
+
     return (
         <Card className="product-card h-full flex flex-col shadow-lg hover:shadow-xl transition-shadow duration-300" onClick={onClick}>
             <CardMedia
@@ -32,7 +33,7 @@ function ProductCard({ product, onClick }) {
                 image={image}
                 alt={name}
                 className="w-full h-48 sm:h-56 object-cover cursor-pointer"
-                onClick={handlePersonalize}
+                onClick={handleClick}
                 sx={{
                     height: '100%',
                     width: '100%',
@@ -62,7 +63,7 @@ function ProductCard({ product, onClick }) {
                     <Button
                         variant="contained"
                         fullWidth
-                        onClick={handlePersonalize}
+                        onClick={handleClick}
                         style={{
                             backgroundColor: '#FFC603',
                             color: 'black',
@@ -72,7 +73,7 @@ function ProductCard({ product, onClick }) {
                             }
                         }}
                     >
-                        Personalizar
+                        {buttonText}
                     </Button>
                 </div>
             </CardContent>
