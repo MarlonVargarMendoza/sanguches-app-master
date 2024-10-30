@@ -13,7 +13,9 @@ class Drink extends Model
         'name',
         'basePrice',
         'image',
-        'type_drinks_id'
+        'type_drinks_id',
+        'status',
+        'combo_price'
     ];
 
     public function typeDrink () {

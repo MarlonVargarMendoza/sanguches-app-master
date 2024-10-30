@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Product\ComboController;
+use App\Http\Controllers\Product\CompanionController;
 use App\Http\Controllers\Product\DrinkController;
 use App\Http\Controllers\Product\ProductController;
 use App\Http\Controllers\Product\SauceController;
@@ -28,10 +30,21 @@ Route::get('additions', [ProductController::class, 'additions']);
 Route::prefix('drinks')->group(function () {
     Route::resource('', DrinkController::class)->except(['create', 'edit', 'store', 'show', 'edit', 'update', 'destroy']);
     Route::get('select', [DrinkController::class, 'selectDrinks']);
+    Route::get('combo', [DrinkController::class, 'selectDrinksCombo']);
 });
 
 Route::prefix('sauces')->group(function () {
     Route::resource('', SauceController::class)->except(['create', 'edit', 'store', 'show', 'edit', 'update', 'destroy']);
+});
+
+Route::prefix('combo')->group(function () {
+    Route::resource('', ComboController::class)->except(['create', 'edit', 'store', 'show', 'edit', 'update', 'destroy']);
+});
+
+Route::prefix('companions')->group(function () {
+    Route::resource('', CompanionController::class)->except(['create', 'edit', 'store', 'show', 'edit', 'update', 'destroy']);
+    Route::get('combo', [CompanionController::class, 'selectCompanionsCombo']);
+
 });
 
 Route::resource('typeProduct', TypeProductController::class);

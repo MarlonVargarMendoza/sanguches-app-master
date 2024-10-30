@@ -15,7 +15,7 @@ class ProductService
                 $query->where('status', true)
                 ->select('ingredients.id', 'name');
             }])
-            ->where('type_products_id', 7)
+            ->whereIn('type_products_id', [7, 8])
             ->where('status', true)
             ->select('id', 'image', 'name', 'description', 'basePrice')
             ->get();
@@ -54,18 +54,7 @@ class ProductService
         $products = '';
 
         try {
-            if ($id == 13 || $id == 14) {
-                $products = Product::where('type_products_id', $id)->where('status', true)
-                    ->select
-                    (
-                        'id AS value',
-                        DB::raw("CONCAT(name, ' --> $', ROUND(basePrice, 0)) AS text"),
-                        'basePrice'
-                    )
-                    ->orderBy('name', 'ASC')
-                    ->get();
-
-            } elseif ($id == 7 || $id == 8 || $id == 9 || $id == 10 || $id == 11 || $id == 12) {
+            if ($id == 7 || $id == 8 || $id == 9 || $id == 10 || $id == 11 || $id == 12) {
                 $products = Product::with(['ingredients' => function ($query) {
                     $query->where('status', true)
                     ->select('ingredients.id', 'name');
