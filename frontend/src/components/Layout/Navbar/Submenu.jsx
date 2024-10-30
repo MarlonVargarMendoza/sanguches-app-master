@@ -10,7 +10,7 @@ import { useCategoryStore } from '../../../stores/categoryStore'; // Actualizada
 const CATEGORIES = [
   { name: 'DESAYUNOS', category: '9' },
   { name: 'SANGUCHES', category: 'all' },
-  { name: 'ANTOJOS', category: ['10', '11', '12', '13', '14'] },
+  /* { name: 'ANTOJOS', category: ['10', '11', '12', '13', '14'] }, */
   { name: 'COMBOS', category: 'combo' }
 ];
 
