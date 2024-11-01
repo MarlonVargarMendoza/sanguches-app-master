@@ -1,135 +1,149 @@
-// hooks/useProductCustomization.js
-import { useCallback, useEffect, useState } from 'react';
-import { getAllCustomizations, getCompanionsCombo, getDrinksCombo } from '../services/productService';
+import { useCallback, useContext, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { CustomizationContext } from '../context/CustomizeContext';
+import { getAllCustomizations, getAllProducts } from '../services/productService';
+import { useCart } from './useCart';
 
-export const CUSTOMIZATION_MODES = {
-    COMBO: 'combo',
-    PRODUCT: 'product'
-};
-
-export const useProductCustomization = (initialProduct, mode = CUSTOMIZATION_MODES.PRODUCT) => {
-    const [customizationState, setCustomizationState] = useState({
-        loading: true,
-        error: null,
-        options: {
-            drinks: [],
-            companions: [],
-            additions: [],
-            sauces: []
-        },
-        selected: {
-            drinks: [],
-            companions: [],
-            additions: [],
-            sauces: []
-        }
-    });
-
-    const isComboMode = mode === CUSTOMIZATION_MODES.COMBO;
-
-    const fetchCustomizationOptions = useCallback(async () => {
-        try {
-            setCustomizationState(prev => ({ ...prev, loading: true }));
-
-            if (isComboMode) {
-                // Fetch combo-specific options
-                const [drinks, companions] = await Promise.all([
-                    getDrinksCombo(),
-                    getCompanionsCombo()
-                ]);
-
-                setCustomizationState(prev => ({
-                    ...prev,
-                    loading: false,
-                    options: {
-                        ...prev.options,
-                        drinks,
-                        companions
-                    },
-                    // Pre-seleccionar opciones por defecto si existen
-                    selected: {
-                        drinks: initialProduct.drinks_id ? [initialProduct.drinks_id] : [],
-                        companions: initialProduct.companions_id ? [initialProduct.companions_id] : [],
-                        additions: [],
-                        sauces: []
-                    }
-                }));
-            } else {
-                // Fetch regular product customization options
-                const customizations = await getAllCustomizations();
-
-                setCustomizationState(prev => ({
-                    ...prev,
-                    loading: false,
-                    options: customizations,
-                    selected: {
-                        drinks: [],
-                        companions: [],
-                        additions: [],
-                        sauces: []
-                    }
-                }));
-            }
-        } catch (error) {
-            setCustomizationState(prev => ({
-                ...prev,
-                loading: false,
-                error: 'Error al cargar opciones de personalización'
-            }));
-        }
-    }, [isComboMode, initialProduct]);
+export const useCustomizations = (initialProduct) => {
+    const { state, dispatch } = useContext(CustomizationContext);
+    const navigate = useNavigate();
+    const { addToCart, updateCartItem } = useCart();
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
 
     useEffect(() => {
-        fetchCustomizationOptions();
-    }, [fetchCustomizationOptions]);
-
-    const handleCustomizationChange = useCallback((type, selections) => {
-        setCustomizationState(prev => ({
-            ...prev,
-            selected: {
-                ...prev.selected,
-                [type]: selections
+        const fetchData = async () => {
+            if (!initialProduct) {
+                dispatch({
+                    type: 'SET_ERROR',
+                    payload: "No se ha seleccionado ningún producto."
+                });
+                return;
             }
-        }));
-    }, []);
 
-    const calculateTotalPrice = useCallback(() => {
-        if (!initialProduct) return 0;
+            try {
+                const [customizations, productsData] = await Promise.all([
+                    getAllCustomizations(),
+                    getAllProducts()
+                ]);
 
-        let totalPrice = initialProduct.basePrice;
-
-        if (!isComboMode) {
-            // Solo añadir costos adicionales para productos regulares
-            const { selected, options } = customizationState;
-
-            Object.entries(selected).forEach(([type, selections]) => {
-                if (type === 'sauces') return; // Las salsas no tienen costo adicional
-
-                selections.forEach(selectionId => {
-                    const option = options[type]?.find(opt => opt.id === selectionId);
-                    if (option?.price) {
-                        totalPrice += option.price;
+                dispatch({
+                    type: 'SET_INITIAL_DATA',
+                    payload: {
+                        product: initialProduct,
+                        customizations,
+                        products: productsData,
+                        isEditing: !!location.state?.isEditing
                     }
                 });
-            });
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                dispatch({
+                    type: 'SET_ERROR',
+                    payload: "Error al cargar las opciones de personalización."
+                });
+            }
+        };
+
+        fetchData();
+    }, [initialProduct, dispatch]);
+
+    const handleSelectionChange = useCallback((type, value) => {
+        dispatch({
+            type: 'UPDATE_SELECTION',
+            payload: { type, value }
+        });
+    }, [dispatch]);
+
+    const handleQuantityChange = useCallback((change) => {
+        dispatch({
+            type: 'UPDATE_QUANTITY',
+            payload: (prev) => Math.max(1, prev + change)
+        });
+    }, [dispatch]);
+
+    const calculatePrice = useCallback(() => {
+        if (!state.product) return 0;
+        let totalPrice = state.product.basePrice;
+
+        const calculateAdditionalCost = (items, selectedIds, priceKey = 'price') =>
+            selectedIds.reduce((sum, id) => {
+                const item = items?.find(i => i.id === id);
+                return sum + (item ? (item[priceKey] || item.basePrice || 0) : 0);
+            }, 0);
+
+        totalPrice += calculateAdditionalCost(
+            state.customizations.additions,
+            state.selections.additions
+        );
+        totalPrice += calculateAdditionalCost(
+            state.customizations.drinks,
+            state.selections.drinks,
+            'basePrice'
+        );
+        totalPrice += calculateAdditionalCost(
+            state.customizations.accompaniments,
+            state.selections.accompaniments,
+            'basePrice'
+        );
+
+        return totalPrice * state.quantity;
+    }, [state.product, state.customizations, state.selections, state.quantity]);
+
+    const mapCustomizations = useCallback((type, selectedIds) => {
+        return selectedIds.map(id => {
+            const item = state.customizations[type]?.find(i => i.id === id);
+            if (!item) return null;
+
+            return {
+                id: item.id,
+                text: item.text || item.name,
+                price: type === 'sauces' ? 0 : (item.price || item.basePrice || 0)
+            };
+        }).filter(Boolean);
+    }, [state.customizations]);
+
+    const handleAddToCart = useCallback(() => {
+        const { product, selections, quantity } = state;
+        if (!product) return;
+
+        const customizedProduct = {
+            ...product,
+            customizations: {
+                additions: mapCustomizations('additions', selections.additions),
+                sauces: mapCustomizations('sauces', selections.sauces),
+                drinks: mapCustomizations('drinks', selections.drinks),
+                accompaniments: mapCustomizations('accompaniments', selections.accompaniments)
+            },
+            quantity,
+            calculatedPrice: calculatePrice()
+        };
+
+        if (state.isEditing) {
+            updateCartItem(product.id, customizedProduct);
+        } else {
+            addToCart(customizedProduct);
         }
 
-        return totalPrice;
-    }, [initialProduct, isComboMode, customizationState]);
-
-    const validateCustomizations = useCallback(() => {
-        if (isComboMode) {
-            const { drinks, companions } = customizationState.selected;
-            return drinks.length === 1 && companions.length === 1;
-        }
-        return true;
-    }, [isComboMode, customizationState.selected]);
+        setSnackbarOpen(true);
+        navigate(-1);
+    }, [state, calculatePrice, mapCustomizations, addToCart, updateCartItem, navigate]);
 
     return {
-        ...customizationState,
-        isComboMode,
-        handleCustomizationChange,
-        calculateTotalPrice,
-        validateCustomizations
+        product: state.product,
+        loading: state.loading,
+        error: state.error,
+        products: state.products,
+        customizations: state.customizations,
+        selections: state.selections,
+        quantity: state.quantity,
+        snackbarOpen,
+        isEditing: state.isEditing,
+        handleSelectionChange,
+        handleQuantityChange,
+        handleAddToCart,
+        setSnackbarOpen,
+        calculatePrice
     };
 };
+
+export default useCustomizations;

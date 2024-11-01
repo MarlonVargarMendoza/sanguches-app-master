@@ -1,99 +1,43 @@
-// services/customizationService.js
+export class CustomizationService {
+    static calculateBasePrice({ product }) {
+        return product?.basePrice || 0;
+    }
 
-const COMBO_TYPES = {
-    REGULAR: 'regular',
-    SPECIAL: 'special'
-  };
-  
-  class CustomizationHandler {
-    static createForProduct(product) {
-      return product.isCombo 
-        ? new ComboCustomizationStrategy(product)
-        : new RegularCustomizationStrategy(product);
+    static addCustomizationsCost({ product, selections }) {
+        if (!product || !selections) return 0;
+
+        return Object.entries(selections).reduce((total, [type, selected]) => {
+            return total + this.calculateTypeTotal(type, selected);
+        }, this.calculateBasePrice({ product }));
     }
-  }
-  
-  class ComboCustomizationStrategy {
-    constructor(product) {
-      this.product = product;
-      this.basePrice = product.basePrice;
-      this.includedItems = {
-        drink: null,
-        sideDish: null
-      };
+
+    static calculateTypeTotal(type, selectedIds) {
+        const getPriceKey = (type) =>
+            type === CUSTOMIZATION_TYPES.DRINKS ? 'basePrice' : 'price';
+
+        return selectedIds.reduce((sum, id) => {
+            const item = this.findItemById(type, id);
+            const priceKey = getPriceKey(type);
+            return sum + (item ? (item[priceKey] || 0) : 0);
+        }, 0);
     }
-  
-    validateComboConfiguration(config) {
-      const { drink, sideDish } = config;
-      const requiredFields = [
-        { field: drink, name: 'bebida' },
-        { field: sideDish, name: 'acompañamiento' }
-      ];
-  
-      const missingFields = requiredFields
-        .filter(({ field }) => !field)
-        .map(({ name }) => name);
-  
-      if (missingFields.length > 0) {
-        throw new Error(`Por favor selecciona: ${missingFields.join(', ')}`);
-      }
-  
-      return true;
+
+    static applyQuantity({ product, selections, quantity }) {
+        const baseTotal = this.addCustomizationsCost({ product, selections });
+        return baseTotal * quantity;
     }
-  
-    calculatePrice(customizations = {}) {
-      let finalPrice = this.basePrice;
-  
-      // Add price for additional customizations beyond combo basics
-      if (customizations.additions) {
-        finalPrice += customizations.additions.reduce((sum, item) => sum + item.price, 0);
-      }
-  
-      // Handle upgrades from basic combo items
-      if (customizations.drinkUpgrade) {
-        finalPrice += customizations.drinkUpgrade.price;
-      }
-      if (customizations.sideDishUpgrade) {
-        finalPrice += customizations.sideDishUpgrade.price;
-      }
-  
-      return finalPrice;
+
+    static mapSelections(selections) {
+        return Object.entries(selections).reduce((acc, [type, ids]) => {
+            acc[type] = ids.map(id => {
+                const item = this.findItemById(type, id);
+                return {
+                    id: item.id,
+                    text: item.text || item.name,
+                    price: item[type === CUSTOMIZATION_TYPES.DRINKS ? 'basePrice' : 'price']
+                };
+            });
+            return acc;
+        }, {});
     }
-  
-    formatCustomizationSummary(customizations) {
-      return {
-        baseItems: {
-          drink: customizations.drink?.name || 'Bebida no seleccionada',
-          sideDish: customizations.sideDish?.name || 'Acompañamiento no seleccionado'
-        },
-        additions: customizations.additions || [],
-        upgrades: {
-          drink: customizations.drinkUpgrade,
-          sideDish: customizations.sideDishUpgrade
-        },
-        totalPrice: this.calculatePrice(customizations)
-      };
-    }
-  
-    getAvailableCustomizations(type) {
-      switch (type) {
-        case 'drinks':
-          return async () => {
-            const response = await fetch('/api/drinks/combo');
-            return response.json();
-          };
-        case 'sideDishes':
-          return async () => {
-            const response = await fetch('/api/companions/combo');
-            return response.json();
-          };
-        default:
-          return async () => [];
-      }
-    }
-  }
-  
-  // Factory for creating customization instances
-  export const createCustomizationStrategy = (product) => {
-    return CustomizationHandler.createForProduct(product);
-  };
+}

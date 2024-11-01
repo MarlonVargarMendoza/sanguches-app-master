@@ -1,4 +1,7 @@
 
+
+
+  
 // filters 
 export const FILTER_TYPES = {
     PRICE: 'price',
@@ -84,6 +87,7 @@ export const CUSTOMIZATION_TYPES = Object.freeze({
     ADDITIONS: 'additions',
     SAUCES: 'sauces',
     DRINKS: 'drinks',
+    ACCOMPANIMENTS: 'accompaniments'
 });
 
 /* 

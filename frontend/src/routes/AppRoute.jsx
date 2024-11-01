@@ -9,12 +9,13 @@ import './loader.css';
 
 // Lazy-loaded components
 const HomePage = lazy(() => import('../App'));
-const CustomizeSandwiches = lazy(() => import('../Pages/Customize.jsx'));
+const CustomizeSandwiches = lazy(() => import('../components/Customize/Customize.jsx'));
 const Menu = lazy(() => import('../components/Product/ProductsSanguches.jsx'));
 const Local = lazy(() => import('../Pages/Local.jsx'));
 const Success = lazy(() => import('../Pages/Success.jsx'));
 const Checkout = lazy(() => import('../Pages/Checkout.jsx'));
 const CombosContainer = lazy(() => import('../components/Product/CombosContainer.jsx'));
+const ComboCustomize = lazy(() => import('../components/Customize/ComboCustomize.jsx'));
 
 // Enhanced loader component
 const Loader = () => (
@@ -63,6 +64,7 @@ export const AppRoute = () => {
                 {[
                   { path: "/", element: <HomePage /> },
                   { path: "/editaloTuMismo", element: <CustomizeSandwiches /> },
+                  { path: "/combo/personaliza", element: <ComboCustomize /> },
                   { path: "/menuSanguches", element: <Menu /> },
                   { path: "/local", element: <Local /> },
                   { path: "/success", element: <Success /> },

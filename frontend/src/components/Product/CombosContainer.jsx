@@ -1,10 +1,10 @@
-import { Alert, Box, Typography } from '@mui/material';
+import { Alert, Box, Breadcrumbs, Typography } from '@mui/material';
 import { motion } from 'framer-motion';
 import React, { memo, useEffect, useState } from 'react';
 import ContentLoader from "react-content-loader";
+import { Link } from 'react-router-dom';
 import { getCombo } from '../../services/productService';
 import ProductCard from '../Product/ProductCard';
-
 const LoadingPlaceholder = memo(() => (
     <div className="container mx-auto p-8">
         <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -28,7 +28,12 @@ const LoadingPlaceholder = memo(() => (
         </ul>
     </div>
 ));
-
+const BreadcrumbNav = () => (
+    <Breadcrumbs className="mb-6 p-4">
+        <Link to="/" className="hover:text-[#C3151A]">Inicio</Link>
+        <Link to="/combos" className="hover:text-[#C3151A]">Combos</Link>
+    </Breadcrumbs>
+);
 const CombosContainer = () => {
    
     const [state, setState] = useState({
@@ -75,6 +80,7 @@ const CombosContainer = () => {
 
     return (
         <main className="min-h-screen bg-[#F5F5F5] pt-[220px]">
+            <BreadcrumbNav />
             <div className="container mx-auto px-4">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
@@ -83,9 +89,14 @@ const CombosContainer = () => {
                     className="w-full"
                 >
                     <Typography
-                        variant="h4"
-                        component="h1"
-                        className="mb-8 font-bold text-[#C8151B] text-center"
+                        variant="h2" 
+                        className="text-center text-[#C8151B] mb-8"
+                        sx={{ 
+                            fontWeight: 'bold', 
+                            fontSize: { xs: '2rem', sm: '2.5rem', md: '3rem' },
+                            textShadow: '2px 2px 4px rgba(0,0,0,0.1)'
+                        }}
+                        paddingTop={ { xs: '1rem', sm: '1.5rem', md: '2rem' } }
                     >
                         Nuestros Combos
                     </Typography>
@@ -107,7 +118,7 @@ const CombosContainer = () => {
                             No hay combos disponibles en este momento.
                         </Alert>
                     ) : (
-                        <Box className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+                        <Box className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12 pt-5">
                             {state.combos.map(combo => (
                                 <ProductCard
                                     key={combo.id}

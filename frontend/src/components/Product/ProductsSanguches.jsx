@@ -142,10 +142,16 @@ export function ProductsSanguches() {
   const [filters, setFilters] = useState({ minPrice: 0, category: 'all' });
 
   const fetchProducts = useCallback(async () => {
+    
     setIsLoading(true);
     setError(null);
     try {
+      console.log('Fetching products with categories:', selectedCategories); // Debug message
       const data = await getProductsByCategories(selectedCategories);
+      console.log('Products received:', data);
+      if (!data) {
+        throw new Error('No products data received');
+    }
       // Filtrar los productos por precio mínimo
       setProducts(data);
     } catch (error) {
@@ -235,7 +241,7 @@ export function ProductsSanguches() {
 
   return (
     <div className='bg-[#F5F5F5] min-h-screen'>
-      <main className='main-container p-6' style={{ paddingTop: '220px' }}>
+      <main className='main-container p-6' style={{ paddingTop: '240px' }}>
         <Breadcrumbs aria-label="breadcrumb" className="mb-6">
           <Link color='inherit' href="/" className="hover:text-[#C3151A]">Inicio</Link>
           <Typography color="text.primary">Menu</Typography>

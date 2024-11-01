@@ -7,12 +7,13 @@ export function CarouselTransition() {
 
     useEffect(() => {
         const interval = setInterval(() => {
-            if (carouselRef.current) {
-                carouselRef.current.goToNext(); // Cambio automático al siguiente slide
+            if (carouselRef.current && typeof carouselRef.current.goToNext === 'function') {
+                carouselRef.current.goToNext();
             }
-        }, 5000); // 5 segundos
-        return () => clearInterval(interval); // Limpiar el intervalo al desmontar
+        }, 5000);
+        return () => clearInterval(interval);//limpia el intervalo al desmontar 
     }, []);
+
 
     return (
         <Carousel
