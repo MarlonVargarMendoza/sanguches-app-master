@@ -12,12 +12,13 @@ import {
 import React from 'react';
 import { SideBySideMagnifier } from "react-image-magnifiers";
 import { Link, useLocation } from 'react-router-dom';
+import priceUtils from '../../../utils/priceUtils.js';
 import QuantityAndCartControls from '../../components/combo/QuantityAndCartControls.jsx';
 import { CustomizationProvider } from '../../context/CustomizeContext';
 import { useComboCustomization } from '../../hooks/useComboCustomization';
+import ComboCustomSelect from '../combo/sections/ComboCustomSelect.jsx';
 import ErrorView, { ErrorBoundary } from '../Error/ErrorComponents';
-import CustomSelect from '../ui/CustomSelect';
-
+import CustomSelect from '../ui/CustomSelect.jsx';
 const DOMAIN = import.meta.env.VITE_APP_DOMAIN;
 
 const typeIcons = {
@@ -52,7 +53,8 @@ function ComboCustomize() {
         handleAddToCart,
         setSnackbarOpen,
         calculatePrice,
-        isEditing
+        isEditing,
+        customizationOptions,
     } = useComboCustomization(initialCombo);
 
     if (loading) {
@@ -84,8 +86,8 @@ function ComboCustomize() {
                         </Typography>
                     </Box>
                 </motion.div>
-
                 <Grid container spacing={4} className="bg-white rounded-lg shadow-lg p-6">
+                    
                     <ProductImageSection combo={combo} />
                     <CustomizationSection
                         combo={combo}
@@ -96,6 +98,7 @@ function ComboCustomize() {
                         handleAddToCart={handleAddToCart}
                         calculatePrice={calculatePrice}
                         isEditing={isEditing}
+                        customizationOptions={customizationOptions}
                     />
                 </Grid>
             </main>
@@ -129,16 +132,7 @@ const ProductImageSection = ({ combo }) => (
                     className="w-full"
                 />
             </Box>
-            <Box className="mt-4 bg-[#FFC603]/10 p-4 rounded-lg">
-                <Typography variant="h6" className="font-bold text-[#C8151B] mb-2">
-                    Incluye:
-                </Typography>
-                <ul className="list-disc pl-5 space-y-2">
-                    {combo.includes?.map((item, index) => (
-                        <li key={index} className="text-gray-700">{item}</li>
-                    ))}
-                </ul>
-            </Box>
+           
         </motion.div>
     </Grid>
 );
@@ -150,8 +144,10 @@ const CustomizationSection = ({
     handleQuantityChange,
     handleAddToCart,
     calculatePrice,
-    isEditing
+    isEditing,
+    customizationOptions
 }) => (
+
     <Grid item xs={12} md={7}>
         <motion.div
             initial={{ opacity: 0, x: 20 }}
@@ -165,6 +161,28 @@ const CustomizationSection = ({
                 selections={selections}
                 handleSelectionChange={handleSelectionChange}
             />
+            <Box className="space-y-4">
+                {customizationOptions.drinks && (
+                    <ComboCustomSelect
+                        type="drinks"
+                        items={customizationOptions.drinks}
+                        selectedItem={selections.drinks}
+                        onSelect={(item) => handleSelectionChange('drinks', item)}
+                        required={true}
+                    />
+                )}
+
+                {customizationOptions.accompaniments && (
+                    <ComboCustomSelect
+                        type="accompaniments"
+                        items={customizationOptions.accompaniments}
+                        selectedItem={selections.accompaniments}
+                        onSelect={(item) => handleSelectionChange('accompaniments', item)}
+                        required={true}
+                    />
+                )}
+            </Box>
+
             <QuantityAndCartControls
                 quantity={quantity}
                 handleQuantityChange={handleQuantityChange}
@@ -200,14 +218,14 @@ const ComboHeader = ({ combo, calculatePrice }) => (
         </Typography>
         <Box className="flex items-center gap-3">
             <Typography variant="h5" className="font-black text-[#FFC603]">
-                ${calculatePrice().toFixed(2)}
+                {priceUtils(calculatePrice().toFixed(2))}
             </Typography>
             {combo.originalPrice && (
                 <Typography
                     variant="body1"
                     className="line-through text-gray-400"
                 >
-                    ${combo.originalPrice.toFixed(2)}
+                    {priceUtils(combo.originalPrice.toFixed(2))}
                 </Typography>
             )}
         </Box>

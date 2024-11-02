@@ -9,14 +9,13 @@ import {
 import React, { useEffect } from 'react';
 import { SideBySideMagnifier } from "react-image-magnifiers";
 import { Link, useLocation } from 'react-router-dom';
+import priceUtils from '../../../utils/priceUtils';
 import { CustomizationProvider } from '../../context/CustomizeContext';
 import { useCustomizations } from '../../hooks/useProductCustomization';
 import ErrorView, { ErrorBoundary } from '../Error/ErrorComponents';
 import CustomSelect from '../ui/CustomSelect';
 import NotificationSnackbar from './sections/NotificationSnackbar ';
 import RelatedProducts from './sections/RelatedProducts';
-
-
 const DOMAIN = import.meta.env.VITE_APP_DOMAIN;
 
 const typeIcons = {
@@ -187,7 +186,7 @@ const ProductHeader = ({ product, calculatePrice }) => (
       {product.name}
     </Typography>
     <Typography variant="h5" className="font-black text-[#FFC603] mt-2">
-      ${calculatePrice().toFixed(2)}
+      { priceUtils(calculatePrice().toFixed(2))}
     </Typography>
   </div>
 );

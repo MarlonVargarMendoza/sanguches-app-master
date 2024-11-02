@@ -5,7 +5,7 @@ import ContentLoader from "react-content-loader";
 import { Link, useNavigate } from 'react-router-dom';
 import useCart from '../../hooks/useCart';
 import { getCombo } from '../../services/productService';
-import ComboCard from './card/ComboCard';
+import ComboCard from './sections/ComboCard';
 const LoadingPlaceholder = memo(() => (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {[...Array(3)].map((_, index) => (

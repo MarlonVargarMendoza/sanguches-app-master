@@ -174,68 +174,94 @@ export const getIngredients = async () => {
 
 export const getCombo = async () => {
     try {
+        // Obtenemos todos los datos necesarios en paralelo para mejorar el rendimiento
         const [combosResponse, drinksResponse, companionsResponse] = await Promise.all([
             axios.get(`${API_URL}/api/combo`),
-            axios.get(`${API_URL}/api/drinks/combo`),
-            axios.get(`${API_URL}/api/companions/combo`)
+            getDrinksCombo(),
+            getCompanionsCombo()
         ]);
 
-        // Corrección de la extracción de datos
         const combos = Array.isArray(combosResponse.data) ? combosResponse.data : [];
-        const drinks = drinksResponse.data?.data || [];
-        const companions = companionsResponse.data?.data || [];
+        const drinks = drinksResponse?.data || [];
+        const companions = companionsResponse?.data || [];
 
         if (combos.length === 0) {
-            return [];
+            throw new Error('No se encontraron combos disponibles');
         }
 
         return combos.map(combo => {
+            // Encontramos los detalles del acompañamiento y la bebida
             const selectedDrink = drinks.find(drink => drink.id === combo.drinks_id);
             const selectedCompanion = companions.find(comp => comp.value === combo.companions_id);
+
+            // Calculamos el precio original y el ahorro
+            const originalPrice = parseFloat(combo.price) * 1.2; // 20% más caro
+            const savings = originalPrice - parseFloat(combo.price);
+
+            // Construimos la descripción detallada
+            const description = `Delicioso combo que incluye: 
+                ${combo.name} + 
+                ${selectedDrink?.text?.split('-->')[0]?.trim() || 'Bebida'} + 
+                ${selectedCompanion?.text?.split('-->')[0]?.trim() || 'Acompañamiento'}`;
 
             return {
                 id: combo.id,
                 name: combo.name,
+                description,
                 basePrice: parseFloat(combo.price),
+                originalPrice,
+                savings,
                 image: combo.image,
-                ingredients: [
-                    { name: `🎁 ${combo.name}` },
-                    ...(selectedDrink ? [{ name: `🥤 ${selectedDrink.text}` }] : []),
-                    ...(selectedCompanion ? [{ name: `🍟 ${selectedCompanion.text}` }] : [])
-                ],
+                includes: [
+                    combo.name,
+                    selectedDrink?.text?.split('-->')[0]?.trim(),
+                    selectedCompanion?.text?.split('-->')[0]?.trim()
+                ].filter(Boolean),
                 customizations: {
                     drinks: selectedDrink ? [{
                         id: selectedDrink.id,
-                        name: selectedDrink.text,
-                        price: parseFloat(selectedDrink.basePrice || 0)
+                        name: selectedDrink.text.split('-->')[0].trim(),
+                        price: parseFloat(selectedDrink.basePrice || 0),
+                        type: 'drink'
                     }] : [],
-                    companions: selectedCompanion ? [{
+                    accompaniments: selectedCompanion ? [{
                         id: selectedCompanion.value,
-                        name: selectedCompanion.text,
-                        price: parseFloat(selectedCompanion.combo_price || 0)
-                    }] : []
-                }
+                        name: selectedCompanion.text.split('-->')[0].trim(),
+                        price: parseFloat(selectedCompanion.combo_price || 0),
+                        type: 'companion'
+                    }] : [],
+                    extras: [], // Para posibles extras adicionales
+                    sauces: []  // Para posibles salsas adicionales
+                },
+                terms: "Válido todos los días. No acumulable con otras promociones."
             };
         });
     } catch (error) {
         console.error('Error fetching combo data:', error);
-        throw new Error('Error al cargar los combos');
+        throw new Error('Error al cargar los combos. Por favor, intenta nuevamente.');
     }
 };
+
 export const getCompanionsCombo = async () => {
     try {
-        const response = await axios.get(`${API_URL}/api/companions/combo`);
-        return response.data.data;
+        const response = await withRetry(() => 
+            axiosInstance.get(`${API_URL}/api/companions/combo`)
+        );
+        return response.data;
     } catch (error) {
-        handleAxiosError(error);
+        console.error('Error fetching companions:', error);
+        return { data: [] };
     }
 };
 export const getDrinksCombo = async () => {
     try {
-        const response = await axios.get(`${API_URL}/api/drinks/combo`);
-        return response.data.data;
+        const response = await withRetry(() => 
+            axiosInstance.get(`${API_URL}/api/drinks/combo`)
+        );
+        return response.data;
     } catch (error) {
-        handleAxiosError(error);
+        console.error('Error fetching drinks:', error);
+        return { data: [] };
     }
 };
 // Centralized Axios error handling
