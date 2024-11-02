@@ -1,128 +1,32 @@
-import { ShoppingCart as ShoppingCartIcon } from '@mui/icons-material';
-import {
-  Alert,
-  Box,
-  Breadcrumbs, Button, Grid, IconButton, Link, Snackbar, Tooltip, Typography
-} from '@mui/material';
+import { Alert, Box, Breadcrumbs, Grid, Link, Snackbar, Typography } from '@mui/material';
 import React, { useCallback, useEffect, useState } from 'react';
-import ContentLoader from "react-content-loader";
 import { useLocation, useNavigate } from 'react-router-dom';
-import priceUtils from '../../../utils/priceUtils';
+import ProductCard from '../Product/ProductCard';
+import ProductLoadingPlaceholder from '../ui/ProductLoadingPlaceholder';
 import { useCart } from '../../hooks/useCart';
 import { getProductsByCategories } from '../../services/productService';
 import { Filters } from './Filters';
 import './Products.css';
 import logoSanguches from '/assets/logoSanguches.jpg';
 
-const DOMAIN = import.meta.env.VITE_APP_DOMAIN;
-
-const ProductCard = React.memo(({ product, onAddToCart, onRemoveFromCart, onProductClick, isInCart, quantity }) => {
-
-  const handleClick = (e) => {
-    e.stopPropagation();
-    onProductClick(product, product.image);
-  };
-
-  const image = DOMAIN + product.image;
-
-  return (
-    <li className="product-card bg-white rounded-lg shadow-lg overflow-hidden transition-transform duration-300 hover:shadow-xl hover:-translate-y-1">
-      <div className="relative product-image">
-        <img
-          src={image}
-          alt={product.name}
-          className="w-full h-48 object-cover cursor-pointer"
-          onClick={handleClick}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-              handleClick(e);
-            }
-          }}      
-          tabIndex={0} // Make the img element focusable
-          loading="lazy"
-        />
-        <div className="absolute top-2 right-2 flex items-center space-x-2">
-          <Tooltip title={isInCart ? "Quitar del carrito" : "Añadir al carrito"}>
-            <IconButton
-              className="bg-white p-1 rounded-full transition-all duration-300 ease-in-out"
-              onClick={(e) => {
-                e.stopPropagation();
-                isInCart ? onRemoveFromCart(product.id) : onAddToCart(product);
-              }}
-              style={{
-                filter: isInCart ? 'none' : 'grayscale(100%)',
-                transform: isInCart ? 'scale(1.1)' : 'scale(1)',
-              }}
-            >
-              <img src={logoSanguches} alt="Logo" className="w-6 h-6 rounded-full" />
-            </IconButton>
-          </Tooltip>
-          {quantity > 0 && (
-            <div className="bg-[#FFC603] text-black rounded-full w-6 h-6 flex items-center justify-center">
-              {quantity}
-            </div>
-          )}
-        </div>
-      </div>
-      <div className="p-4 flex flex-col flex-grow">
-        <h3 className="product-name text-lg font-semibold mb-2">{product.name}</h3>
-        <p className="text-gray-600 text-sm mb-4 line-clamp-2">
-          {product.ingredients?.map(ingredient => ingredient.name).join(', ') || "Ingredientes no disponibles"}
-        </p>
-        <div className="mt-auto flex items-center justify-between">
-          <div className="flex flex-col">
-
-            <span className="text-[#A4A4A4] font-bold">
-              {priceUtils(product.basePrice)}
-            </span>
-          </div>
-          <Button
-            variant="contained"
-            style={{ backgroundColor: '#FFC603', color: 'black' }}
-            onClick={handleClick}
-            startIcon={<ShoppingCartIcon />}
-          >
-            {isInCart ? 'Actualizar' : 'AGREGAR'}
-          </Button>
-        </div>
-      </div>
-    </li>
-  );
-});
-
+// Componente de lista de productos usando el ProductCard compartido
 const ProductsList = ({ products, onAddToCart, onRemoveFromCart, onProductClick, checkProductInCart, getCartItemQuantity }) => (
   <ul className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6'>
     {products.map(product => (
-      <ProductCard
-        key={product.id}
-        product={product}
-        onAddToCart={onAddToCart}
-        onRemoveFromCart={onRemoveFromCart}
-        onProductClick={onProductClick}
-        isInCart={checkProductInCart(product)}
-        quantity={getCartItemQuantity(product)}
-      />
-    ))}
-  </ul>
-);
-
-const LoadingPlaceholder = () => (
-  <ul className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8'>
-    {[...Array(6)].map((_, index) => (
-      <ContentLoader
-        key={index}
-        speed={2}
-        width={400}
-        height={250}
-        viewBox="0 0 400 250"
-        backgroundColor="#f3f3f3"
-        foregroundColor="#ecebeb"
-      >
-        <rect x="0" y="0" rx="5" ry="5" width="400" height="150" />
-        <rect x="0" y="165" rx="3" ry="3" width="350" height="20" />
-        <rect x="0" y="195" rx="3" ry="3" width="250" height="20" />
-        <rect x="0" y="225" rx="3" ry="3" width="150" height="20" />
-      </ContentLoader>
+      <li key={product.id} className="product-card-container">
+        <ProductCard
+          product={product}
+          onAddToCart={onAddToCart}
+          onRemoveFromCart={onRemoveFromCart}
+          onProductClick={onProductClick}
+          isInCart={checkProductInCart(product)}
+          quantity={getCartItemQuantity(product)}
+          buttonText="AGREGAR"
+          showLogo={true}
+          customLogo={<img src={logoSanguches} alt="Logo" className="w-6 h-6 rounded-full" />}
+          className="h-full"
+        />
+      </li>
     ))}
   </ul>
 );
@@ -142,17 +46,13 @@ export function ProductsSanguches() {
   const [filters, setFilters] = useState({ minPrice: 0, category: 'all' });
 
   const fetchProducts = useCallback(async () => {
-    
     setIsLoading(true);
     setError(null);
     try {
-      console.log('Fetching products with categories:', selectedCategories); // Debug message
       const data = await getProductsByCategories(selectedCategories);
-      console.log('Products received:', data);
       if (!data) {
         throw new Error('No products data received');
-    }
-      // Filtrar los productos por precio mínimo
+      }
       setProducts(data);
     } catch (error) {
       console.error('Error fetching products:', error);
@@ -224,9 +124,10 @@ export function ProductsSanguches() {
   }, [cart]);
 
   const renderContent = () => {
-    if (isLoading) return <LoadingPlaceholder />;
+    if (isLoading) return <ProductLoadingPlaceholder count={6} />;
     if (error) return <Alert severity="error" className="my-4">{error}</Alert>;
     if (products.length === 0) return <Alert severity="info" className="my-4">No se encontraron productos. Intenta con otra búsqueda o categoría.</Alert>;
+    
     return (
       <ProductsList
         products={products}

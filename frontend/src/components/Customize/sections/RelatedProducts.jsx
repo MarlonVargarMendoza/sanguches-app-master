@@ -1,9 +1,37 @@
 import { Typography } from '@mui/material';
 import { motion } from 'framer-motion';
-import React from 'react';
+import React, { useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import ProductCard from '../../Product/ProductCard';
 
 const RelatedProducts = ({ products }) => {
+    const navigate = useNavigate();
+
+    const handleProductClick = useCallback((product) => {
+        // Primero hacer scroll suave hacia arriba
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+
+        // Pequeño delay para asegurar una transición fluida
+        setTimeout(() => {
+            // Navegar al mismo componente pero con nuevo producto
+            navigate('/editaloTuMismo', {
+                state: {
+                    selectedProduct: {
+                        ...product,
+                        quantity: 1,
+                        customizations: {},
+                    },
+                    isEditing: false
+                },
+            }, {
+                replace: true // Reemplazar la entrada actual en el historial
+            });
+        }, 300); // Delay que coincide con la animación de scroll
+    }, [navigate]);
+
     if (!products?.length) return null;
 
     return (
@@ -24,7 +52,12 @@ const RelatedProducts = ({ products }) => {
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ duration: 0.5, delay: index * 0.1 }}
                     >
-                        <ProductCard product={product} />
+                        <ProductCard 
+                            product={product}
+                            onProductClick={() => handleProductClick(product)}
+                            buttonText="Personalizar"
+                            showLogo={false}
+                        />
                     </motion.div>
                 ))}
             </div>

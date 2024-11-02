@@ -1,8 +1,9 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import React, { lazy, Suspense } from 'react';
+import React, { lazy, Suspense, useEffect } from 'react';
 import { Route, Routes, useLocation } from 'react-router-dom';
 import Footer from '../components/Layout/Footer.jsx';
 import Navbar from '../components/Layout/Navbar/Navbar.jsx';
+import ScrollToTop from '../components/ui/ScrollToTop.jsx';
 import { CartProvider } from '../context/cart.jsx';
 import { FiltersProvider } from '../context/filters.jsx';
 import './loader.css';
@@ -14,7 +15,7 @@ const Menu = lazy(() => import('../components/Product/ProductsSanguches.jsx'));
 const Local = lazy(() => import('../Pages/Local.jsx'));
 const Success = lazy(() => import('../Pages/Success.jsx'));
 const Checkout = lazy(() => import('../Pages/Checkout.jsx'));
-const CombosContainer = lazy(() => import('../components/Product/CombosContainer.jsx'));
+const CombosContainer = lazy(() => import('../components/combo/CombosContainer.jsx'));
 const ComboCustomize = lazy(() => import('../components/Customize/ComboCustomize.jsx'));
 
 // Enhanced loader component
@@ -28,29 +29,57 @@ const Loader = () => (
 );
 
 // Layout component
-const Layout = ({ children }) => (
-  <div className="flex flex-col min-h-screen">
-    <Navbar />
-    <main className="flex-grow">
-      {children}
-    </main>
-    <Footer />
-  </div>
-);
+const Layout = ({ children }) => {
+  const location = useLocation();
+  
+  // Efecto para manejar el scroll en cambios de ruta
+  useEffect(() => {
+    const handleRouteChange = () => {
+      window.scrollTo({
+        top: 0,
+        left: 0,
+        behavior: 'smooth'
+      });
+    };
 
-// Page transition variants
+    handleRouteChange();
+  }, [location.pathname]);
+
+  return (
+    <div className="flex flex-col min-h-screen">
+      <Navbar />
+      <ScrollToTop /> {/* Componente de scroll */}
+      <main className="flex-grow">
+        {children}
+      </main>
+      <Footer />
+    </div>
+  );
+};
+
+// Page transition variants con manejo de scroll mejorado
 const pageVariants = {
-  initial: { opacity: 0, y: 20 },
-  in: { opacity: 1, y: 0 },
-  out: { opacity: 0, y: -20 }
+  initial: { 
+    opacity: 0, 
+    y: 20 
+  },
+  in: { 
+    opacity: 1, 
+    y: 0,
+    transition: {
+      duration: 0.5,
+      ease: 'easeOut'
+    }
+  },
+  out: { 
+    opacity: 0, 
+    y: -20,
+    transition: {
+      duration: 0.3,
+      ease: 'easeIn'
+    }
+  }
 };
-
-const pageTransition = {
-  type: 'tween',
-  ease: 'anticipate',
-  duration: 0.5
-};
-
 export const AppRoute = () => {
   const location = useLocation();
 
@@ -58,7 +87,10 @@ export const AppRoute = () => {
     <FiltersProvider>
       <CartProvider>
         <Layout>
-          <AnimatePresence mode="wait">
+          <AnimatePresence 
+            mode="wait"
+            onExitComplete={() => window.scrollTo(0, 0)}
+          >
             <Suspense fallback={<Loader />}>
               <Routes location={location} key={location.pathname}>
                 {[
@@ -80,7 +112,11 @@ export const AppRoute = () => {
                         animate="in"
                         exit="out"
                         variants={pageVariants}
-                        transition={pageTransition}
+                        transition={{
+                          type: 'tween',
+                          ease: 'anticipate',
+                          duration: 0.5
+                        }}
                       >
                         {element}
                       </motion.div>

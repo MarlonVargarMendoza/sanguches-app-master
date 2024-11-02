@@ -1,137 +1,95 @@
-import { useCallback, useContext, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { CustomizationContext } from '../context/CustomizeContext';
-import { useCart } from './useCart';
+import { useCart } from '../hooks/useCart';
 
 export const useComboCustomization = (initialCombo) => {
-    const { state, dispatch } = useContext(CustomizationContext);
     const navigate = useNavigate();
-    const { addToCart, updateCartItem } = useCart();
+    const { addToCart, updateCartItem, cart } = useCart();
+    const [combo, setCombo] = useState(initialCombo);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
+    const [quantity, setQuantity] = useState(1);
     const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [selections, setSelections] = useState({
+        accompaniments: [],
+        drinks: [],
+        extras: [],
+        sauces: []
+    });
+
+    const isEditing = cart.some(item => item.id === combo?.id);
 
     useEffect(() => {
-        const initializeCombo = async () => {
-            if (!initialCombo) {
-                dispatch({
-                    type: 'SET_ERROR',
-                    payload: "No se ha seleccionado ningún combo."
-                });
-                return;
-            }
-
-            try {
-                dispatch({
-                    type: 'SET_INITIAL_DATA',
-                    payload: {
-                        product: initialCombo,
-                        customizations: {
-                            accompaniments: initialCombo.accompaniments || [],
-                            drinks: initialCombo.drinks || [],
-                            extras: initialCombo.extras || [],
-                            sauces: initialCombo.sauces || []
-                        },
-                        isEditing: !!location.state?.isEditing
-                    }
-                });
-            } catch (error) {
-                console.error('Error initializing combo:', error);
-                dispatch({
-                    type: 'SET_ERROR',
-                    payload: "Error al cargar las opciones del combo."
-                });
-            }
-        };
-
-        initializeCombo();
-    }, [initialCombo, dispatch]);
-
-    const handleSelectionChange = useCallback((type, value) => {
-        // Validar selecciones requeridas
-        if ((type === 'accompaniments' || type === 'drinks') && value.length > 1) {
-            value = [value[value.length - 1]]; // Solo mantener última selección
-        }
-
-        dispatch({
-            type: 'UPDATE_SELECTION',
-            payload: { type, value }
-        });
-    }, [dispatch]);
-
-    const calculatePrice = useCallback(() => {
-        if (!state.product) return 0;
-        let totalPrice = state.product.basePrice;
-
-        // Agregar precio de extras si existen
-        if (state.selections.extras) {
-            totalPrice += state.selections.extras.reduce((sum, id) => {
-                const extra = state.customizations.extras?.find(e => e.id === id);
-                return sum + (extra?.price || 0);
-            }, 0);
-        }
-
-        return totalPrice * state.quantity;
-    }, [state.product, state.customizations, state.selections, state.quantity]);
-
-    const handleAddToCart = useCallback(() => {
-        // Validar selecciones requeridas
-        if (!state.selections.accompaniments?.length || !state.selections.drinks?.length) {
-            dispatch({
-                type: 'SET_ERROR',
-                payload: "Debes seleccionar un acompañamiento y una bebida."
-            });
+        if (!initialCombo) {
+            setError('No se ha seleccionado ningún combo');
             return;
         }
 
+        // Si el combo está en el carrito, cargar sus selecciones
+        if (isEditing) {
+            const cartItem = cart.find(item => item.id === initialCombo.id);
+            setSelections(cartItem.customizations || {});
+            setQuantity(cartItem.quantity || 1);
+        }
+
+        setCombo(initialCombo);
+    }, [initialCombo, cart, isEditing]);
+
+    const handleSelectionChange = useCallback((type, newSelection) => {
+        setSelections(prev => ({
+            ...prev,
+            [type]: newSelection
+        }));
+    }, []);
+
+    const handleQuantityChange = useCallback((change) => {
+        setQuantity(prev => Math.max(1, prev + change));
+    }, []);
+
+    const calculatePrice = useCallback(() => {
+        if (!combo) return 0;
+
+        let total = combo.basePrice;
+
+        // Agregar precio de extras si hay
+        selections.extras?.forEach(extraId => {
+            const extra = combo.customizations?.extras?.find(e => e.id === extraId);
+            if (extra?.price) total += extra.price;
+        });
+
+        return total * quantity;
+    }, [combo, selections.extras, quantity]);
+
+    const handleAddToCart = useCallback(() => {
         const customizedCombo = {
-            ...state.product,
-            customizations: {
-                accompaniments: mapSelections('accompaniments'),
-                drinks: mapSelections('drinks'),
-                extras: mapSelections('extras'),
-                sauces: mapSelections('sauces')
-            },
-            quantity: state.quantity,
+            ...combo,
+            customizations: selections,
+            quantity,
             calculatedPrice: calculatePrice()
         };
 
-        if (state.isEditing) {
-            updateCartItem(state.product.id, customizedCombo);
+        if (isEditing) {
+            updateCartItem(combo.id, customizedCombo);
         } else {
             addToCart(customizedCombo);
         }
 
         setSnackbarOpen(true);
-        navigate(-1);
-    }, [state, calculatePrice, addToCart, updateCartItem, navigate]);
-
-    const mapSelections = useCallback((type) => {
-        return state.selections[type]?.map(id => {
-            const item = state.customizations[type]?.find(i => i.id === id);
-            return {
-                id: item.id,
-                text: item.text || item.name,
-                price: type === 'extras' ? item.price : 0
-            };
-        }) || [];
-    }, [state.selections, state.customizations]);
+        navigate('/combos');
+    }, [combo, selections, quantity, calculatePrice, isEditing, updateCartItem, addToCart, navigate]);
 
     return {
-        combo: state.product,
-        loading: state.loading,
-        error: state.error,
-        selections: state.selections,
-        quantity: state.quantity,
+        combo,
+        loading,
+        error,
+        selections,
+        quantity,
         snackbarOpen,
         handleSelectionChange,
-        handleQuantityChange: (change) => dispatch({
-            type: 'UPDATE_QUANTITY',
-            payload: (prev) => Math.max(1, prev + change)
-        }),
+        handleQuantityChange,
         handleAddToCart,
         setSnackbarOpen,
         calculatePrice,
-        isEditing: state.isEditing
+        isEditing
     };
 };
-
-export default useComboCustomization;

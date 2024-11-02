@@ -12,6 +12,7 @@ import {
 import React from 'react';
 import { SideBySideMagnifier } from "react-image-magnifiers";
 import { Link, useLocation } from 'react-router-dom';
+import QuantityAndCartControls from '../../components/combo/QuantityAndCartControls.jsx';
 import { CustomizationProvider } from '../../context/CustomizeContext';
 import { useComboCustomization } from '../../hooks/useComboCustomization';
 import ErrorView, { ErrorBoundary } from '../Error/ErrorComponents';

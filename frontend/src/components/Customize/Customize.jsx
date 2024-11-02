@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 import {
   Coffee, Droplet, Gift, Minus, Pizza, Plus, ShoppingCart
 } from 'lucide-react';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { SideBySideMagnifier } from "react-image-magnifiers";
 import { Link, useLocation } from 'react-router-dom';
 import { CustomizationProvider } from '../../context/CustomizeContext';
@@ -55,6 +55,15 @@ function Customize() {
     calculatePrice,
     isEditing
   } = useCustomizations(initialProduct);
+
+    // Efecto para manejar el cambio de producto
+    useEffect(() => {
+      // Reset scroll position when product changes
+      window.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+      });
+  }, [initialProduct?.id]);
 
   if (loading) {
     return (
