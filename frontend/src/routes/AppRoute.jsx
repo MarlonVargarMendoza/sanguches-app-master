@@ -17,6 +17,7 @@ const Success = lazy(() => import('../Pages/Success.jsx'));
 const Checkout = lazy(() => import('../Pages/Checkout.jsx'));
 const CombosContainer = lazy(() => import('../components/combo/CombosContainer.jsx'));
 const ComboCustomize = lazy(() => import('../components/Customize/ComboCustomize.jsx'));
+const Drinks = lazy(() => import('../components/Product/drinks/Drinks.jsx'));
 
 // Enhanced loader component
 const Loader = () => (
@@ -101,7 +102,8 @@ export const AppRoute = () => {
                   { path: "/local", element: <Local /> },
                   { path: "/success", element: <Success /> },
                   { path: "/checkout", element: <Checkout /> },
-                  { path: "/combos", element: <CombosContainer /> }
+                  { path: "/combos", element: <CombosContainer /> },
+                  { path: "/bebidas", element: <Drinks /> }
                 ].map(({ path, element }) => (
                   <Route
                     key={path}

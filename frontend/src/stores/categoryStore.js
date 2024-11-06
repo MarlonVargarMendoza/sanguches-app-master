@@ -2,20 +2,27 @@ import { create } from 'zustand';
 import { NAV_CATEGORIES, mapNavToFilterCategory } from '../constants/index';
 
 export const useCategoryStore = create((set, get) => ({
-    // Estado
     selectedCategory: 'all',
     activeNavCategory: 'SANGUCHES',
 
-    // Acciones
     setSelectedCategory: (category) => {
-        const state = get();
         set({
             selectedCategory: category,
-            activeNavCategory: state.getNavCategoryFromFilter(category)
+            activeNavCategory: category === 'bebidas' ? 'BEBIDAS' :
+                category === 'combo' ? 'COMBOS' :
+                    get().getNavCategoryFromFilter(category)
         });
     },
 
     setFromNavigation: (navCategory) => {
+        if (navCategory === 'BEBIDAS') {
+            set({
+                selectedCategory: 'bebidas',
+                activeNavCategory: 'BEBIDAS'
+            });
+            return;
+        }
+
         const filterCategories = mapNavToFilterCategory(navCategory);
         set({
             selectedCategory: Array.isArray(filterCategories) ? filterCategories[0] : filterCategories,
@@ -23,8 +30,10 @@ export const useCategoryStore = create((set, get) => ({
         });
     },
 
-    // Utilidades
     getNavCategoryFromFilter: (filterCategory) => {
+        if (filterCategory === 'bebidas') return 'BEBIDAS';
+        if (filterCategory === 'combo') return 'COMBOS';
+
         for (const navCat of NAV_CATEGORIES) {
             if (navCat.filterIds.includes(filterCategory)) {
                 return navCat.name;
@@ -33,8 +42,6 @@ export const useCategoryStore = create((set, get) => ({
         return 'SANGUCHES';
     },
 
-    // Selectores
     isNavCategoryActive: (navCategory) => get().activeNavCategory === navCategory,
-    
     getFilterCategory: () => get().selectedCategory
 }));

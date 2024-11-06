@@ -1,5 +1,5 @@
 import { ShoppingCart as ShoppingCartIcon } from '@mui/icons-material';
-import { Button, Chip, Tooltip, Typography } from '@mui/material';
+import { Button, Chip, Typography } from '@mui/material';
 import { motion } from 'framer-motion';
 import PropTypes from 'prop-types';
 import React, { memo, useCallback, useMemo } from 'react';
@@ -72,23 +72,7 @@ const ComboCard = ({
                     loading="lazy"
                 />
 
-                {/* Indicadores de contenido */}
-                <div className="absolute bottom-4 right-4 flex gap-2">
-                    <Tooltip title="Acompañamientos incluidos">
-                        <Chip
-                            size="small"
-                            label={`${comboDetails.accompaniments} Acomp.`}
-                            className="bg-[#FFC603] text-black"
-                        />
-                    </Tooltip>
-                    <Tooltip title="Bebidas incluidas">
-                        <Chip
-                            size="small"
-                            label={`${comboDetails.drinks} Bebidas`}
-                            className="bg-[#FFC603] text-black"
-                        />
-                    </Tooltip>
-                </div>
+            
             </div>
 
             <div className="p-4 flex flex-col gap-3">
