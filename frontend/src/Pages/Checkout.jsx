@@ -94,7 +94,7 @@ const Checkout = () => {
                 total: calculateTotalPrice(),
                 whatsappMessage: voucherText
             };
-
+            
             const orderResponse = await OrderService.createOrder(orderDetails);
 
             if (orderResponse.success) {
@@ -128,7 +128,6 @@ Gracias por tu compra en Sanguches!`;
             }
         } catch (error) {
             console.error('Error al procesar el pedido:', error);
-            console.log(orderResponse);
             
             showMessage(
                 error.message || 'Error al procesar el pedido. Por favor, intenta nuevamente.'
