@@ -1,5 +1,7 @@
 import {
+    Alert,
     Box, Button, CircularProgress, Divider, Grid, Paper,
+    Snackbar,
     Step, StepLabel, Stepper, Typography, useMediaQuery, useTheme
 } from '@mui/material';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -7,62 +9,145 @@ import { CreditCard, Lock, Send, ShieldCheck, ShoppingBag } from 'lucide-react';
 import React, { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import priceUtils from '../../utils/priceUtils';
+import CustomerDataSection from '../components/Order/CustomerDataSection';
 import OrderSummary from '../components/Order/OrderSummary';
 import { useCart } from '../hooks/useCart';
 import { useVoucherGenerator } from '../hooks/useVoucherGenerator';
 import { sendToWhatsApp } from '../services/notificationService';
+import { OrderService } from '../services/orderService';
+
 
 // Asume que tienes una imagen de QR para el pago
 import qrCodeImage from '/assets/qr-code-payment.png';
 
 const Checkout = () => {
+    // 1. Estados
+    const [error, setError] = useState({ show: false, message: '' });
+    const [personalId, setPersonalId] = useState('');
+    const [personalIdError, setPersonalIdError] = useState('');
+    const [isProcessing, setIsProcessing] = useState(false);
+    const [activeStep, setActiveStep] = useState(0);
+
+    // 2. Hooks
     const { cart, calculateTotalPrice, clearCart } = useCart();
     const generateVoucher = useVoucherGenerator();
     const navigate = useNavigate();
-    const [isProcessing, setIsProcessing] = useState(false);
-    const [activeStep, setActiveStep] = useState(0);
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
+    // 3. Constantes
     const steps = ['Resumen del pedido', 'Pago', 'Confirmación'];
 
+    // 4. Funciones de validación y utilidad
+    const validatePersonalId = useCallback(() => {
+        if (!personalId) {
+            setPersonalIdError('La cédula es requerida');
+            return false;
+        }
+        if (personalId.length < 8) {
+            setPersonalIdError('La cédula debe tener al menos 8 dígitos');
+            return false;
+        }
+        setPersonalIdError('');
+        return true;
+    }, [personalId]);
+
+    const showMessage = useCallback((message, severity = 'error') => {
+        setError({
+            show: true,
+            message,
+            severity
+        });
+    }, []);
+
+    const handleCloseSnackbar = useCallback(() => {
+        setError(prev => ({ ...prev, show: false }));
+    }, []);
+
+    // 5. Manejadores de navegación
+    const handleStepChange = useCallback(() => {
+        // Validar cédula solo en el primer paso
+        if (activeStep === 0 && !validatePersonalId()) {
+            showMessage('Por favor, ingresa una cédula válida', 'error');
+            return;
+        }
+        setActiveStep(prevStep => Math.min(prevStep + 1, steps.length - 1));
+    }, [activeStep, validatePersonalId, showMessage, steps.length]);
+
+    const handleBackStep = useCallback(() => {
+        setActiveStep(prevStep => Math.max(prevStep - 1, 0));
+    }, []);
+
+    // 6. Manejador principal de confirmación
     const handleConfirmOrder = useCallback(async () => {
+        if (!validatePersonalId()) {
+            showMessage('Por favor, ingresa una cédula válida', 'error');
+            return;
+        }
+
         setIsProcessing(true);
         try {
             const voucherText = generateVoucher();
-            const message = `
+            const orderDetails = {
+                personalId,
+                items: cart,
+                total: calculateTotalPrice(),
+                whatsappMessage: voucherText
+            };
+
+            const orderResponse = await OrderService.createOrder(orderDetails);
+
+            if (orderResponse.success) {
+                const whatsappMessage = `
+🎯 Pedido #${orderResponse.data.id}
+
 ${voucherText}
 
 Por favor, adjunta el comprobante de pago en el chat.
 
-Gracias por tu compra en Sanguches!
-            `;
-            sendToWhatsApp(message);
+Gracias por tu compra en Sanguches!`;
 
-            const orderDetails = {
-                items: cart,
-                total: calculateTotalPrice(),
-                whatsappMessage: message
-            };
+                sendToWhatsApp(whatsappMessage);
+                clearCart();
+                showMessage('¡Pedido creado exitosamente!', 'success');
 
-            clearCart();
-            navigate('/success', { state: { orderDetails } });
+                setTimeout(() => {
+                    navigate('/success', {
+                        state: {
+                            orderDetails: {
+                                ...orderDetails,
+                                orderId: orderResponse.data.id,
+                                whatsappMessage
+                            },
+                            orderResponse: orderResponse.data
+                        }
+                    });
+                }, 1000);
+            } else {
+                throw new Error('Error al procesar el pedido en el servidor');
+            }
         } catch (error) {
             console.error('Error al procesar el pedido:', error);
-            // TODO: Implementar manejo de errores apropiado
+            console.log(orderResponse);
+            
+            showMessage(
+                error.message || 'Error al procesar el pedido. Por favor, intenta nuevamente.'
+            );
         } finally {
             setIsProcessing(false);
         }
-    }, [cart, calculateTotalPrice, clearCart, generateVoucher, navigate]);
+    }, [
+        personalId,
+        validatePersonalId,
+        cart,
+        calculateTotalPrice,
+        clearCart,
+        generateVoucher,
+        navigate,
+        showMessage
+    ]);
 
-    const handleStepChange = useCallback(() => {
-        setActiveStep((prevStep) => (prevStep < steps.length - 1 ? prevStep + 1 : prevStep));
-    }, [steps.length]);
-
-    const handleBackStep = useCallback(() => {
-        setActiveStep((prevStep) => (prevStep > 0 ? prevStep - 1 : prevStep));
-    }, []);
-
+    // 7. Vista de carrito vacío
     if (cart.length === 0) {
         return (
             <Box className="py-[210px] min-h-screen flex items-center justify-center bg-gradient-to-b from-[#FFC603] to-[#EFEFEF]">
@@ -118,7 +203,14 @@ Gracias por tu compra en Sanguches!
                         <Grid item xs={12} md={7}>
                             <AnimatePresence mode="wait">
                                 {activeStep === 0 && (
-                                    <OrderSummarySection cart={cart} total={calculateTotalPrice()} />
+                                    <>
+                                        <CustomerDataSection
+                                            personalId={personalId}
+                                            onPersonalIdChange={setPersonalId}
+                                            error={personalIdError}
+                                        />
+                                        <OrderSummarySection cart={cart} total={calculateTotalPrice()} />
+                                    </>
                                 )}
                                 {activeStep === 1 && (
                                     <PaymentSection total={calculateTotalPrice()} />
@@ -142,6 +234,21 @@ Gracias por tu compra en Sanguches!
                     </Grid>
                 </Paper>
             </motion.div>
+            <Snackbar
+                open={error.show}
+                autoHideDuration={6000}
+                onClose={handleCloseSnackbar}
+                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+            >
+                <Alert
+                    onClose={handleCloseSnackbar}
+                    severity={error.severity}
+                    elevation={6}
+                    variant="filled"
+                >
+                    {error.message}
+                </Alert>
+            </Snackbar>
         </Box>
     );
 };
