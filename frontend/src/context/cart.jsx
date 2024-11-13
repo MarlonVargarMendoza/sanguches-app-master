@@ -6,6 +6,7 @@ export const CartContext = createContext();
 export const CartProvider = ({ children }) => {
   const [state, dispatch] = useReducer(cartReducer, initialState);
 
+  // Se asegura de retornar correctamente el Provider con sus props
   return (
     <CartContext.Provider value={{ state, dispatch }}>
       {children}
