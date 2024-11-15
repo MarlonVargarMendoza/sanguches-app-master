@@ -4,12 +4,13 @@ import React, { memo, useCallback, useEffect, useState } from 'react';
 import ContentLoader from "react-content-loader";
 import { Link } from 'react-router-dom';
 import useCart from '../../../hooks/useCart';
-import { getDrinksSelect } from '../../../services/productService';
-import DrinkCard from './DrinkCard';
+import { getProductsByCategory } from '../../../services/productService';
+import DrinkCard from '../drinks/DrinkCard';
 
+// Optimized loading placeholder with better skeleton UI
 const LoadingPlaceholder = memo(() => (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {[...Array(3)].map((_, index) => (
+        {[...Array(6)].map((_, index) => (
             <ContentLoader
                 key={index}
                 speed={2}
@@ -28,11 +29,16 @@ const LoadingPlaceholder = memo(() => (
     </div>
 ));
 
+// Enhanced page header with animations
 const PageHeader = memo(() => (
-    <>
+    <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+    >
         <Breadcrumbs className="mb-6">
             <Link to="/" className="hover:text-[#C3151A]">Inicio</Link>
-            <Typography color="text.primary">Bebidas</Typography>
+            <Typography color="text.primary">Donas</Typography>
         </Breadcrumbs>
         
         <Typography
@@ -44,21 +50,21 @@ const PageHeader = memo(() => (
                 textShadow: '2px 2px 4px rgba(0,0,0,0.1)'
             }}
         >
-            Nuestras Bebidas
+            Nuestras Donas
         </Typography>
         <Typography 
             variant="subtitle1" 
             className="text-center text-gray-600 mb-8 pb-4"
         >
-            Descubre nuestra deliciosa selección de bebidas 
+            Descubre nuestra deliciosa selección de donas artesanales
         </Typography>
-    </>
+    </motion.div>
 ));
 
-const Drinks = () => {
+const Donuts = () => {
     const { addToCart, removeFromCart, updateQuantity, cart } = useCart();
     const [state, setState] = useState({
-        drinks: [],
+        products: [],
         isLoading: true,
         error: null
     });
@@ -70,90 +76,87 @@ const Drinks = () => {
     useEffect(() => {
         let isMounted = true;
 
-        const fetchDrinks = async () => {
+        const fetchDonuts = async () => {
             try {
                 setState(prev => ({ ...prev, isLoading: true }));
-                const data = await getDrinksSelect();
+                const data = await getProductsByCategory(10); // ID 10 para donas
                 
                 if (isMounted) {
-                    const formattedDrinks = data.map(drink => ({
-                        id: drink.id,
-                        name: drink.text?.split('-->')[0]?.trim() || drink.name,
-                        description: drink.description || 'Bebida refrescante',
-                        basePrice: parseFloat(drink.basePrice || 0),
-                        image: drink.image,
-                        type: 'drink'
+                    const formattedProducts = data.map(product => ({
+                        id: product.id,
+                        name: product.name,
+                        description: product.description || 'Deliciosa dona artesanal',
+                        basePrice: parseFloat(product.basePrice || 0),
+                        image: product.image,
+                        type: 'product'
                     }));
 
                     setState({
-                        drinks: formattedDrinks || [],
+                        products: formattedProducts,
                         isLoading: false,
-                        error: formattedDrinks?.length ? null : 'No se encontraron bebidas disponibles'
+                        error: null
                     });
                 }
             } catch (err) {
                 if (isMounted) {
                     setState({
-                        drinks: [],
+                        products: [],
                         isLoading: false,
-                        error: 'Error al cargar las bebidas. Por favor, intenta más tarde.'
+                        error: 'Error al cargar las donas. Por favor, intenta más tarde.'
                     });
                 }
             }
         };
 
-        fetchDrinks();
+        fetchDonuts();
         return () => { isMounted = false; };
     }, []);
 
-    const handleAddToCart = useCallback((drink) => {
-        const existingItem = cart.find((item) => item.id === drink.id);
+    const handleAddToCart = useCallback((product) => {
+        const existingItem = cart.find((item) => item.id === product.id);
         if (existingItem) {
-            updateQuantity(drink.id, existingItem.quantity + 1);
+            updateQuantity(product.id, existingItem.quantity + 1);
         } else {
             addToCart({
-                ...drink,
+                ...product,
                 quantity: 1,
-                calculatedPrice: drink.basePrice
+                calculatedPrice: product.basePrice
             });
         }
         setSnackbarState({
             open: true,
-            message: '¡Bebida añadida al carrito!'
+            message: '¡Dona añadida al carrito!'
         });
     }, [cart, addToCart, updateQuantity]);
 
-    const handleRemoveFromCart = useCallback((drinkId) => {
-        removeFromCart(drinkId);
+    const handleRemoveFromCart = useCallback((productId) => {
+        removeFromCart(productId);
         setSnackbarState({
             open: true,
-            message: 'Bebida eliminada del carrito'
+            message: 'Dona eliminada del carrito'
         });
     }, [removeFromCart]);
 
-    const checkDrinkInCart = useCallback((drinkId) =>
-        cart.some(item => item.id === drinkId),
+    const checkProductInCart = useCallback((productId) =>
+        cart.some(item => item.id === productId),
         [cart]
     );
 
-    const getCartQuantity = useCallback((drinkId) =>
-        cart.find(item => item.id === drinkId)?.quantity || 0,
+    const getCartQuantity = useCallback((productId) =>
+        cart.find(item => item.id === productId)?.quantity || 0,
         [cart]
     );
-
-    const handleCloseSnackbar = useCallback(() => {
-        setSnackbarState(prev => ({ ...prev, open: false }));
-    }, []);
 
     return (
         <motion.main
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="min-h-screen bg-[#F5F5F5] pt-[220px] pb-0"
+            className="min-h-screen bg-[#F5F5F5] pt-[220px]"
         >
             <Container maxWidth="lg" className="px-4">
                 <PageHeader />
+                
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -167,14 +170,14 @@ const Drinks = () => {
                         </Alert>
                     ) : (
                         <Box className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pb-8">
-                            {state.drinks.map(drink => (
+                            {state.products.map(product => (
                                 <DrinkCard
-                                    key={drink.id}
-                                    product={drink}
+                                    key={product.id}
+                                    product={product}
                                     onAddToCart={handleAddToCart}
                                     onRemoveFromCart={handleRemoveFromCart}
-                                    isInCart={checkDrinkInCart(drink.id)}
-                                    quantity={getCartQuantity(drink.id)}
+                                    isInCart={checkProductInCart(product.id)}
+                                    quantity={getCartQuantity(product.id)}
                                     buttonText="AGREGAR"
                                     showLogo={true}
                                 />
@@ -188,11 +191,11 @@ const Drinks = () => {
                 anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
                 open={snackbarState.open}
                 autoHideDuration={3000}
-                onClose={handleCloseSnackbar}
+                onClose={() => setSnackbarState(prev => ({ ...prev, open: false }))}
                 message={snackbarState.message}
             />
         </motion.main>
     );
 };
 
-export default memo(Drinks);
+export default memo(Donuts);

@@ -38,7 +38,7 @@ const CATEGORIES = [
   {
     id: 'donas',
     name: 'DONAS', 
-    category: '10',
+    category: 'donas',
     description: 'Donas para compartir'
   }
 ];
@@ -183,6 +183,9 @@ const SubMenu = () => {
         break;
       case 'bebidas':
         navigate('/bebidas');
+        break;
+      case 'donas':
+        navigate('/donas');
         break;
       case 'all':
         navigate('/menuSanguches');

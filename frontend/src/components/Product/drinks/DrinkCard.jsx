@@ -72,10 +72,10 @@ const DrinkCard = ({
                 )}
             </div>
 
-            <div className="p-4 flex flex-col flex-grow">
-                <h3 className="text-lg font-semibold mb-2 text-gray-800">
+            <div className="p-4 flex flex-col gap-4">
+                <h6   className="text-lg font-semibold text-gray-800 mb-2 group-hover:text-[#C8151B] transition-colors duration-300">
                     {product.name}
-                </h3>
+                </h6>
                 <p className="text-gray-600 text-sm mb-4 line-clamp-2">
                     {product.description || "Bebida refrescante"}
                 </p>
