@@ -2,7 +2,7 @@ import { useMediaQuery, useTheme } from '@mui/material';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Beer, Gift, X } from 'lucide-react';
 import React, { useCallback, useState } from 'react';
-
+import priceUtils from '../../../../utils/priceUtils.js';
 const typeIcons = {
     drinks: <Beer className="w-5 h-5" />,
     accompaniments: <Gift className="w-5 h-5" />
@@ -43,12 +43,6 @@ export const ComboCustomSelect = ({
     const getMaxDropdownHeight = () => {
         if (isMobile) return 'max-h-[40vh]';
         return 'max-h-[50vh]';
-    };
-
-    // Formatear el precio para mostrar
-    const formatPrice = (price) => {
-        if (!price) return '';
-        return `$${Number(price).toFixed(2)}`;
     };
 
     return (
@@ -146,7 +140,7 @@ export const ComboCustomSelect = ({
                                                 </span>
                                                 {item.combo_price && (
                                                     <span className="text-xs text-gray-500 font-medium">
-                                                        Precio combo: {formatPrice(item.combo_price)}
+                                                        Precio combo: {priceUtils(item.combo_price)}
                                                     </span>
                                                 )}
                                             </div>

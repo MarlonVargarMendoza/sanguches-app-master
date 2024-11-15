@@ -123,11 +123,6 @@ const CustomSelect = ({
                                                 <span className="text-sm font-medium text-gray-700">
                                                     {item.name || item.text}
                                                 </span>
-                                                {priceDisplay && item.price && (
-                                                    <span className="text-xs text-gray-500">
-                                                        +${item.price.toFixed(2)}
-                                                    </span>
-                                                )}
                                             </div>
                                         </div>
                                     </motion.div>
