@@ -13,7 +13,8 @@ class Ingredient extends Model
         'name',
         'price',
         'type_ingredients_id',
-        'addition'
+        'addition',
+        'status'
     ];
 
     public function typeIngredient () {

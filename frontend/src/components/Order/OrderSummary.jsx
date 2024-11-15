@@ -2,10 +2,10 @@
 import { Box, Divider, List, ListItem, ListItemText, Typography } from '@mui/material';
 import { motion } from 'framer-motion';
 import React from 'react';
-
+import priceUtils from '../../../utils/priceUtils';
 const OrderSummary = ({ items, total }) => (
     <Box className="bg-white p-6 rounded-lg shadow-md">
-        <Typography variant="h5" className="mb-4 font-semibold text-[#C8151B]">
+        <Typography variant="h5" className="mb-4 font-semibold text-black">
             Resumen del pedido
         </Typography>
         <Divider className="mb-4" />
@@ -22,7 +22,7 @@ const OrderSummary = ({ items, total }) => (
                             {item.name} x{item.quantity}
                         </Typography>
                         <Typography variant="body1" className="font-bold">
-                            ${(item.basePrice * item.quantity).toFixed(2)}
+                            ${(item.basePrice * item.quantity)}
                         </Typography>
                     </Box>
                     {item.customizations && (
@@ -48,6 +48,13 @@ const OrderSummary = ({ items, total }) => (
                                     />
                                 </ListItem>
                             )}
+                            {item.customizations.accompaniments?.length > 0 && (
+                                <ListItem>
+                                    <ListItemText
+                                        secondary={`Acompañamientos: ${item.customizations.accompaniments.map(a => a.text || a.name).join(', ')}`}
+                                    />
+                                </ListItem>
+                            )}
                         </List>
                     )}
                 </Box>
@@ -59,7 +66,8 @@ const OrderSummary = ({ items, total }) => (
                 Total
             </Typography>
             <Typography variant="h6" className="font-bold text-[#C8151B]">
-                ${total.toFixed(2)}
+                
+                {priceUtils(total)}
             </Typography>
         </Box>
     </Box>

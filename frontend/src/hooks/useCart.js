@@ -14,6 +14,9 @@ export const useCart = () => {
       if (item.customizations.drinks) {
         price += item.customizations.drinks.reduce((sum, drink) => sum + drink.price, 0);
       }
+      if (item.customizations.accompaniments) {
+        price += item.customizations.accompaniments.reduce((sum, accompaniment) => sum + accompaniment.price, 0);
+      }
     }
     return price * item.quantity;
   }, []);

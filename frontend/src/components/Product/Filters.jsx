@@ -1,81 +1,189 @@
-import { Box, FormControl, InputLabel, MenuItem, Select, Slider, Typography } from '@mui/material';
-import { alpha } from '@mui/material/styles';
+import { Box, Chip, FormControl, MenuItem, Select, Typography } from '@mui/material';
 import { motion } from 'framer-motion';
-import React from 'react';
+import { ChevronDown, Search } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { useCategoryStore } from '../../stores/categoryStore';
 
-export function Filters({ filters = { minPrice: 0, category: 'all' }, onFilterChange }) {
-    const handleChangeMinPrice = (event, newValue) => {
-        onFilterChange({ ...filters, minPrice: Number(newValue) });
-    };
+const CATEGORIES = [
+    { id: 'all', name: 'Sanguches y sanguchitos', icon: '🥪', color: '#FFC603' },
+    { id: 7, name: 'Sanguches', icon: '🍔', color: '#FF9B9B' },
+    { id: 8, name: 'Sanguchitos', icon: '🥖', color: '#FFB084' },
+    { id: 9, name: 'Desayunos', icon: '☕', color: '#AED9E0' },
+    { id: 10, name: 'Donas', icon: '🍩', color: '#FFA8E2' },
+    { id: 11, name: 'Pasteles', icon: '🍰', color: '#B5EAD7' },
+    { id: 12, name: 'Otros', icon: '✨', color: '#C7CEEA' }
+];
 
-    const handleChangeCategory = (event) => {
-        onFilterChange({ ...filters, category: event.target.value });
-    };
-
-    const categorias = [
-        { id: 'all', nombre: 'Todas' },
-        { id: 7, nombre: 'Tradicional' },
-        { id: 8, nombre: 'Sanguchito' },
-        { id: 9, nombre: 'Desayuno' },
-        { id: 10, nombre: 'Dona' },
-        { id: 11, nombre: 'Pastel' },
-        { id: 12, nombre: 'Otro' },
-        { id: 13, nombre: 'Papas a la francesa' },
-        { id: 14, nombre: 'Palos de yuca' },
-    ];
+const SelectIcon = React.memo(({ ownerState = {} }) => {
+    const isOpen = Boolean(ownerState?.open);
 
     return (
-        <motion.section 
-            className='filters flex flex-col sm:flex-row w-full sm:w-3/4 lg:w-1/2 mx-auto mb-6 gap-4 px-4'
-            initial={{ opacity: 0, y: -20 }}
+        <motion.div
+            initial={false}
+            animate={{
+                rotate: isOpen ? 180 : 0,
+                originY: 0.55  // Ajusta el punto de rotación
+            }}
+            transition={{
+                duration: 0.2,
+                ease: [0.4, 0.0, 0.2, 1] // Transición suave tipo Material Design
+            }}
+        >
+            <ChevronDown
+                size={24}
+                className={`text-gray-500 transform ${isOpen ? 'text-[#FFC603]' : ''}`}
+                style={{
+                    strokeWidth: 2.5,
+                    transformOrigin: 'center'
+                }}
+            />
+        </motion.div>
+    );
+});
+
+SelectIcon.displayName = 'SelectIcon';
+
+
+export function Filters({ filters = { category: 'all' }, onFilterChange }) {
+    const [searchTerm, setSearchTerm] = useState('');
+    const { selectedCategory, setSelectedCategory } = useCategoryStore();
+
+    useEffect(() => {
+        // Sincronizar el estado cuando cambia desde el submenu
+        if (selectedCategory !== filters.category) {
+            onFilterChange({ ...filters, category: selectedCategory });
+        }
+    }, [selectedCategory]);
+
+    const handleChangeCategory = (event) => {
+        const newCategory = event.target.value;
+        setSelectedCategory(newCategory);
+        onFilterChange({ ...filters, category: newCategory });
+    };
+
+    const filteredCategories = CATEGORIES.filter(cat =>
+        cat.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    return (
+        <motion.div
+            className="w-full max-w-md "
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
         >
-            <Box className='filter-item flex-1'>
-                <Typography variant="subtitle1" className='text-gray-700 font-semibold mb-2'>
-                    Precio a partir de:
-                </Typography>
-                <Slider
-                    value={filters.minPrice}
-                    onChange={handleChangeMinPrice}
-                    valueLabelDisplay="auto"
-                    step={1000}
-                    marks
-                    min={0}
-                    max={50000}
-                    sx={{
-                        color: '#FFC603',
-                        '& .MuiSlider-thumb': {
-                            '&:hover, &.Mui-focusVisible': {
-                                boxShadow: `0px 0px 0px 8px ${alpha('#FFC603', 0.16)}`,
-                            },
-                            '&.Mui-active': {
-                                boxShadow: `0px 0px 0px 14px ${alpha('#FFC603', 0.16)}`,
-                            },
-                        },
-                    }}
-                />
-                <Typography variant="body2" className='text-gray-700 mt-2'>
-                    ${filters.minPrice}
-                </Typography>
-            </Box>
+            <Typography
+                variant="h6"
+                className="text-gray-800 font-bold mb-4 "
+            >
+                Explora Nuestras Categorías
+            </Typography>
 
-            <FormControl className='filter-item flex-1'>
-                <InputLabel id="category-select-label">Categoría</InputLabel>
+            <FormControl fullWidth >
                 <Select
-                    labelId="category-select-label"
                     value={filters.category}
                     onChange={handleChangeCategory}
-                    label="Categoría"
+                    IconComponent={SelectIcon}
+                    className="bg-white rounded-lg font-medium text-sm"
+                    sx={{
+                        '& .MuiOutlinedInput-notchedOutline': {
+                            borderColor: '#E5E7EB',
+                            borderWidth: '2px',
+                        },
+                        '&:hover .MuiOutlinedInput-notchedOutline': {
+                            borderColor: '#FFC603',
+                        },
+                        '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                            borderColor: '#FFC603',
+                        },
+                        '& .MuiSelect-select': {
+                            padding: '16px',
+                        }
+                    }}
+                    MenuProps={{
+                        PaperProps: {
+                            sx: {
+                                maxHeight: 400,
+                                borderRadius: '12px',
+                                mt: 1,
+                                boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
+                                '& .MuiList-root': {
+                                    padding: '8px',
+                                }
+                            }
+                        }
+                    }}
                 >
-                    {categorias.map(categoria => (
-                        <MenuItem key={categoria.id} value={categoria.id}>
-                            {categoria.nombre}
+                    <Box className="sticky top-0 p-2 bg-white z-10">
+                        <div className="flex items-center gap-2 px-3 py-2 bg-gray-50 rounded-lg">
+                            <Search size={18} className="text-gray-400" />
+                            <input
+                                type="text"
+                                placeholder="Buscar categoría..."
+                                className="w-full bg-transparent border-none outline-none text-sm"
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                            />
+                        </div>
+                    </Box>
+
+                    {filteredCategories.map((categoria) => (
+                        <MenuItem
+                            key={categoria.id}
+                            value={categoria.id}
+                            className="rounded-lg my-1 hover:bg-gray-50"
+                        >
+                            <div className="flex items-center justify-between w-full">
+                                <div className="flex items-center gap-3">
+                                    <span className="text-xl">{categoria.icon}</span>
+                                    <span>{categoria.name}</span>
+                                </div>
+                                <Chip
+                                    size="small"
+                                    label={filters.category === categoria.id ? 'Seleccionado' : ''}
+                                    sx={{
+                                        backgroundColor: categoria.color,
+                                        visibility: filters.category === categoria.id ? 'visible' : 'hidden',
+                                        '& .MuiChip-label': { color: '#000' }
+                                    }}
+                                />
+                            </div>
                         </MenuItem>
                     ))}
+
+                    {filteredCategories.length === 0 && (
+                        <Box className="p-4 text-center text-gray-500">
+                            No se encontraron categorías
+                        </Box>
+                    )}
                 </Select>
             </FormControl>
-        </motion.section>
+
+            {/* Chips de categorías populares */}
+            <Box className="flex flex-wrap gap-2 mt-4">
+                {CATEGORIES.slice(0, 4).map((cat) => (
+                    <motion.div
+                        key={cat.id}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                    >
+                        <Chip
+                            label={cat.name}
+                            icon={<span className="ml-2">{cat.icon}</span>}
+                            onClick={() => {
+                                setSelectedCategory(cat.id);
+                                onFilterChange({ ...filters, category: cat.id });
+                            }}
+                            sx={{
+                                backgroundColor: filters.category === cat.id ? '#FFC603' : '#F3F4F6',
+                                '&:hover': { backgroundColor: '#FFE082' },
+                                transition: 'all 0.2s'
+                            }}
+                        />
+                    </motion.div>
+                ))}
+            </Box>
+        </motion.div>
     );
 }
 

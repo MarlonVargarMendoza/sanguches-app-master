@@ -1,5 +1,6 @@
 // useVoucherGenerator.js
 import { useCallback } from 'react';
+import priceUtils from '../../utils/priceUtils';
 import { useCart } from './useCart';
 
 export const useVoucherGenerator = () => {
@@ -13,29 +14,35 @@ export const useVoucherGenerator = () => {
             const itemPrice = calculateItemPrice(item);
             totalPrice += itemPrice;
 
-            voucherText += `${index + 1}. ${item.name} x${item.quantity} - $${itemPrice.toFixed(2)}\n`;
+            voucherText += `${index + 1}. ${item.name} x${item.quantity} - $${itemPrice}\n`;
 
             if (item.customizations) {
                 if (item.customizations.additions?.length > 0) {
                     voucherText += "   Adiciones:\n";
                     item.customizations.additions.forEach(addition => {
-                        voucherText += `     - ${addition.text || addition.name}: $${addition.price.toFixed(2)}\n`;
+                        voucherText += `     - ${addition.text || addition.name}\n`;
                     });
                 }
                 if (item.customizations.drinks?.length > 0) {
                     voucherText += "   Bebidas:\n";
                     item.customizations.drinks.forEach(drink => {
-                        voucherText += `     - ${drink.text || drink.name}: $${drink.price.toFixed(2)}\n`;
+                        voucherText += `     - ${drink.text || drink.name}\n`;
                     });
                 }
                 if (item.customizations.sauces?.length > 0) {
-                    voucherText += `   Salsas: ${item.customizations.sauces.map(sauce => sauce.text || sauce.name).join(', ')}\n`;
+                    voucherText += `   Salsas: \n ${item.customizations.sauces.map(sauce => sauce.text || sauce.name).join(', ')}\n`;
+                }
+                if (item.customizations.accompaniments?.length > 0) {
+                    voucherText += "   Acompanimentos:\n";
+                    item.customizations.accompaniments.forEach(accompaniment => {
+                        voucherText += `     - ${accompaniment.text || accompaniment.name}\n`;
+                    });
                 }
             }
             voucherText += '\n';
         });
 
-        voucherText += `\nTotal: $${totalPrice.toFixed(2)}`;
+        voucherText += `\nTotal: ${priceUtils(totalPrice)}`;
         return voucherText;
     }, [cart, calculateItemPrice]);
 
