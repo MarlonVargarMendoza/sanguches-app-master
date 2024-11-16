@@ -1,4 +1,3 @@
-import axios from 'axios';
 
 const API_URL = import.meta.env.VITE_APP_DOMAIN;
 
@@ -52,11 +51,11 @@ export class OrderService {
             console.log(JSON.stringify(formattedOrder, null, 2));
             console.groupEnd();
 
-            const response = await axios.post(`${API_URL}/api/orders`, formattedOrder, {
+       /*      const response = await axios.post(`${API_URL}/api/orders`, formattedOrder, {
                 headers: {
                     'Content-Type': 'application/json'
                 }
-            });
+            }); */
 
             return {
                 success: true,
