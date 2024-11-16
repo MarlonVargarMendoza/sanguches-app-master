@@ -17,7 +17,12 @@ const Success = lazy(() => import('../Pages/Success.jsx'));
 const Checkout = lazy(() => import('../Pages/Checkout.jsx'));
 const CombosContainer = lazy(() => import('../components/combo/CombosContainer.jsx'));
 const ComboCustomize = lazy(() => import('../components/Customize/ComboCustomize.jsx'));
-const Drinks = lazy(() => import('../components/Product/drinks/Drinks.jsx'));
+const Drinks = lazy(() => import('../components/Product/drinks/Drinks')
+  .catch(error => {
+    console.error('Error loading Drinks:', error);
+    return { default: ErrorView };
+  })
+);
 const Donuts = lazy(() => import('../components/Product/donuts/Donuts.jsx'));
 // Enhanced loader component
 const Loader = () => (
