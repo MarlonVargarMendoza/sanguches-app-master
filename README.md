@@ -1,1 +1,427 @@
 <div style="display: flex; align-items: flex-start;"><img src="https://techstack-generator.vercel.app/js-icon.svg" alt="icon" width="55" height="55" /></div><div style="display: flex; align-items: flex-start;"><img src="https://techstack-generator.vercel.app/mysql-icon.svg" alt="icon" width="55" height="55" /></div><div style="display: flex; align-items: flex-start;"><img src="https://techstack-generator.vercel.app/nginx-icon.svg" alt="icon" width="55" height="55" /></div><div style="display: flex; align-items: flex-start;"><img src="https://techstack-generator.vercel.app/react-icon.svg" alt="icon" width="55" height="55" /></div>
+
+
+
+# 🥪 Sanguches Xpress - Documentación Técnica
+# 📚 Tech Stack 
+(Basado en package.json y configuración del proyecto)
+## Frontend
+```jsonCopy{
+  "dependencies": {
+    "@emotion/react": "^11.5.0",
+    "@emotion/styled": "^11.5.0",
+    "@heroicons/react": "^1.0.6",
+    "@material-tailwind/react": "^2.1.10",
+    "@mui/icons-material": "^5.16.6",
+    "@mui/material": "^5.16.6",
+    "@mui/styles": "^5.16.6",
+    "@react-google-maps/api": "^2.19.3",
+    "axios": "^1.7.7",
+    "framer-motion": "^11.5.4",
+    "react": "^18.3.1",
+    "react-router-dom": "^6.26.1",
+    "zustand": "^5.0.0"
+  }
+}
+```
+## Backend (Laravel)
+
+ - Laravel 10
+ - PHP 8+
+ - MySQL
+ - RESTful API
+
+ 🗂️ Estructura del Proyecto
+```bash 
+├── src/
+│   ├── components/
+│   │   ├── Cart/
+│   │   │   ├── cartItem.jsx
+│   │   │   └── PersistentCart.jsx
+│   │   ├── Customize/
+│   │   ├── Layout/
+│   │   └── Product/
+│   ├── context/
+│   │   └── cart.jsx
+│   ├── hooks/
+│   │   └── useCart.js
+│   ├── reducers/
+│   │   └── cart.js
+│   └── services/
+│       ├── cartService.js
+│       ├── customizationService.js
+│       └── productService.js
+
+backend/
+├── app/
+│   ├── Http/Controllers/
+│   │   └── Product/
+│   │       ├── ComboController.php
+│   │       ├── CompanionController.php
+│   │       └── ProductController.php
+│   ├── Models/
+│   │   ├── Product.php
+│   │   ├── Combo.php
+│   │   └── Companion.php
+│   └── Services/
+│       └── ProductService.php
+
+```
+
+## 🎯 Patrones de Diseño Implementados
+
+
+1. Observer Pattern (Sistema de Carrito)
+Implementado para manejar actualizaciones del carrito y notificaciones.
+
+- CartContext actúa como el Subject principal que mantiene el estado del carrito
+- cartReducer maneja las mutaciones del estado y notifica a los observers
+- El estado inicial y las acciones definidas (ADD_ITEM, REMOVE_ITEM, etc.) son los eventos que se observan permitiendo parametrizar clientes con diferentes solicitudes y hacer queue o log de solicitudes( Patron Command)
+
+
+### Observer Concreto
+
+
+#### CartItem es efectivamente un Observer concreto que:
+
+Se suscribe a los cambios del estado del carrito
+Reacciona a las actualizaciones renderizando los nuevos datos
+Maneja las interacciones locales (cantidad, eliminación)
+
+#### Mecanismo de Observación
+
+```bash
+// En useCart (actúa como intermediario)
+const { state, dispatch } = useContext(CartContext);
+const [totalPrice, setTotalPrice] = useState(0);
+
+useEffect(() => {
+  setTotalPrice(calculateTotalPrice());
+}, [state.items, calculateTotalPrice]);
+
+```
+#### Gestión de Estado
+
+
+```bash 
+//Publisher (CartContext.jsx) CartProvider establece el mecanismo de suscripción
+
+export const CartProvider = ({ children }) => {
+  const [state, dispatch] = useReducer(cartReducer, initialState);
+
+  const value = useMemo(() => ({ state, dispatch }), [state, dispatch]);
+  // Se asegura de retornar correctamente el Provider con sus props
+  return (
+    <CartContext.Provider value={value}>
+      {children}
+    </CartContext.Provider>
+  );
+};
+
+// Subscriber (PersistentCart.jsx)
+export const PersistentCart = () => {
+  const { cart, totalPrice } = useCart();
+  useEffect(() => {
+    if (cart.length > 0) {
+      setCartAnimation(true);
+    }
+  }, [cart]);
+};
+
+```
+
+#### Flujo de Datos
+  El cartReducer procesa las acciones y actualiza el estado
+Los observers (CartItem, PersistentCart) se actualizan automáticamente
+useCart proporciona métodos para interactuar con el estado
+
+#### Ventajas de esta Implementación
+
+Desacoplamiento: Los componentes del carrito están desacoplados del estado central
+Reactividad: Las actualizaciones se propagan automáticamente
+Mantenibilidad: Centraliza la lógica de estado en el reducer
+Escalabilidad: Facilita añadir nuevos observers sin modificar el código existente
+
+2. Command Pattern en cartReducer
+El patrón Command encapsula una solicitud como un objeto, permitiendo parametrizar clientes con diferentes solicitudes y hacer queue o log de solicitudes.
+
+#### Los elementos del patrón Command presentes son:
+
+```bash
+export const cartReducer = (state = initialState, action) => {
+  switch (action.type) {
+    // Cada case representa un comando concreto
+    case 'ADD_ITEM': {
+      // Comando para añadir item
+      const { id, customizations = {} } = action.payload;
+      // Lógica del comando...
+    }
+    
+    case 'REMOVE_ITEM': {
+      // Comando para eliminar item
+      return {
+        ...state,
+        items: state.items.filter(item => item.id !== action.payload)
+      };
+    }
+    
+    case 'UPDATE_ITEM': {
+      // Comando para actualizar item
+      return {
+        ...state,
+        items: state.items.map(item =>
+          item.id === action.payload.id ? { ...item, ...action.payload.updates } : item
+        )
+      };
+    }
+    
+    case 'CLEAR_CART': {
+      // Comando para limpiar carrito
+      return initialState;
+    }
+  }
+};
+
+``` 
+
+Command: Las acciones con su type y payload
+```bash
+{ type: 'ADD_ITEM', payload: {id, customizations} }
+```
+
+Receiver: El estado del carrito que recibe los comandos
+```bash
+ const initialState = { items: [], total: 0 };
+ ```
+
+Invoker: El dispatch que ejecuta los comandos
+```bash 
+dispatch({ type: 'ADD_ITEM', payload: item });
+```
+
+Client: Los componentes que crean y envían los comandos
+```bash 
+const addToCart = useCallback((item) => {
+  dispatch({ type: 'ADD_ITEM', payload: item });
+}, [dispatch]);
+```
+3. Patrón Template Method en la Gestión de Productos
+El código implementa el patrón Template Method para manejar diferentes tipos de productos (sándwiches, bebidas, donas) manteniendo una estructura algorítmica común.
+### Clase Base Abstracta
+ProductCard actúa como la clase base que define el template:
+```bash
+const ProductCard = ({
+    product,
+    onAddToCart,
+    onRemoveFromCart,
+    isInCart = false,
+    quantity = 0,
+    buttonText = 'AGREGAR',
+    showLogo = false 
+}) => {
+    // Template method structure
+    return (
+        <motion.div>
+            {/* Skeleton implementation */}
+            <div className="relative product-image">
+                {/* Image rendering step */}
+            </div>
+            <div className="p-4 flex flex-col flex-grow">
+                {/* Content rendering step */}
+            </div>
+        </motion.div>
+    );
+};
+```
+#### Métodos Concretos (Steps)
+```bash
+// DrinkCard.jsx - Implementación concreta
+const DrinkCard = (props) => {
+    const handleCartAction = useCallback((e) => {
+        e.stopPropagation();
+        if (isInCart) {
+            onRemoveFromCart?.(product.id);
+        } else {
+            onAddToCart?.(product);
+        }
+    }, [product, isInCart]);
+
+    return ProductCard({...props});
+};
+```
+
+#### 3. Contenedor que Define el Algoritmo
+ProductsSanguches define la estructura principal:
+```bash 
+export function ProductsSanguches() {
+    // 1. Inicialización
+    const [products, setProducts] = useState([]);
+    
+    // 2. Carga de datos
+    const fetchProducts = useCallback(async () => {
+        setIsLoading(true);
+        // Implementación de carga
+    }, [selectedCategories]);
+
+    // 3. Renderizado del contenido
+    const renderContent = () => {
+        if (isLoading) return <ProductLoadingPlaceholder/>;
+        if (error) return <Alert/>;
+        return <ProductsList products={products}/>;
+    };
+}
+
+```
+Beneficios de esta Implementación
+
+Reutilización de Código:
+
+La estructura base se define una vez en ProductCard, DrinkCard, ComboCard
+Las variantes heredan la estructura para reutilizar el codigo
+
+
+Flexibilidad:
+
+Cada tipo de producto puede personalizar comportamientos específicos
+Mantiene consistencia en la interfaz de usuario
+
+
+Mantenibilidad:
+
+Cambios en la estructura base afectan a todos los productos
+Modificaciones específicas no alteran otros componentes
+4. Patrón DTO con MVC
+- Encapsulación de Datos
+- Transforma datos del modelo a una estructura específica
+- Agrupa información relacionada
+- Elimina datos innecesarios (makeHidden)
+#### Controllers (Capa de Presentación) Manejan requests y responses
+
+```BASH 
+class ProductController extends Controller {
+    protected $productService;
+
+    public function __construct(ProductService $productService) {
+        $this->productService = $productService;
+    }
+
+    public function index() {
+        $result = $this->productService->getSandwichsHome();
+        // Handle response...
+    }
+}
+```
+#### Service Layer (Lógica de Negocio)
+```BASH
+
+
+phpCopyclass ProductService {
+    public function getSandwichsHome() {
+        try {
+            $sandwichs = Product::with(['ingredients' => function ($query) {
+                $query->where('status', true)
+                ->select('ingredients.id', 'name');
+            }])
+            // Lógica de negocio...
+        } catch (\Throwable $th) {
+            return ['status' => 500, 'message' => $th];
+        }
+    }
+}
+```
+#### Models (Capa de Datos) Definen estructura y relaciones de datos
+
+```BASH 
+class Product extends Model {
+    protected $fillable = [
+        'name',
+        'basePrice',
+        'image',
+        // ...
+    ];
+
+    // Relaciones Eloquent
+    public function ingredients() {
+        return $this->belongsToMany(Ingredient::class, 
+            'sandwiche_ingredients', 
+            'products_id', 
+            'ingredients_id'
+        );
+    }
+}
+```
+#### Transformación de Datos en Service Layer
+```bash
+public function getSandwichsHome() {
+    try {
+        $sandwichs = Product::with(['ingredients' => function ($query) {
+            $query->where('status', true)
+            ->select('ingredients.id', 'name');
+        }])
+        // Transformación de datos tipo DTO
+        foreach ($sandwichs as $product) {
+            $ingredientsGrouped = $product->ingredients->groupBy('name')->map(function ($group) {
+                $ingredient = $group->first();
+                $ingredient->amount = $group->count();
+                // Transformación del objeto
+                if ($ingredient->amount > 1) {
+                    $ingredient->name = "{$ingredient->name} x{$ingredient->amount}";
+                }
+                // Limpieza de datos innecesarios
+                $ingredient->makeHidden(['pivot', 'amount']);
+                return $ingredient;
+            })->values();
+            
+            // Asignación al objeto de transferencia
+            $product->ingredients = $ingredientsGrouped;
+            $product->setRelation('ingredients', $ingredientsGrouped);
+        }
+```
+```bash
+Estructura de Transferencia
+// Formato de transferencia estandarizado
+return [
+    'status' => 200, 
+    'data' => $sandwichs
+];
+
+//Estandarización de Respuesta
+
+return response()->json([
+    'status' => $result['status'], 
+    'message' => 'Success', 
+    'data' => $result['data']
+], 200);
+```
+
+#### Transformación de Datos
+
+```bash
+// Transformación de formato
+DB::raw("CONCAT(name, ' --> $', ROUND(price, 0)) AS text")
+
+``` 
+Elementos de DTO Presentes
+
+Simplificación de Datos
+```bash
+phpCopy->select('id', 'image', 'name', 'description', 'basePrice')
+
+```
+
+Transformación de Estructura
+
+```bash
+
+phpCopy$ingredientsGrouped = $product->ingredients->groupBy('name')
+```
+
+Limpieza de Datos
+
+```bash
+
+phpCopy$ingredient->makeHidden(['pivot', 'amount']);
+```
+
+Developed with ❤️
+

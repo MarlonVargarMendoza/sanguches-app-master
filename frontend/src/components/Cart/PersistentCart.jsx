@@ -59,7 +59,7 @@ const CartFooter = ({ totalPrice, onCheckout }) => (
     </Box>
 );
 
-export const PersistentCart = () => {
+export const PersistentCart = () => {//subscribes
     const { cart, totalPrice } = useCart();
     const navigate = useNavigate();
     const theme = useTheme();
