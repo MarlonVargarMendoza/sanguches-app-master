@@ -76,7 +76,7 @@ backend/
 ## 🎯 Patrones de Diseño Implementados
 
 
-## 1.  Observer Pattern (Carrito) ✅ 
+## 1.  Observer Pattern (Carrito y filtros de productos) ✅ 
 Implementado para manejar actualizaciones del carrito en tiempo real y notificaciones.
 
 - CartContext actúa como el Subject principal que mantiene el estado del carrito
