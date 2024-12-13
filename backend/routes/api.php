@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Order\OrderController;
 use App\Http\Controllers\Product\ComboController;
 use App\Http\Controllers\Product\CompanionController;
 use App\Http\Controllers\Product\DrinkController;
@@ -48,3 +49,7 @@ Route::prefix('companions')->group(function () {
 });
 
 Route::resource('typeProduct', TypeProductController::class);
+
+Route::prefix('orders')->group(function () {
+    Route::resource('', OrderController::class)->except(['create', 'edit', 'show', 'update', 'destroy']);
+});
