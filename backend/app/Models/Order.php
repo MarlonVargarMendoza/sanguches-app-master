@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -32,5 +33,16 @@ class Order extends Model
     public function combo()
     {
         return $this->belongsToMany(Product::class, 'combo_orders', 'orders_id', 'combos_id');
+    }
+    
+    //mutadores
+    public function getCreatedAtAttribute($value)
+    {
+        return Carbon::parse($value)->setTimezone('America/Bogota')->toDateTimeString();
+    }
+
+    public function getUpdatedAtAttribute($value)
+    {
+        return Carbon::parse($value)->setTimezone('America/Bogota')->toDateTimeString();
     }
 }

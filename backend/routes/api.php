@@ -51,5 +51,5 @@ Route::prefix('companions')->group(function () {
 Route::resource('typeProduct', TypeProductController::class);
 
 Route::prefix('orders')->group(function () {
-    Route::resource('', OrderController::class)->except(['create', 'edit', 'index', 'show', 'update', 'destroy']);
+    Route::resource('', OrderController::class)->except(['create', 'edit', 'show', 'update', 'destroy']);
 });
