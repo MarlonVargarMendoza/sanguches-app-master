@@ -34,43 +34,6 @@
  - MySQL
  - RESTful API
 
- 🗂️ Estructura del Proyecto
-```bash 
-├── src/
-│   ├── components/
-│   │   ├── Cart/
-│   │   │   ├── cartItem.jsx
-│   │   │   └── PersistentCart.jsx
-│   │   ├── Customize/
-│   │   ├── Layout/
-│   │   └── Product/
-│   ├── context/
-│   │   └── cart.jsx
-│   ├── hooks/
-│   │   └── useCart.js
-│   ├── reducers/
-│   │   └── cart.js
-│   └── services/
-│       ├── cartService.js
-│       ├── customizationService.js
-│       └── productService.js
-
-backend/
-├── app/
-│   ├── Http/Controllers/   
-│   │   └── Product/
-│   │       ├── ComboController.php
-│   │       ├── CompanionController.php
-│   │       └── ProductController.php
-├───├── Services/
-          ├── ProductServices.php
-│   ├── Models/
-│   │   ├── Product.php
-│   │   ├── Combo.php
-│   │   └── Companion.php
-│   
-
-```
 🏗️ Arquitectura del Sistema
 
 ## 🎯 Patrones de Diseño Implementados
@@ -79,7 +42,7 @@ backend/
 ## 1.  Observer Pattern (Carrito y filtros de productos) ✅ 
 Implementado para manejar actualizaciones del carrito en tiempo real y notificaciones.
 
-- CartContext actúa como el Subject principal que mantiene el estado del carrito
+- CartContext y FiltersContext actúan como el Subject principal que mantiene el estado del carrito
 - cartReducer maneja las mutaciones del estado y notifica a los observers
 - El estado inicial y las acciones definidas (ADD_ITEM, REMOVE_ITEM, etc.) son los eventos que se observan permitiendo parametrizar clientes con diferentes solicitudes y hacer queue o log de solicitudes( Patron Command)
 
