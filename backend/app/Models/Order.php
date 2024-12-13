@@ -13,4 +13,24 @@ class Order extends Model
         'personal_id',
         'total_price'
     ];
+
+    public function product()
+    {
+        return $this->belongsToMany(Product::class, 'product_orders', 'orders_id', 'products_id');
+    }
+
+    public function ingredient()
+    {
+        return $this->belongsToMany(Ingredient::class, 'ingredient_orders', 'orders_id', 'ingredients_id');
+    }
+
+    public function drink()
+    {
+        return $this->belongsToMany(Drink::class, 'drink_orders', 'orders_id', 'drinks_id');
+    }
+
+    public function combo()
+    {
+        return $this->belongsToMany(Product::class, 'combo_orders', 'orders_id', 'combos_id');
+    }
 }
