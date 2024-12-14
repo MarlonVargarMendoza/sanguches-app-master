@@ -94,7 +94,7 @@ const Checkout = () => {
                 total: calculateTotalPrice(),
                 whatsappMessage: voucherText
             };
-            
+
             const orderResponse = await OrderService.createOrder(orderDetails);
 
             if (orderResponse.success) {
@@ -107,11 +107,26 @@ Por favor, adjunta el comprobante de pago en el chat.
 
 Gracias por tu compra en Sanguches!`;
 
-                sendToWhatsApp(whatsappMessage);
+                 // Primero navegar a success
+            navigate('/success', {
+                state: {
+                    orderDetails: {
+                        ...orderDetails,
+                        orderId: orderResponse.data.id,
+                        whatsappMessage
+                    },
+                    orderResponse: orderResponse.data
+                }
+            });
                 clearCart();
                 showMessage('¡Pedido creado exitosamente!', 'success');
 
-                setTimeout(() => {
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                // Intentar enviar a WhatsApp
+                const whatsappSuccess = sendToWhatsApp(whatsappMessage);
+
+                if (whatsappSuccess) {
+                    // Solo navegar a success si WhatsApp se abrió correctamente
                     navigate('/success', {
                         state: {
                             orderDetails: {
@@ -122,13 +137,16 @@ Gracias por tu compra en Sanguches!`;
                             orderResponse: orderResponse.data
                         }
                     });
-                }, 1000);
             } else {
-                throw new Error('Error al procesar el pedido en el servidor');
+                // Mostrar mensaje alternativo si WhatsApp no se pudo abrir
+                showMessage('Por favor, copia el número y el mensaje para contactarnos por WhatsApp', 'info');
             }
+        } else {
+            throw new Error('Error al procesar el pedido en el servidor');
+        }
         } catch (error) {
             console.error('Error al procesar el pedido:', error);
-            
+
             showMessage(
                 error.message || 'Error al procesar el pedido. Por favor, intenta nuevamente.'
             );
