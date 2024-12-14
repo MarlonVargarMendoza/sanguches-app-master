@@ -107,17 +107,7 @@ Por favor, adjunta el comprobante de pago en el chat.
 
 Gracias por tu compra en Sanguches!`;
 
-                 // Primero navegar a success
-            navigate('/success', {
-                state: {
-                    orderDetails: {
-                        ...orderDetails,
-                        orderId: orderResponse.data.id,
-                        whatsappMessage
-                    },
-                    orderResponse: orderResponse.data
-                }
-            });
+                sendToWhatsApp(whatsappMessage)
                 clearCart();
                 showMessage('¡Pedido creado exitosamente!', 'success');
 
