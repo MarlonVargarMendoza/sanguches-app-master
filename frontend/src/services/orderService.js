@@ -1,12 +1,13 @@
 
 const API_URL = import.meta.env.VITE_APP_DOMAIN;
+import axios from 'axios';
 
 export class OrderService {
     static async createOrder(orderDetails) {
         try {
             // Separar los items por tipo
             const categorizedItems = this.categorizeItems(orderDetails.items);
-            
+
             const formattedOrder = {
                 personal_id: orderDetails.personalId,
                 products: categorizedItems.products.map(item => ({
@@ -51,24 +52,33 @@ export class OrderService {
             console.log(JSON.stringify(formattedOrder, null, 2));
             console.groupEnd();
 
-       /*      const response = await axios.post(`${API_URL}/api/orders`, formattedOrder, {
+            const response = await axios.post(`${API_URL}/api/orders`, formattedOrder, {
                 headers: {
                     'Content-Type': 'application/json'
                 }
-            }); */
+            });
+            // Verificar y extraer el ID del pedido de la estructura correcta
+            // Verificación de respuesta
+            if (!response.data?.data?.id) {
+                console.warn('Respuesta del servidor sin ID:', response.data);
+                throw new Error('No se pudo obtener el ID del pedido');
+            }
 
+            // Return corregido con la estructura correcta
             return {
                 success: true,
-                data: response.data,
-                orderId: response.data.id
+                data: response.data.data,
+                orderId: response.data.data.id
             };
 
         } catch (error) {
             console.error('❌ Error en la petición:', error);
             console.error('Detalles del error:', error.response?.data);
+
+            const errorMessage = error.response?.data?.message || 'Error al procesar el pedido';
             throw {
                 success: false,
-                error: error.response?.data?.message || 'Error al procesar el pedido',
+                error: errorMessage,
                 details: error.response?.data
             };
         }

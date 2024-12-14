@@ -387,6 +387,8 @@ class Product extends Model {
 }
 ```
 
+## public/images 
+Alli encontraras las fotos que se consumen en el frontend de la app
 ## 🚀 Performance
 
 - Lazy loading de componentes
