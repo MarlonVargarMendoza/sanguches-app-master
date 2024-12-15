@@ -27,6 +27,16 @@
   }
 }
 ```
+
+### Frontend
+- **React**: Biblioteca para construir interfaces de usuario
+- **Framer Motion**: Manejo de animaciones
+- **Axios**: Cliente HTTP para comunicación con la API
+- **Tailwind CSS**: Framework de utilidades CSS para diseño moderno
+- **Routing:** React Router v6, code Splitting y lazy loading
+- **Animaciones:** Framer Motion
+- **Axios**: Cliente HTTP para comunicación con la API
+  - 
 ## Backend (Laravel)
 
  - Laravel 10
@@ -52,7 +62,7 @@ Implementado para manejar actualizaciones del carrito en tiempo real y notificac
 
 #### CartItem es efectivamente un Observer concreto que:
 
-Se suscribe a los cambios del estado del carrito
+componente reutilizable que se suscribe a los cambios del estado del carrito
 Reacciona a las actualizaciones renderizando los nuevos datos
 Maneja las interacciones locales (cantidad, eliminación)
 
@@ -237,7 +247,7 @@ const PersistentCart = () => {
 ## 3. Patrón Template Method en la Gestión de Productos  ✅ 
 El código implementa el patrón Template Method para manejar diferentes tipos de productos (sándwiches, bebidas, donas) manteniendo una estructura algorítmica común.
 ### Clase Base Abstracta
-ProductCard actúa como la clase base que define el template:
+ProductCard actúa como la clase base reutilizable que define el template:
 ```bash
 const ProductCard = ({
     product,
@@ -322,7 +332,7 @@ Modificaciones específicas no alteran otros componentes
 
 ✅  Backend con MVC
 
-#### Controllers (Capa de Presentación) Manejan requests y responses  🗂️ 
+#### Controllers (ProductController.php) Manejan requests y responses  🗂️ 
 Cada controlador se encarga de hacer consultas sencillas a base de datos y de dar las respuestas de cada endpoint en formato JSON
 
 ```BASH 
@@ -339,7 +349,22 @@ class ProductController extends Controller {
     }
 }
 ```
-#### Service Layer (Lógica de Negocio)  🗂️ 
+#### Models
+
+```bash
+class Product extends Model {
+    protected $fillable = [
+        'name',
+        'basePrice',
+        'image',
+    ];
+    
+    public function ingredients() {
+        return $this->belongsToMany(Ingredient::class);
+    }
+}
+```
+#### Service Layer (Lógica de Negocio - ProductService.php)  🗂️ 
 Es una consulta a base de datos que esta separada de los controladores por que es una logica mas larga, entonces se manejo como un microservicio
 ```BASH
 
