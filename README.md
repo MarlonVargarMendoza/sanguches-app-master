@@ -7,26 +7,6 @@
 
 # 🥪 Sanguches Xpress - Documentación Técnica
 # 📚 Tech Stack 
-(Basado en package.json y configuración del proyecto)
-## Frontend
-```jsonCopy{
-  "dependencies": {
-    "@emotion/react": "^11.5.0",
-    "@emotion/styled": "^11.5.0",
-    "@heroicons/react": "^1.0.6",
-    "@material-tailwind/react": "^2.1.10",
-    "@mui/icons-material": "^5.16.6",
-    "@mui/material": "^5.16.6",
-    "@mui/styles": "^5.16.6",
-    "@react-google-maps/api": "^2.19.3",
-    "axios": "^1.7.7",
-    "framer-motion": "^11.5.4",
-    "react": "^18.3.1",
-    "react-router-dom": "^6.26.1",
-    "zustand": "^5.0.0"
-  }
-}
-```
 
 ### Frontend
 - **React**: Biblioteca para construir interfaces de usuario
