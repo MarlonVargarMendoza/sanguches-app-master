@@ -7,26 +7,16 @@
 
 # 🥪 Sanguches Xpress - Documentación Técnica
 # 📚 Tech Stack 
-(Basado en package.json y configuración del proyecto)
-## Frontend
-```jsonCopy{
-  "dependencies": {
-    "@emotion/react": "^11.5.0",
-    "@emotion/styled": "^11.5.0",
-    "@heroicons/react": "^1.0.6",
-    "@material-tailwind/react": "^2.1.10",
-    "@mui/icons-material": "^5.16.6",
-    "@mui/material": "^5.16.6",
-    "@mui/styles": "^5.16.6",
-    "@react-google-maps/api": "^2.19.3",
-    "axios": "^1.7.7",
-    "framer-motion": "^11.5.4",
-    "react": "^18.3.1",
-    "react-router-dom": "^6.26.1",
-    "zustand": "^5.0.0"
-  }
-}
-```
+
+### Frontend
+- **React**: Biblioteca para construir interfaces de usuario
+- **Framer Motion**: Manejo de animaciones
+- **Axios**: Cliente HTTP para comunicación con la API
+- **Tailwind CSS**: Framework de utilidades CSS para diseño moderno
+- **Routing:** React Router v6, code Splitting y lazy loading
+- **Animaciones:** Framer Motion
+- **Axios**: Cliente HTTP para comunicación con la API
+  - 
 ## Backend (Laravel)
 
  - Laravel 10
@@ -39,108 +29,107 @@
 ## 🎯 Patrones de Diseño Implementados
 
 
-## 1.  Observer Pattern (Carrito y filtros de productos) ✅ 
-Implementado para manejar actualizaciones del carrito en tiempo real y notificaciones.
+## 1.🛒 Observer Pattern - Cart Implementation  ✅ 
+Implementado para manejar actualizaciones del carrito en tiempo real y notificaciones. Este patrón es fundamental cuando necesitamos mantener sincronizados múltiples componentes con un estado central.
+```mermaid
+graph TD
+      Z[cartReducer] --> A[CartContext<br>Publisher]
+    A --> B[useCart<br>Interface]
+    B --> C[CartItem<br>Observer]
+    C --> D[PersistentCart<br>Observer]
+    style A fill:#FFD966,stroke:#333,color:#333
+    style B fill:#f8f9fa,stroke:#333,color:#333
+    style C fill:#c8151b,stroke:#333
+    style D fill:#c8151b,stroke:#333
+```
 
-- CartContext y FiltersContext actúan como el Subject principal que mantiene el estado del carrito
-- cartReducer maneja las mutaciones del estado y notifica a los observers
-- El estado inicial y las acciones definidas (ADD_ITEM, REMOVE_ITEM, etc.) son los eventos que se observan permitiendo parametrizar clientes con diferentes solicitudes y hacer queue o log de solicitudes( Patron Command)
-
+#### Flujo de Datos( Cuando ocurre un evento (ej: agregar al carrito)
+ - **cartReducer**: procesa y notifica actualiza al el estado
+ - **cartContext**: Mantiene el estado y notifica cambios
+ -  **useCart**: proporciona métodos para interactuar con el estado, Los suscriptores reaccionan automáticamente por medio de un useEffect
+-**(CartItem, PersistentCart)** - Reaccionan a los cambios
 
 ### Implementacion 
-
-
-#### CartItem es efectivamente un Observer concreto que:
-
-Se suscribe a los cambios del estado del carrito
-Reacciona a las actualizaciones renderizando los nuevos datos
-Maneja las interacciones locales (cantidad, eliminación)
-
-#### Mecanismo de Observación
-
-```bash
-// En useCart (actúa como intermediario)
-const { state, dispatch } = useContext(CartContext);
-const [totalPrice, setTotalPrice] = useState(0);
-
-useEffect(() => {
-  setTotalPrice(calculateTotalPrice());
-}, [state.items, calculateTotalPrice]);
-
-```
-#### Gestión de Estado
-CartProvider Este mecanismo de suscripción y notificación está abstraído por React, lo que hace el código más limpio y mantenible en el contexto de una aplicación React moderna.
-
+-  Subject/publisher **(CartContext y FiltersContext)**: Este mecanismo de suscripción y notificación está abstraído por React, lo que hace el código más limpio y mantenible en el contexto de una aplicación React moderna.
 ```bash 
 //Publisher (CartContext.jsx) 
+export const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
   const [state, dispatch] = useReducer(cartReducer, initialState);
-
-  const value = useMemo(() => ({ state, dispatch }), [state, dispatch]);
-  // Se asegura de retornar correctamente el Provider con sus props
+  // Infrastructure para suscriptores
   return (
-    <CartContext.Provider value={value}>
+    <CartContext.Provider value={{ state, dispatch }}>
       {children}
     </CartContext.Provider>
   );
 };
+```
 
-// Subscriber (PersistentCart.jsx)
-export const PersistentCart = () => {
-  const { cart, totalPrice } = useCart();
-  useEffect(() => {
-    if (cart.length > 0) {
-      setCartAnimation(true);
-    }
-  }, [cart]);
+- Subscriber/Interface **(useCart)** - La clase abstracta useCart actúa como un contrato que garantiza que todas las operaciones del carrito se implementen de manera consistente en toda la aplicación. Los suscriptores reaccionan automáticamente
+```bash
+export const useCart = () => {
+  const { state, dispatch } = useContext(CartContext);
+  // Métodos compartidos
+  return {
+    addToCart,
+    removeFromCart,
+    updateCartItem,
+    // ...
+  };
 };
-
-// CartItem Observa cambios en el estado del carrito
-
-const CartItem = React.memo(({ item, onSnackbarMessage }) => {
-  // Suscripción al estado global mediante useCart
-  const { updateCartItem, removeFromCart } = useCart();
+```
+- Observers/Concrete Subscribers **(CartItem, PersistentCart)** - Es efectivamente un Observer concreto que Reacciona a las actualizaciones renderizando los nuevos datos
+- **CartItem** : componente reutilizable que se suscribe a los cambios del estado del carrito y Maneja las interacciones locales (cantidad, eliminación)
+```bash
+const CartItem = React.memo(({ item }) => {
+  const { updateCartItem } = useCart();
   
-  // Estado local del observer
-  const [expanded, setExpanded] = useState(false);
-  const [confirmDelete, setConfirmDelete] = useState(false);
-
-  // Reacción a cambios mediante callbacks
-  const handleQuantityChange = useCallback((change) => {
-    const newQuantity = Math.max(1, item.quantity + change);
-    updateCartItem(item.id, { quantity: newQuantity });
-    onSnackbarMessage?.(`${message}: "${item.name}" - Cantidad: ${newQuantity}`);
-  }, [item, updateCartItem, onSnackbarMessage]);
+  useEffect(() => {
+    // Reacción a cambios
+  }, [item]);
+  // ...
 });
 ```
 
-### Acciones del Observer
-
 ```bash
-// Actualización de cantidad
-const handleQuantityChange = useCallback((change) => {
-  const newQuantity = Math.max(1, item.quantity + change);
-  updateCartItem(item.id, { quantity: newQuantity });
-}, [item, updateCartItem]);
-
-// Eliminación del item
-const handleRemove = useCallback(() => {
-  removeFromCart(item.id);
-  onSnackbarMessage?.(`"${item.name}" eliminado del carrito`);
-}, [item.id, removeFromCart]);
+// PersistentCart.jsx
+export const PersistentCart = () => {
+  const { cart, totalPrice } = useCart(); // Suscripción al contexto
+  
+  useEffect(() => {
+    if (cart.length > 0) {
+      setCartAnimation(true); // Reacción a cambios
+    }
+  }, [cart]);
+};
 ```
-#### Flujo de Datos
-  El cartReducer procesa las acciones y actualiza el estado
-Los observers (CartItem, PersistentCart) se actualizan automáticamente
-useCart proporciona métodos para interactuar con el estado
+- **cartReducer** : Procesa la acción, maneja las mutaciones del estado
+- El estado inicial y las acciones definidas (ADD_ITEM, REMOVE_ITEM, etc.) son los eventos que se observan permitiendo parametrizar clientes con diferentes solicitudes y hacer queue o log de solicitudes
+```bash
+// cartReducer procesa y notifica
+case 'ADD_ITEM': {
+  return {
+    ...state,
+    items: [...state.items, { ...action.payload }]
+  };
+}
+```
+### Acciones Principales
+```bash
+{
+  ADD_ITEM: 'ADD_ITEM',
+  REMOVE_ITEM: 'REMOVE_ITEM',
+  UPDATE_ITEM: 'UPDATE_ITEM',
+  CLEAR_CART: 'CLEAR_CART'
+}
+```
+#### 💡 Beneficios Clave
 
-#### Ventajas de esta Implementación 💡
-
-Desacoplamiento: Los componentes del carrito están desacoplados del estado central
-Reactividad: Las actualizaciones se propagan automáticamente
-Mantenibilidad: Centraliza la lógica de estado en el reducer
-Escalabilidad: Facilita añadir nuevos observers sin modificar el código existente
+**Desacoplamiento:** Componentes independientes
+**Reactividad:** Actualizaciones automáticas
+**Mantenibilidad:** Lógica centralizada
+**Escalabilidad:** Fácil agregar nuevos observers
 
 ## 2. Command Pattern en cartReducer ✅ 
 El patrón Command encapsula una solicitud como un objeto, permitiendo parametrizar clientes con diferentes solicitudes y hacer queue o log de solicitudes.
@@ -237,7 +226,7 @@ const PersistentCart = () => {
 ## 3. Patrón Template Method en la Gestión de Productos  ✅ 
 El código implementa el patrón Template Method para manejar diferentes tipos de productos (sándwiches, bebidas, donas) manteniendo una estructura algorítmica común.
 ### Clase Base Abstracta
-ProductCard actúa como la clase base que define el template:
+ProductCard actúa como la clase base reutilizable que define el template:
 ```bash
 const ProductCard = ({
     product,
@@ -320,9 +309,9 @@ Mantiene consistencia en la interfaz de usuario
 Cambios en la estructura base afectan a todos los productos
 Modificaciones específicas no alteran otros componentes
 
-✅  Backend con MVC
+### 🏗️Backend con MVC:
 
-#### Controllers (Capa de Presentación) Manejan requests y responses  🗂️ 
+#### Controllers (ProductController.php) Manejan requests y responses  🗂️ 
 Cada controlador se encarga de hacer consultas sencillas a base de datos y de dar las respuestas de cada endpoint en formato JSON
 
 ```BASH 
@@ -339,7 +328,22 @@ class ProductController extends Controller {
     }
 }
 ```
-#### Service Layer (Lógica de Negocio)  🗂️ 
+#### Models
+
+```bash
+class Product extends Model {
+    protected $fillable = [
+        'name',
+        'basePrice',
+        'image',
+    ];
+    
+    public function ingredients() {
+        return $this->belongsToMany(Ingredient::class);
+    }
+}
+```
+#### Service Layer (Lógica de Negocio - ProductService.php)  🗂️ 
 Es una consulta a base de datos que esta separada de los controladores por que es una logica mas larga, entonces se manejo como un microservicio
 ```BASH
 
