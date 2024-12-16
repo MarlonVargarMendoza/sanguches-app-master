@@ -310,7 +310,7 @@ Mantiene consistencia en la interfaz de usuario
 Cambios en la estructura base afectan a todos los productos
 Modificaciones específicas no alteran otros componentes
 
-✅  Backend con MVC
+✅### Backend con MVC:
 
 #### Controllers (ProductController.php) Manejan requests y responses  🗂️ 
 Cada controlador se encarga de hacer consultas sencillas a base de datos y de dar las respuestas de cada endpoint en formato JSON
