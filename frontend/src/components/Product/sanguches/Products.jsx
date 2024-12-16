@@ -1,10 +1,10 @@
 import PropTypes from 'prop-types';
 import React, { memo, useCallback, useEffect, useState } from 'react';
-import { useCart } from '../../hooks/useCart.js';
-import { getProducts } from '../../services/productService';
-import ProductCard from '../Product/ProductCard';
-import Button from '../ui/Button';
-import ProductLoadingPlaceholder from '../ui/ProductLoadingPlaceholder';
+import { useCart } from '../../../hooks/useCart.js';
+import { getProducts } from '../../../services/productService.js';
+import Button from '../../ui/Button.jsx';
+import ProductLoadingPlaceholder from '../../ui/ProductLoadingPlaceholder.jsx';
+import ProductCard from '../sanguches/ProductCard.jsx';
 import './Products.css';
 
 // Constantes para mejorar mantenibilidad
@@ -140,7 +140,7 @@ export function Productsjson({ productService = getProducts }) {
   };
 
   return (
-    <main className="w-full min-h-screen bg-[#f5f5f5] p-8  md:flex-row">
+    <main className="w-full min-h-screen bg-[#f5f5f5] pt-8  md:flex-row">
       <div className="py-8">
         {renderContent()}
       </div>

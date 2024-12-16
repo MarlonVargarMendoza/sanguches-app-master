@@ -1,11 +1,11 @@
 import { Alert, Box, Breadcrumbs, Grid, Link, Snackbar, Typography } from '@mui/material';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useCart } from '../../hooks/useCart';
-import { getProductsByCategories } from '../../services/productService';
-import ProductCard from '../Product/ProductCard';
-import ProductLoadingPlaceholder from '../ui/ProductLoadingPlaceholder';
-import { Filters } from './Filters';
+import { useCart } from '../../../hooks/useCart';
+import { getProductsByCategories } from '../../../services/productService';
+import ProductLoadingPlaceholder from '../../ui/ProductLoadingPlaceholder';
+import { Filters } from '../Filters';
+import ProductCard from '../sanguches/ProductCard';
 import './Products.css';
 import logoSanguches from '/assets/logoSanguches.jpg';
 

@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import PropTypes from 'prop-types';
 import React, { useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import priceUtils from '../../../utils/priceUtils';
+import priceUtils from '../../../../utils/priceUtils';
 import logoSanguches from '/assets/logoSanguches.jpg';
 
 const DOMAIN = import.meta.env.VITE_APP_DOMAIN;

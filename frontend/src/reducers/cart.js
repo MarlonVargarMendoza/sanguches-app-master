@@ -1,5 +1,5 @@
 export const initialState = { items: [], total: 0 };
-
+// cartReducer procesa y notifica cambios en el carrito
 export const cartReducer = (state = initialState, action) => {
   switch (action.type) {
     case 'ADD_ITEM': {
