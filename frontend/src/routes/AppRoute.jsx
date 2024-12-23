@@ -11,7 +11,7 @@ import './loader.css';
 // Lazy-loaded components
 const HomePage = lazy(() => import('../App'));
 const CustomizeSandwiches = lazy(() => import('../components/Customize/Customize.jsx'));
-const Menu = lazy(() => import('../components/Product/ProductsSanguches.jsx'));
+const Menu = lazy(() => import('../components/Product/sanguches/ProductsSanguches.jsx'));
 const Local = lazy(() => import('../Pages/Local.jsx'));
 const Success = lazy(() => import('../Pages/Success.jsx'));
 const Checkout = lazy(() => import('../Pages/Checkout.jsx'));

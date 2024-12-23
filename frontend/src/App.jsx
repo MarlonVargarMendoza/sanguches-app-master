@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Hero } from './components';
-import { Productsjson } from './components/Product/Products.jsx';
+import { Productsjson } from './components/Product/sanguches/Products.jsx';
 import { CartProvider } from './context/cart.jsx';
 
 const App = () => {

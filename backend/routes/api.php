@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Order\OrderController;
 use App\Http\Controllers\Product\ComboController;
 use App\Http\Controllers\Product\CompanionController;
 use App\Http\Controllers\Product\DrinkController;
@@ -24,27 +25,37 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::resource('products', ProductController::class)->except('create', 'edit', 'store', 'edit', 'update', 'destroy');
-Route::get('additions', [ProductController::class, 'additions']);
+// Products Routes
+Route::resource('products', ProductController::class)->except(['create', 'edit', 'store', 'update', 'destroy'])->names('products');
+Route::get('additions', [ProductController::class, 'additions'])->name('products.additions');
 
+// Drinks Routes
 Route::prefix('drinks')->group(function () {
-    Route::resource('', DrinkController::class)->except(['create', 'edit', 'store', 'show', 'edit', 'update', 'destroy']);
-    Route::get('select', [DrinkController::class, 'selectDrinks']);
-    Route::get('combo', [DrinkController::class, 'selectDrinksCombo']);
+    Route::resource('/', DrinkController::class)->except(['create', 'edit', 'store', 'show', 'update', 'destroy'])->names('drinks');
+    Route::get('select', [DrinkController::class, 'selectDrinks'])->name('drinks.select');
+    Route::get('combo', [DrinkController::class, 'selectDrinksCombo'])->name('drinks.combo');
 });
 
+// Sauces Routes
 Route::prefix('sauces')->group(function () {
-    Route::resource('', SauceController::class)->except(['create', 'edit', 'store', 'show', 'edit', 'update', 'destroy']);
+    Route::resource('/', SauceController::class)->except(['create', 'edit', 'store', 'show', 'update', 'destroy'])->names('sauces');
 });
 
+// Combo Routes
 Route::prefix('combo')->group(function () {
-    Route::resource('', ComboController::class)->except(['create', 'edit', 'store', 'show', 'edit', 'update', 'destroy']);
+    Route::resource('/', ComboController::class)->except(['create', 'edit', 'store', 'show', 'update', 'destroy'])->names('combo');
 });
 
+// Companions Routes
 Route::prefix('companions')->group(function () {
-    Route::resource('', CompanionController::class)->except(['create', 'edit', 'store', 'show', 'edit', 'update', 'destroy']);
-    Route::get('combo', [CompanionController::class, 'selectCompanionsCombo']);
-
+    Route::resource('/', CompanionController::class)->except(['create', 'edit', 'store', 'show', 'update', 'destroy'])->names('companions');
+    Route::get('combo', [CompanionController::class, 'selectCompanionsCombo'])->name('companions.combo');
 });
 
-Route::resource('typeProduct', TypeProductController::class);
+// Type Product Routes
+Route::resource('typeProduct', TypeProductController::class)->names('typeProduct');
+
+// Orders Routes
+Route::prefix('orders')->group(function () {
+    Route::resource('/', OrderController::class)->except(['create', 'edit', 'show', 'update', 'destroy'])->names('orders');
+});
