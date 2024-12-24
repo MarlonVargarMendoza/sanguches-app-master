@@ -16,25 +16,30 @@ export const Navbar = () => {
     setIsOpen(prev => !prev);
   }, []);
 
-   return (
-    <AppBar className={`transition-all duration-300 ${scrolled ? 'shadow-md' : ''}`}>
+  return (
+    <AppBar className={`transition-all duration-300 ${scrolled ? 'shadow-md' : ''}`}
+    sx={{ minHeight: { xs: '48px', sm: '56px' } }}
+    >
       <PromotionBanner />
-      <Toolbar className="flex items-center xl:py-0 sm:py-0 sticky bg-[#FFC603] z-50">
-        
-        <div className="flex-1 flex justify-end">
+      <Toolbar className="flex items-center z-50 px-2 sm:px-4 sticky bg-[#FFC603] "
+        sx={{ minHeight: { xs: '48px', sm: '56px' } }}
+      >
+
+        <div className="flex-1 flex justify-end h-8 sm:h-10">
           <Logo />
         </div>
-        
-        <div className="flex-1 flex justify-end items-center space-x-2">
-        <div className="flex-1 flex justify-end">
-          <DesktopNavLinks />
-        </div>
+
+        <div className="flex-1 flex justify-end items-center gap-1">
+          <div className="hidden md:block">
+            <DesktopNavLinks />
+          </div>
           <div className="hidden md:block">
             <PersistentCart />
           </div>
-          <div className="md:hidden flex items-center">
-            <PersistentCart />
+          <div className="flex items-center md:hidden">
+            
             <MobileNavMenu isOpen={isOpen} toggleMenu={toggleMenu} />
+            <PersistentCart />
           </div>
         </div>
       </Toolbar>

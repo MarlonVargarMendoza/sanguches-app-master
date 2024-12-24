@@ -12,9 +12,9 @@ const Hero = () => {
   return (
     <Box
       className={`relative overflow-hidden ${isMobile
-          ? 'h-[calc(140vh-320px)] pt-[160px]'
+          ? 'h-[calc(130vh-320px)] pt-[130px]'
           : isTablet
-            ? 'h-[calc(100vh-100px)] pt-[150px]'
+            ? 'h-[calc(100vh-190px)] pt-[140px]'
             : isDesktop
               ? 'h-[calc(100vh-0px)] pt-[190px]'
               : 'h-[calc(100vh-0px)] pt-[185px]'
