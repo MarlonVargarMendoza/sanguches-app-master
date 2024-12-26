@@ -72,12 +72,14 @@ export function Filters({ filters = { category: 'all' }, onFilterChange }) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
         >
-            <Typography
-                variant="h6"
-                className="text-gray-800 font-bold mb-4 "
-            >
-                Explora Nuestras Categorías
-            </Typography>
+            <div className='mb-2'>
+                <Typography
+                    variant="h6"
+                    className="text-gray-800 font-bold"
+                >
+                    Explorar Categorías
+                </Typography>
+            </div>
 
             <FormControl fullWidth >
                 <Select

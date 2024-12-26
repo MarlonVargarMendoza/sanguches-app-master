@@ -142,16 +142,17 @@ export function ProductsSanguches() {
 
   return (
     <div className='bg-[#F5F5F5] min-h-screen'>
-      <main className='main-container p-6' style={{ paddingTop: '140px' }}>
-        <Breadcrumbs aria-label="breadcrumb" className="mb-6">
-          <Link color='inherit' href="/" className="hover:text-[#C3151A]">Inicio</Link>
-          <Typography color="text.primary">Menu</Typography>
-        </Breadcrumbs>
+      <main className='main-container p-6' style={{ paddingTop: '120px' }}>
+        <div className='mb-2 ml-3'>
+          <Breadcrumbs aria-label="breadcrumb" className="mb-6">
+            <Link color='inherit' href="/" className="hover:text-[#C3151A]">Inicio</Link>
+            <Typography color="text.primary">Menu</Typography>
+          </Breadcrumbs>
+        </div>
 
         <Grid container spacing={4}>
           <Grid item xs={12} md={3}>
             <Box className="bg-white rounded-lg shadow-lg p-4">
-              <Typography variant="h6" className="font-bold mb-4">Filtros</Typography>
               <Filters
                 filters={filters}
                 onFilterChange={handleFilterChange}

@@ -35,6 +35,7 @@ const PageHeader = memo(() => (
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
+        className='mb-2'
     >
         <Breadcrumbs className="mb-6">
             <Link to="/" className="hover:text-[#C3151A]">Inicio</Link>
@@ -43,7 +44,7 @@ const PageHeader = memo(() => (
         
         <Typography
             variant="h2" 
-            className="text-center text-[#C8151B] mb-8"
+            className="text-center text-[#C8151B]"
             sx={{ 
                 fontWeight: 'bold', 
                 fontSize: { xs: '2rem', sm: '2.5rem', md: '3rem' },
@@ -51,12 +52,6 @@ const PageHeader = memo(() => (
             }}
         >
             Nuestras Donas
-        </Typography>
-        <Typography 
-            variant="subtitle1" 
-            className="text-center text-gray-600 mb-8 pb-4"
-        >
-            Descubre nuestra deliciosa selección de donas artesanales
         </Typography>
     </motion.div>
 ));
@@ -152,7 +147,7 @@ const Donuts = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="min-h-screen bg-[#F5F5F5] pt-[140px]"
+            className="min-h-screen bg-[#F5F5F5] pt-[120px]"
         >
             <Container maxWidth="lg" className="px-4">
                 <PageHeader />
