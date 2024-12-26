@@ -37,11 +37,11 @@ const DrinkCard = ({
             whileHover={{ y: -4 }}
             transition={{ duration: 0.2 }}
         >
-            <div className="relative product-image">
+            <div className="relative aspect-[4/3] overflow-hidden">
                 <img
                     src={imageUrl}
                     alt={product.name}
-                    className="w-full h-48 object-cover transition-transform duration-300 hover:scale-105"
+                    className="w-full object-cover transition-transform duration-300 hover:scale-105 h-80"
                     loading="lazy"
                 />
 
@@ -73,10 +73,10 @@ const DrinkCard = ({
             </div>
 
             <div className="p-4 flex flex-col gap-4">
-                <h6   className="text-lg font-semibold text-gray-800 mb-2 group-hover:text-[#C8151B] transition-colors duration-300">
+                <h6   className="text-lg font-semibold text-gray-800 group-hover:text-[#C8151B] transition-colors duration-300">
                     {product.name}
                 </h6>
-                <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+                <p className="text-gray-600 text-sm line-clamp-2">
                     {product.description || "Bebida refrescante"}
                 </p>
 

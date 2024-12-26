@@ -113,7 +113,7 @@ const CombosContainer = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="min-h-screen bg-[#F5F5F5] pt-[220px]"
+            className="min-h-screen bg-[#F5F5F5] pt-[120px]"
         >
             <Container maxWidth="lg" className="px-4">
                 <PageHeader />
@@ -129,7 +129,7 @@ const CombosContainer = () => {
                             {state.error}
                         </Alert>
                     ) : (
-                        <Box className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+                        <Box className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pb-8">
                             {state.combos.map(combo => (
                                 <ComboCard
                                     key={combo.id}

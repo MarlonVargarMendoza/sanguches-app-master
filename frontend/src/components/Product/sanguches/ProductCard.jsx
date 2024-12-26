@@ -15,7 +15,7 @@ const ProductCard = ({
     onRemoveFromCart,
     isInCart = false,
     quantity = 0,
-    buttonText = 'AGREGAR',
+    buttonText = 'PERSONALIZAR',
     showLogo = false // Nueva prop para controlar la visibilidad del logo
 }) => {
     const navigate = useNavigate();
@@ -53,15 +53,16 @@ const ProductCard = ({
 
     return (
         <motion.div
-            className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300"
+            className={`group bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 `}
             whileHover={{ y: -4 }}
             transition={{ duration: 0.2 }}
         >
-            <div className="relative product-image">
+            <div className="relative aspect-[4/3] overflow-hidden">
                 <img
                     src={imageUrl}
                     alt={product.name}
-                    className="w-full h-48 object-cover cursor-pointer transition-transform duration-300 hover:scale-105"
+                    className="w-full h-100 object-cover transition-all duration-500 cursor-pointer
+          group-hover:scale-105 group-hover:brightness-95"
                     onClick={handleProductClick}
                     onKeyDown={(e) => {
                         if (e.key === 'Enter' || e.key === ' ') {
