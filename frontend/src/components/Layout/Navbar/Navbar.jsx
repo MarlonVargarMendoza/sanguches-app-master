@@ -33,7 +33,7 @@ export const Navbar = () => {
 
   return (
     <AppBar
-      className={`transition-all duration-300 ${scrolled ? 'shadow-lg' : ''}`}
+      className={`transition-all duration-300 pb-2 ${scrolled ? 'shadow-lg' : ''}`}
       sx={{
         bgcolor: '#FFC603',
         boxShadow: 'none'
@@ -57,13 +57,23 @@ const NavigationContent = ({ isMobile, isOpen, onToggle }) => (
       <DesktopNavigationBar />
     )}
 
+    {/* Mostrar el Submenu completo al abrir */}
     <AnimatePresence>
-      {isOpen && isMobile && (
-        <Submenu variant="mobile" onClose={onToggle} />
+      {isMobile && isOpen && (
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          transition={{ duration: 0.3 }}
+        >
+          <Submenu variant="mobile" onClose={onToggle} />
+        </motion.div>
       )}
     </AnimatePresence>
   </Box>
 );
+
+
 
 const DesktopNavigationBar = () => {
   const theme = useTheme();

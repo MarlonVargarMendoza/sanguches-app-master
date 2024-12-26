@@ -4,12 +4,14 @@ import React, { memo, useCallback, useEffect, useState } from 'react';
 import ContentLoader from "react-content-loader";
 import { Link } from 'react-router-dom';
 import useCart from '../../../hooks/useCart';
-import { getDrinksSelect } from '../../../services/productService';
+import { getDrinks } from '../../../services/productService';
 import DrinkCard from './DrinkCard';
+
+const DOMAIN = import.meta.env.VITE_APP_DOMAIN;
 
 const LoadingPlaceholder = memo(() => (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {[...Array(3)].map((_, index) => (
+        {[...Array(6)].map((_, index) => (
             <ContentLoader
                 key={index}
                 speed={2}
@@ -34,23 +36,12 @@ const PageHeader = memo(() => (
             <Link to="/" className="hover:text-[#C3151A]">Inicio</Link>
             <Typography color="text.primary">Bebidas</Typography>
         </Breadcrumbs>
-        
-        <Typography
-            variant="h2" 
-            className="text-center text-[#C8151B] mb-8"
-            sx={{ 
-                fontWeight: 'bold', 
-                fontSize: { xs: '2rem', sm: '2.5rem', md: '3rem' },
-                textShadow: '2px 2px 4px rgba(0,0,0,0.1)'
-            }}
-        >
+        <Typography variant="h2" className="text-center text-[#C8151B] mb-8" sx={{ 
+            fontWeight: 'bold', 
+            fontSize: { xs: '2rem', sm: '2.5rem', md: '3rem' },
+            textShadow: '2px 2px 4px rgba(0,0,0,0.1)'
+        }}>
             Nuestras Bebidas
-        </Typography>
-        <Typography 
-            variant="subtitle1" 
-            className="text-center text-gray-600 mb-8 pb-4"
-        >
-            Descubre nuestra deliciosa selección de bebidas 
         </Typography>
     </>
 ));
@@ -64,7 +55,8 @@ const Drinks = () => {
     });
     const [snackbarState, setSnackbarState] = useState({
         open: false,
-        message: ''
+        message: '',
+        severity: 'success'
     });
 
     useEffect(() => {
@@ -73,32 +65,32 @@ const Drinks = () => {
         const fetchDrinks = async () => {
             try {
                 setState(prev => ({ ...prev, isLoading: true }));
-                const data = await getDrinksSelect();
+                const data = await getDrinks();
                 
-                if (isMounted) {
-                    const formattedDrinks = data.map(drink => ({
-                        id: drink.id,
-                        name: drink.text?.split('-->')[0]?.trim() || drink.name,
-                        description: drink.description || 'Bebida refrescante',
-                        basePrice: parseFloat(drink.basePrice || 0),
-                        image: drink.image,
-                        type: 'drink'
-                    }));
+                if (!isMounted) return;
+                
+                const formattedDrinks = data.map(drink => ({
+                    id: drink.id,
+                    name: drink.name,
+                    description: `${drink.type_drink || 'Bebida refrescante'}`,
+                    basePrice: parseFloat(drink.basePrice || 0),
+                    image: drink.image?.startsWith('/') ? drink.image : '/images/Foto_no_disponible.png',
+                    type: 'drink',
+                    type_drink: drink.type_drink
+                }));
 
-                    setState({
-                        drinks: formattedDrinks || [],
-                        isLoading: false,
-                        error: formattedDrinks?.length ? null : 'No se encontraron bebidas disponibles'
-                    });
-                }
+                setState({
+                    drinks: formattedDrinks,
+                    isLoading: false,
+                    error: null
+                });
             } catch (err) {
-                if (isMounted) {
-                    setState({
-                        drinks: [],
-                        isLoading: false,
-                        error: 'Error al cargar las bebidas. Por favor, intenta más tarde.'
-                    });
-                }
+                if (!isMounted) return;
+                setState({
+                    drinks: [],
+                    isLoading: false,
+                    error: 'Error al cargar las bebidas. Por favor, intenta más tarde.'
+                });
             }
         };
 
@@ -107,28 +99,46 @@ const Drinks = () => {
     }, []);
 
     const handleAddToCart = useCallback((drink) => {
-        const existingItem = cart.find((item) => item.id === drink.id);
-        if (existingItem) {
-            updateQuantity(drink.id, existingItem.quantity + 1);
-        } else {
-            addToCart({
-                ...drink,
-                quantity: 1,
-                calculatedPrice: drink.basePrice
+        try {
+            const existingItem = cart.find((item) => item.id === drink.id);
+            if (existingItem) {
+                updateQuantity(drink.id, existingItem.quantity + 1);
+            } else {
+                addToCart({
+                    ...drink,
+                    quantity: 1,
+                    calculatedPrice: drink.basePrice
+                });
+            }
+            setSnackbarState({
+                open: true,
+                message: '¡Bebida añadida al carrito!',
+                severity: 'success'
+            });
+        } catch (error) {
+            setSnackbarState({
+                open: true,
+                message: 'Error al añadir la bebida',
+                severity: 'error'
             });
         }
-        setSnackbarState({
-            open: true,
-            message: '¡Bebida añadida al carrito!'
-        });
     }, [cart, addToCart, updateQuantity]);
 
     const handleRemoveFromCart = useCallback((drinkId) => {
-        removeFromCart(drinkId);
-        setSnackbarState({
-            open: true,
-            message: 'Bebida eliminada del carrito'
-        });
+        try {
+            removeFromCart(drinkId);
+            setSnackbarState({
+                open: true,
+                message: 'Bebida eliminada del carrito',
+                severity: 'success'
+            });
+        } catch (error) {
+            setSnackbarState({
+                open: true,
+                message: 'Error al eliminar la bebida',
+                severity: 'error'
+            });
+        }
     }, [removeFromCart]);
 
     const checkDrinkInCart = useCallback((drinkId) =>
@@ -141,16 +151,12 @@ const Drinks = () => {
         [cart]
     );
 
-    const handleCloseSnackbar = useCallback(() => {
-        setSnackbarState(prev => ({ ...prev, open: false }));
-    }, []);
-
     return (
         <motion.main
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="min-h-screen bg-[#F5F5F5] pt-[140px] pb-0"
+            className="min-h-screen bg-[#F5F5F5] pt-[140px] pb-8"
         >
             <Container maxWidth="lg" className="px-4">
                 <PageHeader />
@@ -166,7 +172,7 @@ const Drinks = () => {
                             {state.error}
                         </Alert>
                     ) : (
-                        <Box className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pb-8">
+                        <Box className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                             {state.drinks.map(drink => (
                                 <DrinkCard
                                     key={drink.id}
@@ -188,9 +194,12 @@ const Drinks = () => {
                 anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
                 open={snackbarState.open}
                 autoHideDuration={3000}
-                onClose={handleCloseSnackbar}
-                message={snackbarState.message}
-            />
+                onClose={() => setSnackbarState(prev => ({ ...prev, open: false }))}
+            >
+                <Alert severity={snackbarState.severity}>
+                    {snackbarState.message}
+                </Alert>
+            </Snackbar>
         </motion.main>
     );
 };

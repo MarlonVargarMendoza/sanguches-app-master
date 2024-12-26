@@ -1,7 +1,8 @@
 import { useMediaQuery, useTheme } from '@mui/material';
 import { AnimatePresence, motion } from 'framer-motion';
 import { X } from 'lucide-react';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+
 
 const CustomSelect = ({
     label,
@@ -17,6 +18,41 @@ const CustomSelect = ({
     const [isOpen, setIsOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
 
+    const dropdownRef = useRef(null);
+
+    useEffect(() => {
+
+        const handleClickOutside = (event) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setIsOpen(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
+    useEffect(() => {
+        const handleEscape = (event) => {
+            if (event.key === 'Escape') {
+                setIsOpen(false);
+            }
+        };
+    
+        const handleClickOutside = (event) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setIsOpen(false);
+            }
+        };
+    
+        document.addEventListener('keydown', handleEscape);
+        document.addEventListener('mousedown', handleClickOutside);
+    
+        return () => {
+            document.removeEventListener('keydown', handleEscape);
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
     const getMaxDropdownHeight = () => {
         if (isMobile) return 'max-h-[40vh]';
         if (isTablet) return 'max-h-[40vh]';
@@ -35,7 +71,7 @@ const CustomSelect = ({
     }, [selectedItems, onChange]);
 
     return (
-        <div className="w-full mb-4 relative">
+        <div ref={dropdownRef} className="w-full mb-4 relative">
             {/* Botón principal */}
             <motion.button
                 onClick={() => setIsOpen(!isOpen)}

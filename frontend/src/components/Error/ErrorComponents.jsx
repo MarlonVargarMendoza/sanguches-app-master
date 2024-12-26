@@ -1,6 +1,6 @@
 import { Button, Container, Typography } from '@mui/material';
 import { motion } from 'framer-motion';
-import { AlertCircle, ArrowLeft, RefreshCw } from 'lucide-react';
+import { AlertCircle, ArrowLeft } from 'lucide-react';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import logoSanguches from '/assets/logoSanguches.jpg';
@@ -9,7 +9,7 @@ export const ErrorView = ({ error }) => {
     const navigate = useNavigate();
     
     return (
-        <div className="min-h-screen bg-gradient-to-b from-[#FFC603]/10 to-[#F5F5F5] pt-[240px]">
+        <div className="min-h-screen bg-gradient-to-b from-[#FFC603]/10 to-[#F5F5F5] pt-[140px]">
             <Container maxWidth="md">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
@@ -61,19 +61,11 @@ export const ErrorView = ({ error }) => {
                         <div className="flex flex-col sm:flex-row gap-4">
                             <Button
                                 variant="contained"
-                                onClick={() => window.location.reload()}
-                                className="bg-[#FFC603] hover:bg-[#e6b200] text-black normal-case"
-                                startIcon={<RefreshCw className="w-4 h-4" />}
-                            >
-                                Reintentar
-                            </Button>
-                            <Button
-                                variant="outlined"
                                 onClick={() => navigate('/menuSanguches')}
                                 className="border-[#C8151B] text-[#C8151B] hover:border-[#C8151B] hover:bg-[#C8151B]/5 normal-case"
                                 startIcon={<ArrowLeft className="w-4 h-4" />}
                             >
-                                Volver al menú
+                                 Volver al menú
                             </Button>
                         </div>
                     </div>
