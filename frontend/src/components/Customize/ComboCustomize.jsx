@@ -6,7 +6,6 @@ import {
 import { motion } from 'framer-motion';
 import {
     Coffee, Droplet, Gift,
-    Package,
     Pizza
 } from 'lucide-react';
 import React from 'react';
@@ -71,21 +70,12 @@ function ComboCustomize() {
 
     return (
         <div className="bg-[#F5F5F5] min-h-screen">
-            <main className="container mx-auto p-4 md:p-6" style={{ paddingTop: isMobile ? '180px' : '240px' }}>
+            <main className="container mx-auto px-4 py-6" style={{ 
+        paddingTop: isMobile ? '120px' : '140px' 
+            }}>
                 <BreadcrumbNav />
 
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5 }}
-                >
-                    <Box className="bg-[#FFC603]/10 p-4 rounded-lg mb-6 flex items-center">
-                        <Package className="w-6 h-6 text-[#C8151B] mr-3" />
-                        <Typography variant="h6" className="font-semibold text-[#C8151B]">
-                            Personaliza tu Combo
-                        </Typography>
-                    </Box>
-                </motion.div>
+               
                 <Grid container spacing={4} className="bg-white rounded-lg shadow-lg p-6">
                     
                     <ProductImageSection combo={combo} />

@@ -37,7 +37,7 @@ const DrinkCard = ({
             whileHover={{ y: -4 }}
             transition={{ duration: 0.2 }}
         >
-            <div className="relative aspect-[4/3] overflow-hidden">
+            <div className="relative product-image">
                 <img
                     src={imageUrl}
                     alt={product.name}

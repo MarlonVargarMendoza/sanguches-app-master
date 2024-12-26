@@ -78,7 +78,7 @@ function Customize() {
 
   return (
     <div className="bg-[#F5F5F5] min-h-screen">
-      <main className="container mx-auto p-4 md:p-6" style={{ paddingTop: isMobile ? '180px' : '240px' }}>
+      <main className="container mx-auto p-4 md:p-6" style={{ paddingTop: isMobile ? '110px' : '140px' }}>
         <BreadcrumbNav />
         
         <Grid container spacing={4} className="bg-white rounded-lg shadow-lg p-6">
