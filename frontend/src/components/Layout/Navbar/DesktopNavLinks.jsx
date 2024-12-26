@@ -6,7 +6,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 const DesktopNavLinks = () => (
-  <div id='navbarend' className="all hidden md:flex space-x-12">
+  <div id='navbarend' className="all hidden  space-x-12">
     <div id="navlinks" className="all">
       <NavLink to='/' icon={<AutoAwesomeIcon />} text="Home" />
       <NavLink to="/menuSanguches" icon={<FastfoodIcon />} text="Menu" />

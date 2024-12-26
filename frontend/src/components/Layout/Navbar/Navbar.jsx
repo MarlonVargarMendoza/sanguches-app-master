@@ -1,4 +1,6 @@
-import { AppBar, Toolbar } from '@mui/material';
+import { AppBar, Box, Container, IconButton, Toolbar, useMediaQuery, useTheme } from '@mui/material';
+import { AnimatePresence, motion } from 'framer-motion';
+import { Menu, X } from 'lucide-react';
 import React, { useCallback, useState } from 'react';
 import PersistentCart from '../../Cart/PersistentCart';
 import DesktopNavLinks from './DesktopNavLinks';
@@ -8,69 +10,145 @@ import PromotionBanner from './PromotionBanner';
 import Submenu from './Submenu';
 import useScrollDetection from './useScrollDetection';
 
+// Breakpoints constants
+const BREAKPOINTS = {
+  MOBILE: 'md',
+  DESKTOP: 'lg'
+};
+
+// Animation variants
+const fadeInVariants = {
+  hidden: { opacity: 0, y: -20 },
+  visible: { opacity: 1, y: 0 },
+  exit: { opacity: 0, y: -20 }
+};
+
 export const Navbar = () => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down(BREAKPOINTS.MOBILE));
   const [isOpen, setIsOpen] = useState(false);
   const scrolled = useScrollDetection(10);
 
-  const toggleMenu = useCallback(() => {
-    setIsOpen(prev => !prev);
-  }, []);
+  const toggleMenu = useCallback(() => setIsOpen(prev => !prev), []);
 
-   return (
-    <AppBar className={`transition-all duration-300 ${scrolled ? 'shadow-md' : ''}`}>
+  return (
+    <AppBar
+      className={`transition-all duration-300 ${scrolled ? 'shadow-lg' : ''}`}
+      sx={{
+        bgcolor: '#FFC603',
+        boxShadow: 'none'
+      }}
+    >
       <PromotionBanner />
-      <Toolbar className="flex items-center xl:py-0 sm:py-0 sticky bg-[#FFC603] z-50">
-        
-        <div className="flex-1 flex justify-end">
-          <Logo />
-        </div>
-        
-        <div className="flex-1 flex justify-end items-center space-x-2">
-        <div className="flex-1 flex justify-end">
-          <DesktopNavLinks />
-        </div>
-          <div className="hidden md:block">
-            <PersistentCart />
-          </div>
-          <div className="md:hidden flex items-center">
-            <PersistentCart />
-            <MobileNavMenu isOpen={isOpen} toggleMenu={toggleMenu} />
-          </div>
-        </div>
-      </Toolbar>
-      <Submenu />
-      <NavbarStyles />
+      <NavigationContent 
+        isMobile={isMobile} 
+        isOpen={isOpen} 
+        onToggle={toggleMenu} 
+      />
     </AppBar>
   );
 };
-const NavbarStyles = () => (
-  <style> {`
-    .nav-link {
-      position: relative;
-      transition: color 0.3s ease-in-out;
-    }
-    .nav-link::after {
-      content: '';
-      position: absolute;>
-      width: 0;
-      height: 2px;
-      bottom: -5px;
-      left: 50%;
-      background-color: #C8151B;
-      transition: all 0.3s ease-in-out;
-    }
-    .nav-link:hover::after {
-      width: 100%;
-      left: 0;
-    }
-    @keyframes marquee {
-      0% { transform: translateX(100%); }
-      100% { transform: translateX(-100%); }
-    }
-    .animate-marquee {
-      animation: marquee 20s linear infinite;
-    }
-  `}</style>
+
+const NavigationContent = ({ isMobile, isOpen, onToggle }) => (
+  <Box className="relative">
+    {isMobile ? (
+      <MobileNavigationBar isOpen={isOpen} onToggle={onToggle} />
+    ) : (
+      <DesktopNavigationBar />
+    )}
+
+    <AnimatePresence>
+      {isOpen && isMobile && (
+        <Submenu variant="mobile" onClose={onToggle} />
+      )}
+    </AnimatePresence>
+  </Box>
+);
+
+const DesktopNavigationBar = () => {
+  const theme = useTheme();
+  const isDesktop = useMediaQuery(theme.breakpoints.up(BREAKPOINTS.DESKTOP));
+
+  return (
+    <Container maxWidth="2xl" className="px-6">
+      <Toolbar className="flex items-center h-20">
+        <NavigationGrid isDesktop={isDesktop} />
+      </Toolbar>
+    </Container>
+  );
+};
+
+const NavigationGrid = ({ isDesktop }) => (
+  <div className="w-full grid grid-cols-3 items-center">
+    {/* Logo section */}
+    <motion.div
+      className="flex items-center"
+      initial="hidden"
+      animate="visible"
+      variants={fadeInVariants}
+      transition={{ duration: 0.3 }}
+    >
+      <Logo />
+    </motion.div>
+
+    {/* Submenu section */}
+    <motion.div
+      className="flex justify-center pr-20 gap-10"
+      initial="hidden"
+      animate="visible"
+      variants={fadeInVariants}
+      transition={{ duration: 0.3, delay: 0.1 }}
+    >
+      <Submenu />
+    </motion.div>
+
+    {/* Navigation links and cart */}
+    <motion.div
+      className="flex items-center justify-end gap-6  pl-20"
+      initial="hidden"
+      animate="visible"
+      variants={fadeInVariants}
+      transition={{ duration: 0.3, delay: 0.2 }}
+    >
+      {isDesktop && <DesktopNavLinks />}
+      <PersistentCart />
+    </motion.div>
+  </div>
+);
+
+const MobileNavigationBar = ({ isOpen, onToggle }) => (
+  <Toolbar className="px-4">
+    <div className="w-full flex items-center justify-between gap-4">
+      <MenuToggleButton isOpen={isOpen} onToggle={onToggle} />
+      <div className="flex-1 flex justify-center">
+        <Logo />
+      </div>
+      <div className="flex items-center gap-1">
+        <MobileNavMenu />
+        <PersistentCart />
+      </div>
+    </div>
+  </Toolbar>
+);
+
+const MenuToggleButton = ({ isOpen, onToggle }) => (
+  <IconButton
+    onClick={onToggle}
+    className="text-[#C8151B] hover:bg-[#C8151B]/5 transition-colors"
+  >
+    {isOpen ? <X size={24} /> : <Menu size={24} />}
+  </IconButton>
+);
+
+const MobileMenuDrawer = ({ onClose }) => (
+  <motion.div
+    {...fadeInVariants}
+    className="absolute top-full left-0 right-0 bg-white shadow-xl z-50"
+  >
+    <Box className="py-2">
+      <Submenu variant="mobile" onSelect={onClose} />
+    </Box>
+  </motion.div>
 );
 
 export default Navbar;

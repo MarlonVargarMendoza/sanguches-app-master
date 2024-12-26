@@ -47,11 +47,11 @@ const ComboCard = ({
         >
             <div className="relative overflow-hidden">
                 {/* Imagen con overlay en hover */}
-                <div className="relative h-48">
+                <div className="relative aspect-[4/3] overflow-hidden">
                     <img
                         src={imageUrl}
                         alt={combo.name}
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        className="w-full object-cover transition-transform duration-500 group-hover:scale-105 h-90"
                         loading="lazy"
                         
                     />
@@ -66,7 +66,7 @@ const ComboCard = ({
                 <div>
                     <Typography
                         variant="h6"
-                        className="text-lg font-semibold text-gray-800 mb-2 group-hover:text-[#C8151B] transition-colors duration-300"
+                        className="text-lg font-semibold text-gray-800 group-hover:text-[#C8151B] transition-colors duration-300"
                     >
                         {combo.name}
                     </Typography>
@@ -93,7 +93,7 @@ const ComboCard = ({
                 )}
 
                 {/* Precios y botón */}
-                <div className="flex items-center justify-between mt-auto pt-4 border-t border-gray-100">
+                <div className="flex items-center justify-between mt-auto pt-1 border-t border-gray-100">
                     <div className="flex flex-col">
 
                         <Typography

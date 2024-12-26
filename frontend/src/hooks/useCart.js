@@ -24,7 +24,7 @@ export const useCart = () => {
   const calculateTotalPrice = useCallback(() => {
     return state.items.reduce((total, item) => total + calculateItemPrice(item), 0);
   }, [state.items, calculateItemPrice]);
-
+// Los suscriptores reaccionan automáticamente a los cambios en el estado
   useEffect(() => {
     setTotalPrice(calculateTotalPrice());
   }, [state.items, calculateTotalPrice]);

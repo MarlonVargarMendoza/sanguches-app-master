@@ -2,7 +2,7 @@ import { Typography } from '@mui/material';
 import { motion } from 'framer-motion';
 import React, { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import ProductCard from '../../Product/ProductCard';
+import ProductCard from '../../Product/sanguches/ProductCard';
 
 const RelatedProducts = ({ products }) => {
     const navigate = useNavigate();

@@ -150,7 +150,7 @@ const Drinks = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="min-h-screen bg-[#F5F5F5] pt-[220px] pb-0"
+            className="min-h-screen bg-[#F5F5F5] pt-[140px] pb-0"
         >
             <Container maxWidth="lg" className="px-4">
                 <PageHeader />
