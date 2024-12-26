@@ -272,7 +272,6 @@
   display: none;
   justify-content: center;
   align-items: center;
-  border-bottom: 2px solid #AB131B;
   background: radial-gradient(ellipse at bottom, 144.39deg,
       #ffffff -278.56%,
       #6d6d6d -78.47%,
@@ -310,8 +309,6 @@
   box-shadow: 0, 0, 30px, 10px #C8151B;
   background-color: #C8151B;
   text-transform: uppercase;
-
-
 }
 
 .text {

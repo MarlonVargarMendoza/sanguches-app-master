@@ -21,7 +21,7 @@ const ProductsList = ({ products, onAddToCart, onRemoveFromCart, onProductClick,
           onProductClick={onProductClick}
           isInCart={checkProductInCart(product)}
           quantity={getCartItemQuantity(product)}
-          buttonText="AGREGAR"
+          buttonText="PERSONALIZAR"
           showLogo={true}
           customLogo={<img src={logoSanguches} alt="Logo" className="w-6 h-6 rounded-full" />}
           className="h-full"
@@ -142,7 +142,7 @@ export function ProductsSanguches() {
 
   return (
     <div className='bg-[#F5F5F5] min-h-screen'>
-      <main className='main-container p-6' style={{ paddingTop: '240px' }}>
+      <main className='main-container p-6' style={{ paddingTop: '140px' }}>
         <Breadcrumbs aria-label="breadcrumb" className="mb-6">
           <Link color='inherit' href="/" className="hover:text-[#C3151A]">Inicio</Link>
           <Typography color="text.primary">Menu</Typography>
