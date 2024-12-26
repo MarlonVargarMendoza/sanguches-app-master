@@ -327,22 +327,7 @@ class ProductController extends Controller {
         // Handle response...
     }
 }
-```
-#### Models
 
-```bash
-class Product extends Model {
-    protected $fillable = [
-        'name',
-        'basePrice',
-        'image',
-    ];
-    
-    public function ingredients() {
-        return $this->belongsToMany(Ingredient::class);
-    }
-}
-```
 #### Service Layer (Lógica de Negocio - ProductService.php)  🗂️ 
 Es una consulta a base de datos que esta separada de los controladores por que es una logica mas larga, entonces se manejo como un microservicio
 ```BASH
