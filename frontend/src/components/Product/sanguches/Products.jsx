@@ -21,7 +21,7 @@ const PLACEHOLDER_IDS = [
 ];
 
 const ProductGrid = memo(({ products, addToCart, removeFromCart, checkProductInCart }) => (
-  <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 list-none p-0 m-0 rounded-lg" style={ {padding: 30} }>
+  <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 list-none p-0 m-0 rounded-lg" style={ {padding: 28} }>
     {products.slice(0, VISIBLE_PRODUCTS).map(product => (
       <li key={`product-${product.id}`}>
          <ProductCard
