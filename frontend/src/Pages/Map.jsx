@@ -7,7 +7,7 @@ function Map() {
     return (
         <iframe
             src={iframeSrc}
-            width="600"
+            width="660"
             height="450"
             style={{ border: 0 }}
             allowFullScreen=""
