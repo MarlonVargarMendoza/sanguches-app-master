@@ -51,16 +51,31 @@ export const getProductsByCategory = async (categoryId) => {
 
 export const getProductsByCategories = async (categories) => {
     try {
-        if (categories.includes('all')) {
+        // Si no hay categorías o incluye 'all', obtener todos los productos
+        if (!categories || categories.includes('all') || categories.length === 0) {
             return getAllProducts();
         }
-        const promises = categories.map(category => getProductsByCategory(category));
+
+        // Normalizar categorías para manejar tanto arrays como strings
+        const normalizedCategories = Array.isArray(categories) ? categories : [categories];
+        
+        // Filtrar categorías válidas y hacer las peticiones en paralelo
+        const validCategories = normalizedCategories.filter(cat => cat && cat !== 'undefined');
+        
+        if (validCategories.length === 0) {
+            return getAllProducts();
+        }
+
+        const promises = validCategories.map(category => getProductsByCategory(category));
         const results = await Promise.all(promises);
-        return results.flat();
+        return results.flat().filter(Boolean); // Eliminar posibles valores null/undefined
+
     } catch (error) {
-        handleAxiosError(error);
+        console.error('Error fetching products by categories:', error);
+        return getAllProducts(); // Fallback a todos los productos en caso de error
     }
 };
+
 export const getAllProducts = async (categoryId = 'all') => {
     try {
         const url = categoryId === 'all'
