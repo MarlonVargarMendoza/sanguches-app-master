@@ -156,7 +156,7 @@ const Drinks = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="min-h-screen bg-[#F5F5F5] pt-[140px] pb-8"
+            className="min-h-screen bg-[#F5F5F5] pt-[120px] pb-8"
         >
             <Container maxWidth="lg" className="px-4">
                 <PageHeader />
@@ -164,6 +164,7 @@ const Drinks = () => {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5 }}
+                    className='mt-2'
                 >
                     {state.isLoading ? (
                         <LoadingPlaceholder />

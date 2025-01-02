@@ -6,6 +6,8 @@ import Button from '../../ui/Button.jsx';
 import ProductLoadingPlaceholder from '../../ui/ProductLoadingPlaceholder.jsx';
 import ProductCard from '../sanguches/ProductCard.jsx';
 import './Products.css';
+import { padding } from '@mui/system';
+import { px } from 'framer-motion';
 
 // Constantes para mejorar mantenibilidad
 const PLACEHOLDER_COUNT = 3;
@@ -19,7 +21,7 @@ const PLACEHOLDER_IDS = [
 ];
 
 const ProductGrid = memo(({ products, addToCart, removeFromCart, checkProductInCart }) => (
-  <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 list-none p-0 m-0 rounded-lg">
+  <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 list-none p-0 m-0 rounded-lg" style={ {padding: 28} }>
     {products.slice(0, VISIBLE_PRODUCTS).map(product => (
       <li key={`product-${product.id}`}>
          <ProductCard
@@ -140,8 +142,8 @@ export function Productsjson({ productService = getProducts }) {
   };
 
   return (
-    <main className="w-full min-h-screen bg-[#f5f5f5]  md:flex-row">
-      <div className="pt-8">
+    <main className="w-full bg-[#f5f5f5]  md:flex-row">
+      <div>
         {renderContent()}
       </div>
       <div className="filters-container flex flex-row justify-center  w-full px-4 z-20 ">
