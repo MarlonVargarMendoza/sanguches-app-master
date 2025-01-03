@@ -141,8 +141,8 @@ export function ProductsSanguches() {
   };
 
   return (
-    <div className='bg-[#F5F5F5] min-h-screen'>
-      <main className='main-container p-6' style={{ paddingTop: '120px' }}>
+    <div className='bg-[#F5F5F5] min-h-screen pt-[90px] md:pt-[120px] lg:pt-[110px] sm:pt-[70px]'>
+      <main className='main-container pb-6'>
         <div className='mb-2 ml-3'>
           <Breadcrumbs aria-label="breadcrumb" className="mb-6">
             <Link color='inherit' href="/" className="hover:text-[#C3151A]">Inicio</Link>

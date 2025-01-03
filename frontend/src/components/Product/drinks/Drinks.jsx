@@ -152,11 +152,9 @@ const Drinks = () => {
     );
 
     return (
-        <motion.main
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="min-h-screen bg-[#F5F5F5] pt-[120px] pb-8"
+        <div
+           
+            className="min-h-screen bg-[#F5F5F5] pt-[90px] md:pt-[120px] lg:pt-[110px] sm:pt-[80px] pb-8"
         >
             <Container maxWidth="lg" className="px-4">
                 <PageHeader />
@@ -201,7 +199,7 @@ const Drinks = () => {
                     {snackbarState.message}
                 </Alert>
             </Snackbar>
-        </motion.main>
+        </div>
     );
 };
 

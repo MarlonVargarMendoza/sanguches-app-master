@@ -157,7 +157,7 @@ Gracias por tu compra en Sanguches!`;
     // 7. Vista de carrito vacío
     if (cart.length === 0) {
         return (
-            <Box className="py-[210px] min-h-screen flex items-center justify-center bg-gradient-to-b from-[#FFC603] to-[#EFEFEF]">
+            <Box className=" min-h-screen flex items-center justify-center bg-gradient-to-b from-[#FFC603] to-[#EFEFEF] pt-[90px] md:pt-[120px] lg:pt-[110px] sm:pt-[80px]">
                 <Paper elevation={3} className="p-8 rounded-lg shadow-xl text-center">
                     <ShoppingBag size={64} className="mx-auto mb-4 text-[#C8151B]" />
                     <Typography variant="h5" className="mb-4 font-bold text-[#333]">
@@ -180,7 +180,7 @@ Gracias por tu compra en Sanguches!`;
     }
 
     return (
-        <Box className="checkout py-[220px] min-h-screen bg-gradient-to-b from-[#FFC603] to-[#EFEFEF] flex items-center justify-center p-4">
+        <Box className="checkout  min-h-screen bg-gradient-to-b from-[#FFC603] to-[#EFEFEF] flex items-center justify-center pt-[90px] md:pt-[120px] lg:pt-[110px] sm:pt-[80px]">
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
