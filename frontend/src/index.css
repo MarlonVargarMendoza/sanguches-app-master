@@ -474,3 +474,15 @@
 .product-max-qty {
   margin-top: 10px;
 }
+
+.drawer-overlay {
+  z-index: 40;
+}
+
+.drawer-content {
+  z-index: 50;
+}
+
+.appbar-content {
+  z-index: 30;
+}
