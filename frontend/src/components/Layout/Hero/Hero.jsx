@@ -4,6 +4,7 @@ import { ScrollTrigger } from "gsap/all";
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from "react";
 import { TiLocationArrow } from "react-icons/ti";
+import { useNavigate } from 'react-router-dom';
 import Button from "../../ui/Button";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -15,11 +16,34 @@ const Hero = () => {
     const [loadedImages, setLoadedImages] = useState(0);
     const timeoutRef = useRef(null);
     const nextImageRef = useRef(null);
+    const navigate = useNavigate();
+    const [dragStart, setDragStart] = useState(0);
+    const [isDragging, setIsDragging] = useState(false);
+
 
     // Breakpoints responsivos
     const isMobile = useMediaQuery('(max-width:640px)');
     const isTablet = useMediaQuery('(min-width:641px) and (max-width:1024px)');
 
+    const handleDragStart = (e) => {
+        setIsDragging(true);
+        setDragStart(e.touches ? e.touches[0].clientX : e.clientX);
+    };
+    const handleDragEnd = (e) => {
+        if (!isDragging) return;
+
+        const dragEnd = e.changedTouches ? e.changedTouches[0].clientX : e.clientX;
+        const dragThreshold = window.innerWidth * 0.15;
+
+        if (Math.abs(dragEnd - dragStart) > dragThreshold) {
+            if (dragEnd < dragStart) {
+                nextSlide();
+            } else {
+                prevSlide();
+            }
+        }
+        setIsDragging(false);
+    };
     const carouselImages = [
         {
             src: "public/assets/hero/hero12.webp",
@@ -48,13 +72,13 @@ const Hero = () => {
     }, [loadedImages, totalImages]);
 
     const nextSlide = useCallback(() => {
-        setCurrentIndex(prevIndex => 
+        setCurrentIndex(prevIndex =>
             prevIndex === totalImages - 1 ? 0 : prevIndex + 1
         );
     }, [totalImages]);
 
     const prevSlide = useCallback(() => {
-        setCurrentIndex(prevIndex => 
+        setCurrentIndex(prevIndex =>
             prevIndex === 0 ? totalImages - 1 : prevIndex - 1
         );
     }, [totalImages]);
@@ -64,7 +88,7 @@ const Hero = () => {
         return () => timeoutRef.current && clearTimeout(timeoutRef.current);
     }, [currentIndex, nextSlide]);
 
-   
+
 
     return (
         <div className="relative h-dvh w-screen overflow-x-hidden">
@@ -86,28 +110,33 @@ const Hero = () => {
                     {carouselImages.map((image, index) => (
                         <div
                             key={index}
-                            className={`absolute inset-0 transition-transform duration-700 ease-in-out ${
-                                index === currentIndex ? "translate-x-0" : "translate-x-full"
-                            }`}
+                            className={`absolute inset-0 transition-transform duration-700 ease-in-out ${index === currentIndex ? "translate-x-0" : "translate-x-full"
+                                }`}
+                            onTouchStart={handleDragStart}
+                            onTouchEnd={handleDragEnd}
                         >
                             <img
-                                src={image.src}
-                                alt={image.alt}
-                                className={`h-full w-full object-cover transition-opacity duration-300
-                                    ${index === currentIndex ? 'opacity-100' : 'opacity-0'}`}
-                                loading={index === 0 ? "eager" : "lazy"}
-                                onLoad={handleImageLoad}
+                               src={image.src}
+                               alt={image.alt}
+                               className={`h-full w-full object-cover transition-opacity duration-300
+                                   ${index === currentIndex ? 'opacity-100' : 'opacity-0'}`}
+                               loading={index === 0 ? "eager" : "lazy"}
+                               onLoad={handleImageLoad}
+                               draggable="false"
                             />
                         </div>
                     ))}
 
                     {/* Controles de navegación */}
-                    <div className={`absolute inset-x-4 top-1/2 z-10 flex -translate-y-1/2 items-center justify-between
+                    <div className={`absolute inset-x-4 top-1/2 z-50 flex -translate-y-1/2 items-center justify-between
                         ${isMobile ? 'px-2' : 'px-6'}`}>
                         <button
-                            onClick={prevSlide}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                prevSlide();
+                            }}
                             className={`flex items-center justify-center rounded-full bg-white/20 text-white 
-                                backdrop-blur-sm transition-all hover:bg-white/40
+                                backdrop-blur-sm transition-all hover:bg-white/40 active:scale-95
                                 ${isMobile ? 'h-8 w-8' : 'h-12 w-12'}`}
                             aria-label="Anterior"
                         >
@@ -115,9 +144,12 @@ const Hero = () => {
                         </button>
 
                         <button
-                            onClick={nextSlide}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                nextSlide();
+                            }}
                             className={`flex items-center justify-center rounded-full bg-white/20 text-white 
-                                backdrop-blur-sm transition-all hover:bg-white/40
+                                backdrop-blur-sm transition-all hover:bg-white/40 active:scale-95
                                 ${isMobile ? 'h-8 w-8' : 'h-12 w-12'}`}
                             aria-label="Siguiente"
                         >
@@ -133,16 +165,16 @@ const Hero = () => {
                             </h1>
 
                             <p className="mb-5 max-w-64 text-white font-medium">
-                                Los mejores sándwiches <br /> 
+                                Los mejores sándwiches <br />
                             </p>
 
-                           
+
                         </div>
                         <Button
-                                buttonText="Ver Menú"
-                                leftIcon={<TiLocationArrow />}
-                                containerClass="bg-[#FFC603] flex-center gap-1"
-                            />
+                            buttonText="Ver Menú"
+                            leftIcon={<TiLocationArrow />}
+                            containerClass="bg-[#FFC603] flex-center gap-1"
+                        />
                     </div>
                 </div>
             </div>
@@ -155,8 +187,8 @@ const Hero = () => {
                         onClick={() => setCurrentIndex(index)}
                         className={`h-1.5 rounded-full transition-all
                             ${isMobile ? 'h-1' : 'md:h-2'} 
-                            ${currentIndex === index 
-                                ? `w-6 bg-white ${isMobile ? '' : 'md:w-12'}` 
+                            ${currentIndex === index
+                                ? `w-6 bg-white ${isMobile ? '' : 'md:w-12'}`
                                 : `w-3 bg-white/50 hover:bg-white/80 ${isMobile ? '' : 'md:w-6'}`
                             }`}
                         aria-label={`Ir a diapositiva ${index + 1}`}

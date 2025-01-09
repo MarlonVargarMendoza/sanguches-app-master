@@ -2,36 +2,26 @@ import PropTypes from 'prop-types';
 import React, { memo, useCallback, useEffect, useState } from 'react';
 import { useCart } from '../../../hooks/useCart.js';
 import { getProducts } from '../../../services/productService.js';
-import Button from '../../ui/Button.jsx';
+import MenuButton from '../../ui/MenuButton.jsx';
 import ProductLoadingPlaceholder from '../../ui/ProductLoadingPlaceholder.jsx';
 import ProductCard from '../sanguches/ProductCard.jsx';
 import './Products.css';
-import { padding } from '@mui/system';
-import { px } from 'framer-motion';
 
 // Constantes para mejorar mantenibilidad
-const PLACEHOLDER_COUNT = 3;
 const VISIBLE_PRODUCTS = 3;
 
-// Array de identificadores únicos para los placeholders
-const PLACEHOLDER_IDS = [
-  'featured-product',
-  'popular-product',
-  'new-product'
-];
-
 const ProductGrid = memo(({ products, addToCart, removeFromCart, checkProductInCart }) => (
-  <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 list-none p-0 m-0 rounded-lg" style={ {padding: 28} }>
+  <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 list-none p-0 m-0 rounded-lg" style={{ padding: 28 }}>
     {products.slice(0, VISIBLE_PRODUCTS).map(product => (
       <li key={`product-${product.id}`}>
-         <ProductCard
-            product={product}
-            onAddToCart={addToCart}
-            onRemoveFromCart={removeFromCart}
-            isInCart={checkProductInCart(product)}
-            buttonText="Personalizar"
-            showLogo={false}
-          />
+        <ProductCard
+          product={product}
+          onAddToCart={addToCart}
+          onRemoveFromCart={removeFromCart}
+          isInCart={checkProductInCart(product)}
+          buttonText="Personalizar"
+          showLogo={false}
+        />
       </li>
     ))}
   </ul>
@@ -147,7 +137,7 @@ export function Productsjson({ productService = getProducts }) {
         {renderContent()}
       </div>
       <div className="filters-container flex flex-row justify-center  w-full px-4 z-20 ">
-        <Button buttonText="Ver menu completo" />
+        <MenuButton />
       </div>
     </main>
   );

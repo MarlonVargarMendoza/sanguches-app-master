@@ -1,7 +1,8 @@
 import { Box, Chip, FormControl, MenuItem, Select, Typography } from '@mui/material';
 import { motion } from 'framer-motion';
 import { ChevronDown, Search } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useCategoryStore } from '../../stores/categoryStore';
 
 const CATEGORIES = [
@@ -11,7 +12,9 @@ const CATEGORIES = [
     { id: 9, name: 'Desayunos', icon: '☕', color: '#AED9E0' },
     { id: 10, name: 'Donas', icon: '🍩', color: '#FFA8E2' },
     { id: 11, name: 'Pasteles', icon: '🍰', color: '#B5EAD7' },
-    { id: 12, name: 'Otros', icon: '✨', color: '#C7CEEA' }
+    { id: 12, name: 'Otros', icon: '✨', color: '#C7CEEA' },
+    { id: 'bebidas', name: 'Bebidas', icon: '🥤', color: '#87CEEB', path: '/bebidas' },
+    { id: 'combo', name: 'Combos', icon: '🍱', color: '#FFD700', path: '/combos' }
 ];
 
 const SelectIcon = React.memo(({ ownerState = {} }) => {
@@ -43,23 +46,42 @@ const SelectIcon = React.memo(({ ownerState = {} }) => {
 
 SelectIcon.displayName = 'SelectIcon';
 
-
-export function Filters({ filters = { category: 'all' }, onFilterChange }) {
+export function Filters({ filters = { category: 'all' }, onFilterChange, selectedCategory }) {
     const [searchTerm, setSearchTerm] = useState('');
-    const { selectedCategory, setSelectedCategory } = useCategoryStore();
+    const { setSelectedCategory } = useCategoryStore();
+    const navigate = useNavigate();
 
     useEffect(() => {
-        // Sincronizar el estado cuando cambia desde el submenu
-        if (selectedCategory !== filters.category) {
-            onFilterChange({ ...filters, category: selectedCategory });
-        }
-    }, [selectedCategory]);
+        // Sincronizar cuando cambia selectedCategory
+        if (selectedCategory && selectedCategory !== filters.category) {
+            const specialRoutes = {
+                'bebidas': '/bebidas',
+                'combo': '/combos',
+                '10': '/donas',
+                'donas': '/donas'
+            };
 
-    const handleChangeCategory = (event) => {
+            if (specialRoutes[selectedCategory]) {
+                navigate(specialRoutes[selectedCategory]);
+            } else {
+                onFilterChange({ ...filters, category: selectedCategory });
+            }
+        }
+    }, [selectedCategory, filters, onFilterChange, navigate]);
+
+    const handleChangeCategory = useCallback((event) => {
         const newCategory = event.target.value;
+        const selectedCat = CATEGORIES.find(cat => cat.id === newCategory);
+
         setSelectedCategory(newCategory);
-        onFilterChange({ ...filters, category: newCategory });
-    };
+
+        if (selectedCat?.path) {
+            navigate(selectedCat.path);
+        } else {
+            onFilterChange({ ...filters, category: newCategory });
+        }
+    }, [setSelectedCategory, navigate, onFilterChange, filters]);
+
 
     const filteredCategories = CATEGORIES.filter(cat =>
         cat.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -67,21 +89,18 @@ export function Filters({ filters = { category: 'all' }, onFilterChange }) {
 
     return (
         <motion.div
-            className="w-full max-w-md "
+            className="w-full max-w-md"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
         >
             <div className='mb-2'>
-                <Typography
-                    variant="h6"
-                    className="text-gray-800 font-bold"
-                >
+                <Typography variant="h6" className="text-gray-800 font-bold">
                     Explorar Categorías
                 </Typography>
             </div>
 
-            <FormControl fullWidth >
+            <FormControl fullWidth>
                 <Select
                     value={filters.category}
                     onChange={handleChangeCategory}
@@ -152,16 +171,9 @@ export function Filters({ filters = { category: 'all' }, onFilterChange }) {
                             </div>
                         </MenuItem>
                     ))}
-
-                    {filteredCategories.length === 0 && (
-                        <Box className="p-4 text-center text-gray-500">
-                            No se encontraron categorías
-                        </Box>
-                    )}
                 </Select>
             </FormControl>
 
-            {/* Chips de categorías populares */}
             <Box className="flex flex-wrap gap-2 mt-4">
                 {CATEGORIES.slice(0, 4).map((cat) => (
                     <motion.div
@@ -172,10 +184,7 @@ export function Filters({ filters = { category: 'all' }, onFilterChange }) {
                         <Chip
                             label={cat.name}
                             icon={<span className="ml-2">{cat.icon}</span>}
-                            onClick={() => {
-                                setSelectedCategory(cat.id);
-                                onFilterChange({ ...filters, category: cat.id });
-                            }}
+                            onClick={() => handleChangeCategory({ target: { value: cat.id } })}
                             sx={{
                                 backgroundColor: filters.category === cat.id ? '#FFC603' : '#F3F4F6',
                                 '&:hover': { backgroundColor: '#FFE082' },

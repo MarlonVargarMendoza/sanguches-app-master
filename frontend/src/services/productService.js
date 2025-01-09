@@ -49,17 +49,30 @@ export const getProductsByCategory = async (categoryId) => {
     }
 };
 
+// productService.js
+
 export const getProductsByCategories = async (categories) => {
     try {
-        // Si no hay categorías o incluye 'all', obtener todos los productos
+        // Manejar categorías especiales
+        const specialCategories = {
+            'bebidas': getDrinks,
+            'combo': getCombo
+        };
+
+        // Si categorías incluye una categoría especial
+        const specialCategory = categories.find(cat => specialCategories[cat]);
+        if (specialCategory) {
+            const specialFetch = specialCategories[specialCategory];
+            const data = await specialFetch();
+            return data;
+        }
+
+        // Lógica normal para otras categorías
         if (!categories || categories.includes('all') || categories.length === 0) {
             return getAllProducts();
         }
 
-        // Normalizar categorías para manejar tanto arrays como strings
         const normalizedCategories = Array.isArray(categories) ? categories : [categories];
-        
-        // Filtrar categorías válidas y hacer las peticiones en paralelo
         const validCategories = normalizedCategories.filter(cat => cat && cat !== 'undefined');
         
         if (validCategories.length === 0) {
@@ -68,11 +81,11 @@ export const getProductsByCategories = async (categories) => {
 
         const promises = validCategories.map(category => getProductsByCategory(category));
         const results = await Promise.all(promises);
-        return results.flat().filter(Boolean); // Eliminar posibles valores null/undefined
+        return results.flat().filter(Boolean);
 
     } catch (error) {
         console.error('Error fetching products by categories:', error);
-        return getAllProducts(); // Fallback a todos los productos en caso de error
+        return getAllProducts();
     }
 };
 

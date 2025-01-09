@@ -6,13 +6,47 @@ export const useCategoryStore = create((set, get) => ({
     activeNavCategory: 'SANGUCHES',
 
     setSelectedCategory: (category) => {
+        // Normalizar la categoría y resetear si es 'all'
+        const current = get().selectedCategory;
+        
+        // Guardar categoría anterior si no es la misma
+        if (current !== category) {
+            set(state => ({ ...state, previousCategory: current }));
+        }
+        if (category === 'all') {
+            set({
+                selectedCategory: 'all',
+                activeNavCategory: 'SANGUCHES'
+            });
+            return;
+        }
+
+        const normalizedCategory = category?.toString() || 'all';
+
+        // Mapa de rutas especiales
+        const specialRoutes = {
+            'bebidas': { category: 'bebidas', nav: 'BEBIDAS' },
+            'combo': { category: 'combo', nav: 'COMBOS' },
+            '10': { category: '10', nav: 'DONAS' },
+            'donas': { category: '10', nav: 'DONAS' }
+        };
+
+        const specialRoute = specialRoutes[normalizedCategory];
+        if (specialRoute) {
+            set({
+                selectedCategory: specialRoute.category,
+                activeNavCategory: specialRoute.nav
+            });
+            return;
+        }
+
+        // Manejo normal de categorías
         set({
-            selectedCategory: category,
-            activeNavCategory: category === 'bebidas' ? 'BEBIDAS' :
-                category === 'combo' ? 'COMBOS' :
-                    get().getNavCategoryFromFilter(category)
+            selectedCategory: normalizedCategory,
+            activeNavCategory: get().getNavCategoryFromFilter(normalizedCategory)
         });
     },
+
 
     setFromNavigation: (navCategory) => {
         if (navCategory === 'BEBIDAS') {

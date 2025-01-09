@@ -56,7 +56,7 @@ const MobileNavMenu = () => {
       </IconButton>
 
       {/* Sheet */}
-      <Sheet isOpen={isMenuOpen} onClose={toggleMenu} side="left">
+      <Sheet isOpen={isMenuOpen} onClose={toggleMenu} side="left" className=" z-[150]">
         <div className="p-4 border-b border-gray-100 h-full">
           <h3 className="text-lg font-bold text-[#C8151B]">Categorías</h3>
         </div>

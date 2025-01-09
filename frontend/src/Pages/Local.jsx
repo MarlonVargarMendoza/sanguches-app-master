@@ -136,7 +136,7 @@ const Local = () => {
                         </motion.div>
                     </Grid>
 
-                    <Grid item xs={12} md={7}>
+                    <Grid item xs={11} md={7}>
                         <Paper elevation={3} sx={{ height: '400px',margin: '16px' ,width: '100%', borderRadius: '8px', overflow: 'hidden' }}>
                             <Map
                                 locations={filteredLocations}

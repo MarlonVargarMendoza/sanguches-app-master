@@ -15,8 +15,8 @@ const ProductCard = ({
     onRemoveFromCart,
     isInCart = false,
     quantity = 0,
-    buttonText = 'PERSONALIZAR',
-    showLogo = false // Nueva prop para controlar la visibilidad del logo
+    showLogo = false ,// Nueva prop para controlar la visibilidad del logo
+    ...props
 }) => {
     const navigate = useNavigate();
 
@@ -24,10 +24,20 @@ const ProductCard = ({
         `${DOMAIN}${product.image}`,
         [product.image]
     );
+    const isSpecialProduct = product.type === 'drink' || product.type === 'combo';
+    const buttonText = useMemo(() => {
+        if (isSpecialProduct) return 'AGREGAR';
+        return props.isInCart ? 'ACTUALIZAR' : 'PERSONALIZAR';
+    }, [isSpecialProduct, props.isInCart]);
+
 
     const handleProductClick = useCallback((e) => {
         e.stopPropagation();
         const existingCartItem = isInCart ? product : null;
+        if (isSpecialProduct) {
+            props.onAddToCart?.(product);
+            return;
+        }
         navigate('/editaloTuMismo', {
             state: {
                 selectedProduct: existingCartItem || {
@@ -40,7 +50,8 @@ const ProductCard = ({
                 isEditing: !!existingCartItem
             }
         });
-    }, [navigate, product, imageUrl, isInCart]);
+        handleProductClick(e);
+    }, [isSpecialProduct,navigate, product, imageUrl, isInCart]);
 
     const handleCartAction = useCallback((e) => {
         e.stopPropagation();
