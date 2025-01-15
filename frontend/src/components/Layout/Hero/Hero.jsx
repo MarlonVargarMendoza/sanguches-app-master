@@ -46,15 +46,15 @@ const Hero = () => {
     };
     const carouselImages = [
         {
-            src: "public/assets/hero/hero12.webp",
+            src: "/assets/hero/hero12.png",
             alt: "Promoción especial de sándwiches",
         },
         {
-            src: "public/assets/hero/hero21.webp",
+            src: "/assets/hero/hero21.png",
             alt: "Nuevos productos destacados",
         },
         {
-            src: "public/assets/banner.png",
+            src: "/assets/banner.png",
             alt: "Ofertas especiales del día",
         }
     ];
