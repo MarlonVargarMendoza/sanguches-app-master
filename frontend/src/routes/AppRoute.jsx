@@ -3,6 +3,7 @@ import React, { lazy, Suspense, useEffect } from 'react';
 import { Route, Routes, useLocation } from 'react-router-dom';
 import Footer from '../components/Layout/Footer.jsx';
 import Navbar from '../components/Layout/Navbar/Navbar.jsx';
+import Loader from '../components/ui/Loader.jsx';
 import ScrollToTop from '../components/ui/ScrollToTop.jsx';
 import { CartProvider } from '../context/cart.jsx';
 import { FiltersProvider } from '../context/filters.jsx';
@@ -25,14 +26,7 @@ const Drinks = lazy(() => import('../components/Product/drinks/Drinks')
 );
 const Donuts = lazy(() => import('../components/Product/donuts/Donuts.jsx'));
 // Enhanced loader component
-const Loader = () => (
-  <div className="loader-container">
-    <div className="loader">
-      <div className="justify-content-center jimu-primary-loading"></div>
-    </div>
-    <h2 className="loader-text">Cargando deliciosos sanguches...</h2>
-  </div>
-);
+
 
 // Layout component
 const Layout = ({ children }) => {

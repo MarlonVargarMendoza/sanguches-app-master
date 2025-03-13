@@ -25,21 +25,21 @@ export const Navbar = () => {
 
   useEffect(() => {
     if (currentScrollY === 0) {
-        // Topmost position: show navbar without floating-nav
-        setIsNavVisible(true);
-        navRef.current.classList.remove("floating-nav");
+      // Topmost position: show navbar without floating-nav
+      setIsNavVisible(true);
+      navRef.current.classList.remove("floating-nav");
     } else if (currentScrollY > lastScrollY) {
-        // Scrolling down: hide navbar and apply floating-nav
-        setIsNavVisible(false);
-        navRef.current.classList.add("floating-nav");
+      // Scrolling down: hide navbar and apply floating-nav
+      setIsNavVisible(false);
+      navRef.current.classList.add("floating-nav");
     } else if (currentScrollY < lastScrollY) {
-        // Scrolling up: show navbar with floating-nav
-        setIsNavVisible(true);
-        navRef.current.classList.add("floating-nav");
+      // Scrolling up: show navbar with floating-nav
+      setIsNavVisible(true);
+      navRef.current.classList.add("floating-nav");
     }
 
     setLastScrollY(currentScrollY);
-}, [currentScrollY, lastScrollY]);
+  }, [currentScrollY, lastScrollY]);
 
   useEffect(() => {
     if (navRef.current) {
@@ -53,10 +53,10 @@ export const Navbar = () => {
   }, [isNavVisible]);
 
   return (
-    <nav 
+    <nav
       ref={navRef}
       className={`
-        fixed top-0 left-0 right-0 z-[100]
+        fixed top-0 left-0 right-0 z-[var(--z-navbar)]
         transition-all duration-300
         bg-[#FFC603] 
         ${currentScrollY > 0 ? 'shadow-lg' : ''}
@@ -92,7 +92,7 @@ const MobileNav = React.memo(({ isOpen, onToggle }) => (
 
 const DesktopNav = React.memo(() => {
   const isDesktop = useMediaQuery(theme => theme.breakpoints.up(BREAKPOINTS.DESKTOP));
-  
+
   return (
     <div className="w-full grid grid-cols-3 items-center px-4">
       <Logo />

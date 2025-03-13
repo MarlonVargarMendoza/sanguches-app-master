@@ -1,5 +1,6 @@
 import {
-  Box, Breadcrumbs, Button, CircularProgress, Grid, IconButton,
+  Box, Breadcrumbs, Button,
+  Grid, IconButton,
   Tooltip, Typography, useMediaQuery, useTheme
 } from '@mui/material';
 import { motion } from 'framer-motion';
@@ -14,6 +15,7 @@ import { CustomizationProvider } from '../../context/CustomizeContext';
 import { useCustomizations } from '../../hooks/useProductCustomization';
 import ErrorView, { ErrorBoundary } from '../Error/ErrorComponents';
 import CustomSelect from '../ui/CustomSelect';
+import Loader from '../ui/Loader';
 import NotificationSnackbar from './sections/NotificationSnackbar ';
 import RelatedProducts from './sections/RelatedProducts';
 const DOMAIN = import.meta.env.VITE_APP_DOMAIN;
@@ -67,7 +69,7 @@ function Customize() {
   if (loading) {
     return (
       <div className="flex h-screen items-center justify-center bg-[#F5F5F5]">
-        <CircularProgress />
+        <Loader />
       </div>
     );
   }

@@ -94,10 +94,8 @@ const SubMenu = () => {
   if (!isVisible) return null;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: -20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="relative z-40 bg-[#FFC603] shadow-sm"
+    <div
+      className="relative z-[var(--z-submenu)] bg-[#FFC603] shadow-sm"
     >
       <div className="container mx-auto">
         <div className="flex items-center justify-center h-16">
@@ -118,7 +116,7 @@ const SubMenu = () => {
           )}
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 };
 
