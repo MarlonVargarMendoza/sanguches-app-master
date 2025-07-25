@@ -1,12 +1,12 @@
-import { IconButton, Snackbar } from '@mui/material';
+import { Button, IconButton, Snackbar } from '@mui/material';
 import { motion } from 'framer-motion';
 import { X } from 'lucide-react';
 
-const NotificationSnackbar = ({ open, onClose, isEditing }) => {
+const NotificationSnackbar = ({ open, onClose, isEditing, onViewCart }) => {
     return (
         <Snackbar
             open={open}
-            autoHideDuration={3000}
+            autoHideDuration={4000}
             onClose={onClose}
             anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
             className="mt-16"
@@ -14,18 +14,35 @@ const NotificationSnackbar = ({ open, onClose, isEditing }) => {
             <motion.div
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-[#FFC603] text-black px-6 py-3 rounded-lg shadow-lg flex items-center justify-between"
+                className="bg-[#FFC603] text-black px-4 py-3 rounded-lg shadow-lg min-w-[300px]"
             >
-                <span className="font-medium">
-                    {isEditing ? '¡Producto actualizado!' : '¡Producto añadido al carrito!'}
-                </span>
-                <IconButton
+                <div className="flex items-center justify-between mb-2">
+                    <span className="font-medium">
+                        {isEditing ? '¡Producto actualizado!' : '¡Producto añadido al carrito!'}
+                    </span>
+                    <IconButton
+                        size="small"
+                        onClick={onClose}
+                        className="text-black hover:text-gray-800"
+                    >
+                        <X className="w-4 h-4" />
+                    </IconButton>
+                </div>
+                
+                <Button
                     size="small"
-                    onClick={onClose}
-                    className="text-black hover:text-gray-800 ml-2"
+                    onClick={onViewCart}
+                    className="w-full bg-[#C8151B] hover:bg-[#A50F14] text-white normal-case font-medium"
+                    sx={{
+                        backgroundColor: '#C8151B',
+                        color: 'white',
+                        '&:hover': {
+                            backgroundColor: '#A50F14'
+                        }
+                    }}
                 >
-                    <X className="w-4 h-4" />
-                </IconButton>
+                    Ver carrito
+                </Button>
             </motion.div>
         </Snackbar>
     );

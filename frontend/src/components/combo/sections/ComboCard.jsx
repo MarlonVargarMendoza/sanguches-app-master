@@ -49,7 +49,6 @@ const ComboCard = ({ combo, onSelect, className = '', showBadge = true }) => {
                 </h3>
                 
                 <div className="flex gap-2 items-center text-sm text-gray-500">
-                   
                     {savings > 0 && (
                         <span className="line-through text-gray-400 ml-2">
                             {priceUtils(combo.originalPrice)}

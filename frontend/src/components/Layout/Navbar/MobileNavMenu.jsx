@@ -120,7 +120,7 @@ const MobileNavMenu = () => {
   ), [toggleMenu]);
 
   return (
-    <div className="relative" ref={menuRef}>
+    <div className="relative overflow-hidden" ref={menuRef}>
       <IconButton onClick={toggleMenu} aria-label={isOpen ? "Cerrar menú" : "Abrir menú"}>
         <motion.div animate={{ rotate: isOpen ? 90 : 0 }} transition={{ duration: 0.3 }}>
           <Menu size={24} className="text-[#C8151B]" />

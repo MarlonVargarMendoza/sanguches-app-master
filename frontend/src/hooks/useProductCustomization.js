@@ -4,6 +4,22 @@ import { CustomizationContext } from '../context/CustomizeContext';
 import { getAllCustomizations, getAllProducts } from '../services/productService';
 import { useCart } from './useCart';
 
+const calculateItemPrice = (customizations, selections, priceKey = 'price') =>
+    selections.reduce((sum, id) => {
+        const item = customizations?.find(i => i.id === id);
+        return sum + (item?.[priceKey] || item?.basePrice || 0);
+    }, 0);
+
+const mapCustomizationItems = (customizations, selectedIds, type) =>
+    selectedIds.map(id => {
+        const item = customizations?.find(i => i.id === id);
+        return item ? {
+            id: item.id,
+            text: item.text || item.name,
+            price: type === 'sauces' ? 0 : (item.price || item.basePrice || 0)
+        } : null;
+    }).filter(Boolean);
+
 export const useCustomizations = (initialProduct) => {
     const { state, dispatch } = useContext(CustomizationContext);
     const navigate = useNavigate();
@@ -11,21 +27,13 @@ export const useCustomizations = (initialProduct) => {
     const [snackbarOpen, setSnackbarOpen] = useState(false);
 
     useEffect(() => {
-        const fetchData = async () => {
-            if (!initialProduct) {
-                dispatch({
-                    type: 'SET_ERROR',
-                    payload: "No se ha seleccionado ningún producto."
-                });
-                return;
-            }
+        if (!initialProduct) {
+            dispatch({ type: 'SET_ERROR', payload: "No se ha seleccionado ningún producto." });
+            return;
+        }
 
-            try {
-                const [customizations, productsData] = await Promise.all([
-                    getAllCustomizations(),
-                    getAllProducts()
-                ]);
-
+        Promise.all([getAllCustomizations(), getAllProducts()])
+            .then(([customizations, productsData]) => {
                 dispatch({
                     type: 'SET_INITIAL_DATA',
                     payload: {
@@ -35,98 +43,65 @@ export const useCustomizations = (initialProduct) => {
                         isEditing: !!location.state?.isEditing
                     }
                 });
-            } catch (error) {
-                console.error('Error fetching data:', error);
+            })
+            .catch(() => {
                 dispatch({
                     type: 'SET_ERROR',
                     payload: "Error al cargar las opciones de personalización."
                 });
-            }
-        };
-
-        fetchData();
+            });
     }, [initialProduct, dispatch]);
 
-    const handleSelectionChange = useCallback((type, value) => {
+    const handleSelectionChange = (type, value) => {
         dispatch({
             type: 'UPDATE_SELECTION',
             payload: { type, value }
         });
-    }, [dispatch]);
+    };
 
-    const handleQuantityChange = useCallback((change) => {
+    const handleQuantityChange = (change) => {
         dispatch({
             type: 'UPDATE_QUANTITY',
-            payload: (prev) => Math.max(1, prev + change)
+            payload: Math.max(1, parseInt(change) || 1)
         });
-    }, [dispatch]);
+    };
 
     const calculatePrice = useCallback(() => {
         if (!state.product) return 0;
-        let totalPrice = state.product.basePrice;
 
-        const calculateAdditionalCost = (items, selectedIds, priceKey = 'price') =>
-            selectedIds.reduce((sum, id) => {
-                const item = items?.find(i => i.id === id);
-                return sum + (item ? (item[priceKey] || item.basePrice || 0) : 0);
-            }, 0);
+        const { customizations, selections, quantity, product } = state;
 
-        totalPrice += calculateAdditionalCost(
-            state.customizations.additions,
-            state.selections.additions
-        );
-        totalPrice += calculateAdditionalCost(
-            state.customizations.drinks,
-            state.selections.drinks,
-            'basePrice'
-        );
-        totalPrice += calculateAdditionalCost(
-            state.customizations.accompaniments,
-            state.selections.accompaniments,
-            'basePrice'
-        );
+        // precio por tipo de customización
+        const additionsPrice = calculateItemPrice(customizations.additions, selections.additions, 'price');
+        const drinksPrice = calculateItemPrice(customizations.drinks, selections.drinks, 'basePrice');
+        const accompanimentsPrice = calculateItemPrice(customizations.accompaniments, selections.accompaniments, 'basePrice');
 
-        return totalPrice * state.quantity;
+        return (product.basePrice + additionsPrice + drinksPrice + accompanimentsPrice) * quantity;
     }, [state.product, state.customizations, state.selections, state.quantity]);
 
-    const mapCustomizations = useCallback((type, selectedIds) => {
-        return selectedIds.map(id => {
-            const item = state.customizations[type]?.find(i => i.id === id);
-            if (!item) return null;
-
-            return {
-                id: item.id,
-                text: item.text || item.name,
-                price: type === 'sauces' ? 0 : (item.price || item.basePrice || 0)
-            };
-        }).filter(Boolean);
-    }, [state.customizations]);
-
-    const handleAddToCart = useCallback(() => {
+    const handleAddToCart = () => {
         const { product, selections, quantity } = state;
         if (!product) return;
 
         const customizedProduct = {
             ...product,
             customizations: {
-                additions: mapCustomizations('additions', selections.additions),
-                sauces: mapCustomizations('sauces', selections.sauces),
-                drinks: mapCustomizations('drinks', selections.drinks),
-                accompaniments: mapCustomizations('accompaniments', selections.accompaniments)
+                additions: mapCustomizationItems(state.customizations.additions, selections.additions, 'additions'),
+                sauces: mapCustomizationItems(state.customizations.sauces, selections.sauces, 'sauces'),
+                drinks: mapCustomizationItems(state.customizations.drinks, selections.drinks, 'drinks'),
+                accompaniments: mapCustomizationItems(state.customizations.accompaniments, selections.accompaniments, 'accompaniments')
             },
             quantity,
             calculatedPrice: calculatePrice()
         };
 
-        if (state.isEditing) {
-            updateCartItem(product.id, customizedProduct);
-        } else {
-            addToCart(customizedProduct);
-        }
+        state.isEditing
+            ? updateCartItem(product.id, customizedProduct)
+            : addToCart(customizedProduct);
 
         setSnackbarOpen(true);
         navigate(-1);
-    }, [state, calculatePrice, mapCustomizations, addToCart, updateCartItem, navigate]);
+    };
 
     return {
         product: state.product,

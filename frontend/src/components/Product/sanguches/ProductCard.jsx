@@ -1,5 +1,5 @@
 import { Button, IconButton, Tooltip, Typography } from '@mui/material';
-import React, { useCallback, useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import priceUtils from '../../../../utils/priceUtils';
 import logoSanguches from '/assets/logoSanguches.jpg';
@@ -154,8 +154,3 @@ const ProductCard = ({
 };
 
 export default ProductCard;
-
-// Añadir en tu CSS global:
-// @keyframes bounce-scale { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.15); } }
-// .animate-bounce-scale { animation: bounce-scale 0.6s ease; }
-// .animate-pulse-once { animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) 1; }

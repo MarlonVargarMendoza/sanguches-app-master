@@ -23,11 +23,11 @@ const Hero = () => {
 
     const carouselImages = [
         {
-            src: "assets/hero/hero12.webp",
+            src: "assets/hero/hero12.png",
             alt: "Promoción especial de sándwiches",
         },
         {
-            src: "assets/hero/hero21.webp",
+            src: "assets/hero/hero21.png",
             alt: "Nuevos productos destacados",
         },
         {
